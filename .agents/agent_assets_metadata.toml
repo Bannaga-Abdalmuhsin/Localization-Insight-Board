@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "QwT9jCd4G42ag9JX017hY"
+uri = "file://supabase_seed.md"
+type = "text"
+title = "supabase_seed.sql — Schema + 195 employees"
