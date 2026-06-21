@@ -1,0 +1,304 @@
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+
+export type Lang = "ar" | "en";
+
+const translations = {
+  ar: {
+    nav: {
+      brand: "السعودة",
+      brandSub: "لوحة المتابعة",
+      dashboard: "الرئيسية",
+      teamBreakdown: "تفصيل الفرق",
+      positionDetail: "تفاصيل الوظائف",
+      uploadData: "رفع البيانات",
+      ministry: "وزارة الموارد البشرية والتنمية الاجتماعية",
+      framework: "نظام السعودة الإصدار 2.0",
+    },
+    dashboard: {
+      title: "لوحة متابعة السعودة",
+      subtitle: "نظرة عامة على الامتثال — حالة السعودة الحالية حسب القسم والفريق",
+      target: "الهدف",
+      scope: "النطاق",
+      totalHeadcount: "إجمالي القوى العاملة",
+      saudiNationals: "الموظفون السعوديون",
+      nonSaudi: "غير السعوديين",
+      totalHiringGap: "فجوة التوظيف الإجمالية",
+      ofWorkforce: "من إجمالي القوى العاملة",
+      teamsCompliant: "من الفرق ممتثلة",
+      departmentOverview: "نظرة عامة على الأقسام",
+      viewAllTeams: "عرض جميع الفرق",
+      employees: "موظف",
+      teams: "فريق",
+      team: "الفريق",
+      saudi: "سعودي",
+      nonSaudiLabel: "غير سعودي",
+      gap: "الفجوة",
+      compliant: "ممتثل",
+      actionRequired: "يتطلب إجراء",
+      ofTeamsCompliant: "من الفرق ممتثلة",
+      details: "التفاصيل",
+      overallProgress: "التقدم الإجمالي في السعودة",
+      overallProgressSub: "الحالي مقابل الهدف عبر جميع الفرق",
+      allCompliant: "جميع الفرق تحقق هدف السعودة.",
+      loading: "جارٍ تحميل البيانات...",
+      errorLoading: "خطأ في تحميل البيانات:",
+      errorHint: "تحقق من اتصال Supabase وحاول التحديث.",
+      noData: "لا توجد بيانات",
+      noDataHint: "قم برفع ملف CSV للبدء",
+      uploadData: "رفع البيانات",
+    },
+    teams: {
+      title: "تفصيل الفرق",
+      subtitle: "حالة السعودة وفجوة التوظيف لكل فريق",
+      searchPlaceholder: "البحث في الفرق أو الأقسام...",
+      all: "الكل",
+      compliant: "ممتثل",
+      actionRequired: "يتطلب إجراء",
+      colTeam: "الفريق",
+      colDepartment: "القسم",
+      colTotal: "الإجمالي",
+      colSaudi: "سعودي",
+      colSaudizationPct: "نسبة السعودة",
+      colGap: "الفجوة",
+      colStatus: "الحالة",
+      colPositions: "الوظائف",
+      noResults: "لا توجد فرق تطابق المرشحات.",
+      teamCount: (n: number) => `${n} ${n === 1 ? "فريق" : "فرق"}`,
+    },
+    positions: {
+      title: "تفاصيل الوظائف",
+      subtitle: "قائمة قابلة للتصفية لجميع الوظائف — تحديد الأدوار غير السعودية لتخطيط الانتقال",
+      showing: "عرض",
+      saudi: "سعودي",
+      nonSaudi: "غير سعودي",
+      searchPlaceholder: "البحث في الوظائف أو الجنسيات...",
+      allTeams: "جميع الفرق",
+      allNationalities: "جميع الجنسيات",
+      nonSaudiOnly: "غير السعوديين فقط",
+      saudiOnly: "السعوديين فقط",
+      colPosition: "المسمى الوظيفي",
+      colDepartment: "القسم",
+      colTeam: "الفريق",
+      colNationality: "الجنسية",
+      colStatus: "الحالة",
+      noResults: "لا توجد وظائف تطابق المرشحات.",
+      transitionNote: (n: number) => `${n} وظيفة يشغلها غير السعوديين — مصنفة لتخطيط الانتقال أو الاستبدال.`,
+    },
+    upload: {
+      title: "رفع بيانات الموظفين",
+      subtitle: "قم برفع ملف CSV أو Excel يحتوي على بيانات الموظفين. سيتم تحليل البيانات وإدراجها في قاعدة البيانات.",
+      requiredColumns: "الأعمدة المطلوبة",
+      autoDetect: "يتم اكتشاف السعوديين تلقائيًا من خلال قيمة حقل الجنسية.",
+      downloadSample: "تنزيل نموذج CSV",
+      dropZone: "أفلت الملف هنا أو انقر للتصفح",
+      supportedFormats: "يدعم .csv و .xlsx و .xls",
+      rowsParsed: "صف تم تحليله",
+      uploadBtn: (n: number) => `رفع ${n} موظف`,
+      uploading: "جارٍ إدراج السجلات في Supabase...",
+      uploadComplete: "اكتمل الرفع",
+      insertedRecords: (n: number, demo: boolean) =>
+        demo
+          ? `تمت معالجة ${n} سجل (وضع العرض — لا توجد قاعدة بيانات متصلة)`
+          : `تم إدراج ${n} سجل في Supabase`,
+      uploadAnother: "رفع ملف آخر",
+      errorTitle: "خطأ في تحليل الملف",
+      tryAgain: "حاول مرة أخرى",
+      colDepartment: "القسم",
+      colTeam: "الفريق",
+      colPositionTitle: "المسمى الوظيفي",
+      colNationality: "الجنسية",
+      colStatus: "الحالة",
+      saudiLabel: "سعودي",
+      nonSaudiLabel: "غير سعودي",
+      moreRows: (n: number) => `...و ${n} صف إضافي`,
+      noValidRows: "لا توجد صفوف صالحة. تأكد من وجود الأعمدة: Department, Team, Position Title, Nationality",
+      unsupportedType: "نوع الملف غير مدعوم. يرجى رفع ملف .csv أو .xlsx أو .xls.",
+    },
+    scope: {
+      label: "النطاق",
+      currentDept: "القسم الحالي",
+      companyLevel: "مستوى الشركة",
+      soon: "قريبًا",
+    },
+    common: {
+      saudiLabel: "سعودي",
+      nonSaudiLabel: "غير سعودي",
+      target: "الهدف",
+      gap: "الفجوة",
+      gapWarning: (gap: number, pct: number) =>
+        `مطلوب ${gap} موظف سعودي إضافي عبر جميع الفرق لتحقيق هدف ${pct}٪.`,
+    },
+  },
+
+  en: {
+    nav: {
+      brand: "Saudization",
+      brandSub: "Dashboard",
+      dashboard: "Dashboard",
+      teamBreakdown: "Team Breakdown",
+      positionDetail: "Position Detail",
+      uploadData: "Upload Data",
+      ministry: "Ministry of HR & Social Development",
+      framework: "Saudization Framework v2.0",
+    },
+    dashboard: {
+      title: "Saudization Dashboard",
+      subtitle: "Workforce compliance overview — Current Saudization status by department and team",
+      target: "Target",
+      scope: "Scope",
+      totalHeadcount: "Total Headcount",
+      saudiNationals: "Saudi Nationals",
+      nonSaudi: "Non-Saudi",
+      totalHiringGap: "Total Hiring Gap",
+      ofWorkforce: "of workforce",
+      teamsCompliant: "teams compliant",
+      departmentOverview: "Department Overview",
+      viewAllTeams: "View all teams",
+      employees: "employees",
+      teams: "teams",
+      team: "Team",
+      saudi: "Saudi",
+      nonSaudiLabel: "Non-Saudi",
+      gap: "Gap",
+      compliant: "Compliant",
+      actionRequired: "Action Required",
+      ofTeamsCompliant: "of teams compliant",
+      details: "Details",
+      overallProgress: "Overall Saudization Progress",
+      overallProgressSub: "Current vs. target across all teams",
+      allCompliant: "All teams meet the Saudization target.",
+      loading: "Loading dashboard data…",
+      errorLoading: "Error loading data:",
+      errorHint: "Check your Supabase connection and try refreshing.",
+      noData: "No data available",
+      noDataHint: "Upload a CSV file to get started",
+      uploadData: "Upload data",
+    },
+    teams: {
+      title: "Team Breakdown",
+      subtitle: "Saudization status and hiring gap for every team",
+      searchPlaceholder: "Search teams or departments…",
+      all: "All Teams",
+      compliant: "Compliant",
+      actionRequired: "Action Required",
+      colTeam: "Team",
+      colDepartment: "Department",
+      colTotal: "Total",
+      colSaudi: "Saudi",
+      colSaudizationPct: "Saudization %",
+      colGap: "Gap",
+      colStatus: "Status",
+      colPositions: "Positions",
+      noResults: "No teams match your filters.",
+      teamCount: (n: number) => `${n} team${n !== 1 ? "s" : ""}`,
+    },
+    positions: {
+      title: "Position Detail",
+      subtitle: "Filterable list of all positions — identify Non-Saudi roles for transition planning",
+      showing: "Showing",
+      saudi: "Saudi",
+      nonSaudi: "Non-Saudi",
+      searchPlaceholder: "Search positions or nationality…",
+      allTeams: "All Teams",
+      allNationalities: "All Nationalities",
+      nonSaudiOnly: "Non-Saudi Only",
+      saudiOnly: "Saudi Only",
+      colPosition: "Position Title",
+      colDepartment: "Department",
+      colTeam: "Team",
+      colNationality: "Nationality",
+      colStatus: "Status",
+      noResults: "No positions match your filters.",
+      transitionNote: (n: number) =>
+        `${n} position${n !== 1 ? "s" : ""} currently held by Non-Saudi nationals — flagged for transition or replacement planning.`,
+    },
+    upload: {
+      title: "Upload Employee Data",
+      subtitle: "Upload a CSV or Excel file with team members. Data will be parsed and upserted into your database.",
+      requiredColumns: "Required Columns",
+      autoDetect: "Saudi nationals are detected automatically by nationality field value.",
+      downloadSample: "Download sample CSV",
+      dropZone: "Drop your file here, or click to browse",
+      supportedFormats: "Supports .csv, .xlsx, .xls",
+      rowsParsed: "rows parsed",
+      uploadBtn: (n: number) => `Upload ${n} Employees`,
+      uploading: "Upserting records into Supabase…",
+      uploadComplete: "Upload complete",
+      insertedRecords: (n: number, demo: boolean) =>
+        demo
+          ? `${n} employee records processed (demo mode — no database connected)`
+          : `${n} employee records inserted into Supabase`,
+      uploadAnother: "Upload another file",
+      errorTitle: "Error parsing file",
+      tryAgain: "Try again",
+      colDepartment: "Department",
+      colTeam: "Team",
+      colPositionTitle: "Position Title",
+      colNationality: "Nationality",
+      colStatus: "Status",
+      saudiLabel: "Saudi",
+      nonSaudiLabel: "Non-Saudi",
+      moreRows: (n: number) => `…and ${n} more rows`,
+      noValidRows: "No valid rows found. Ensure columns: Department, Team, Position Title, Nationality",
+      unsupportedType: "Unsupported file type. Please upload a .csv, .xlsx, or .xls file.",
+    },
+    scope: {
+      label: "Scope",
+      currentDept: "Current Department",
+      companyLevel: "Company Level",
+      soon: "Soon",
+    },
+    common: {
+      saudiLabel: "Saudi",
+      nonSaudiLabel: "Non-Saudi",
+      target: "Target",
+      gap: "Gap",
+      gapWarning: (gap: number, pct: number) =>
+        `${gap} additional Saudi national${gap !== 1 ? "s" : ""} required across all teams to meet the ${pct}% target.`,
+    },
+  },
+};
+
+export type Translations = typeof translations.en;
+
+interface I18nContextValue {
+  lang: Lang;
+  setLang: (l: Lang) => void;
+  t: Translations;
+  isRtl: boolean;
+}
+
+const I18nContext = createContext<I18nContextValue>({
+  lang: "ar",
+  setLang: () => {},
+  t: translations.en,
+  isRtl: true,
+});
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const [lang, setLangState] = useState<Lang>("ar");
+
+  function setLang(l: Lang) {
+    setLangState(l);
+    document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
+    document.documentElement.lang = l;
+  }
+
+  useEffect(() => {
+    document.documentElement.dir = "rtl";
+    document.documentElement.lang = "ar";
+  }, []);
+
+  const value: I18nContextValue = {
+    lang,
+    setLang,
+    t: translations[lang] as Translations,
+    isRtl: lang === "ar",
+  };
+
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
+}
+
+export function useTranslation() {
+  return useContext(I18nContext);
+}

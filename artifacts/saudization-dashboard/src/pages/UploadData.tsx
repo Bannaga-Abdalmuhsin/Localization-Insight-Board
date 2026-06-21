@@ -6,6 +6,7 @@ import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { isSaudi } from "@/lib/metrics";
 import type { CsvRow } from "@/types";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/lib/i18n";
 
 type UploadStatus = "idle" | "parsing" | "upserting" | "done" | "error";
 
@@ -30,6 +31,7 @@ export default function UploadData() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { t } = useTranslation();
 
   function parseFile(file: File) {
     setFileName(file.name);
@@ -44,13 +46,8 @@ export default function UploadData() {
       Papa.parse<CsvRow>(file, {
         header: true,
         skipEmptyLines: true,
-        complete: (r) => {
-          handleParsed(r.data);
-        },
-        error: (err) => {
-          setErrorMsg(err.message);
-          setStatus("error");
-        },
+        complete: (r) => { handleParsed(r.data); },
+        error: (err) => { setErrorMsg(err.message); setStatus("error"); },
       });
     } else if (ext === "xlsx" || ext === "xls") {
       const reader = new FileReader();
@@ -67,7 +64,7 @@ export default function UploadData() {
       };
       reader.readAsArrayBuffer(file);
     } else {
-      setErrorMsg("Unsupported file type. Please upload a .csv, .xlsx, or .xls file.");
+      setErrorMsg(t.upload.unsupportedType);
       setStatus("error");
     }
   }
@@ -84,9 +81,7 @@ export default function UploadData() {
       }));
 
     if (parsed.length === 0) {
-      setErrorMsg(
-        "No valid rows found. Ensure columns: Department, Team, Position Title, Nationality"
-      );
+      setErrorMsg(t.upload.noValidRows);
       setStatus("error");
       return;
     }
@@ -111,9 +106,7 @@ export default function UploadData() {
     try {
       const deptNames = [...new Set(rows.map((r) => r.department))];
       for (const name of deptNames) {
-        const { error } = await supabase
-          .from("departments")
-          .upsert({ name }, { onConflict: "name" });
+        const { error } = await supabase.from("departments").upsert({ name }, { onConflict: "name" });
         if (error) errors.push(`Dept "${name}": ${error.message}`);
       }
 
@@ -132,18 +125,12 @@ export default function UploadData() {
       }
 
       const { data: teams } = await supabase.from("teams").select("id, name, department_id");
-      const teamMap = new Map((teams ?? []).map((t) => [`${t.department_id}::${t.name}`, t.id]));
+      const teamMap = new Map((teams ?? []).map((tm) => [`${tm.department_id}::${tm.name}`, tm.id]));
 
       const employeeRows = rows.map((r) => {
         const deptId = deptMap.get(r.department);
         const teamId = teamMap.get(`${deptId}::${r.team}`);
-        return {
-          team_id: teamId,
-          department_id: deptId,
-          position_title: r.positionTitle,
-          nationality: r.nationality,
-          is_saudi: r.isSaudi,
-        };
+        return { team_id: teamId, department_id: deptId, position_title: r.positionTitle, nationality: r.nationality, is_saudi: r.isSaudi };
       }).filter((r) => r.team_id && r.department_id);
 
       const BATCH = 100;
@@ -188,15 +175,13 @@ Finance,Accounting,Accountant,Lebanese`;
   return (
     <div className="p-6 space-y-6 max-w-3xl">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Upload Employee Data</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Upload a CSV or Excel file with team members. Data will be parsed and upserted into your database.
-        </p>
+        <h1 className="text-2xl font-bold text-foreground">{t.upload.title}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t.upload.subtitle}</p>
       </div>
 
       {/* Required columns */}
       <div className="rounded-xl border border-border bg-white shadow-sm p-5">
-        <h3 className="text-sm font-semibold text-foreground mb-3">Required Columns</h3>
+        <h3 className="text-sm font-semibold text-foreground mb-3">{t.upload.requiredColumns}</h3>
         <div className="grid grid-cols-2 gap-3">
           {["Department", "Team", "Position Title", "Nationality"].map((col) => (
             <div key={col} className="flex items-center gap-2 bg-muted/40 rounded-lg px-3 py-2">
@@ -206,14 +191,14 @@ Finance,Accounting,Accountant,Lebanese`;
           ))}
         </div>
         <div className="mt-4 flex items-center justify-between">
-          <p className="text-xs text-muted-foreground">Saudi nationals are detected automatically by nationality field value.</p>
+          <p className="text-xs text-muted-foreground">{t.upload.autoDetect}</p>
           <button
             onClick={downloadSample}
             data-testid="btn-download-sample"
             className="flex items-center gap-1.5 text-xs text-primary font-medium hover:underline"
           >
             <Download className="w-3.5 h-3.5" />
-            Download sample CSV
+            {t.upload.downloadSample}
           </button>
         </div>
       </div>
@@ -235,8 +220,8 @@ Finance,Accounting,Accountant,Lebanese`;
             <Upload className="w-6 h-6 text-primary" />
           </div>
           <div className="text-center">
-            <p className="text-sm font-medium text-foreground">Drop your file here, or click to browse</p>
-            <p className="text-xs text-muted-foreground mt-1">Supports .csv, .xlsx, .xls</p>
+            <p className="text-sm font-medium text-foreground">{t.upload.dropZone}</p>
+            <p className="text-xs text-muted-foreground mt-1">{t.upload.supportedFormats}</p>
           </div>
         </div>
         <input
@@ -260,7 +245,7 @@ Finance,Accounting,Accountant,Lebanese`;
             <div className="flex items-center gap-2">
               <FileSpreadsheet className="w-4 h-4 text-primary" />
               <span className="text-sm font-semibold text-foreground">{fileName}</span>
-              <span className="text-xs text-muted-foreground">— {rows.length} rows parsed</span>
+              <span className="text-xs text-muted-foreground">— {rows.length} {t.upload.rowsParsed}</span>
             </div>
             <button onClick={() => { setRows([]); setFileName(null); setStatus("idle"); }} data-testid="btn-clear-file">
               <X className="w-4 h-4 text-muted-foreground hover:text-foreground" />
@@ -270,7 +255,7 @@ Finance,Accounting,Accountant,Lebanese`;
             <table className="w-full text-sm">
               <thead className="sticky top-0 bg-white border-b border-border">
                 <tr>
-                  {["Department", "Team", "Position Title", "Nationality", "Status"].map((h) => (
+                  {[t.upload.colDepartment, t.upload.colTeam, t.upload.colPositionTitle, t.upload.colNationality, t.upload.colStatus].map((h) => (
                     <th key={h} className="px-4 py-2.5 text-left text-xs font-semibold text-muted-foreground">{h}</th>
                   ))}
                 </tr>
@@ -284,7 +269,7 @@ Finance,Accounting,Accountant,Lebanese`;
                     <td className="px-4 py-2 text-foreground">{row.nationality}</td>
                     <td className="px-4 py-2">
                       <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full", row.isSaudi ? "bg-emerald-100 text-emerald-700" : "bg-muted text-muted-foreground")}>
-                        {row.isSaudi ? "Saudi" : "Non-Saudi"}
+                        {row.isSaudi ? t.upload.saudiLabel : t.upload.nonSaudiLabel}
                       </span>
                     </td>
                   </tr>
@@ -292,13 +277,13 @@ Finance,Accounting,Accountant,Lebanese`;
               </tbody>
             </table>
             {rows.length > 20 && (
-              <p className="text-xs text-center text-muted-foreground py-2">…and {rows.length - 20} more rows</p>
+              <p className="text-xs text-center text-muted-foreground py-2">{t.upload.moreRows(rows.length - 20)}</p>
             )}
           </div>
           <div className="px-5 py-3 border-t border-border flex items-center justify-between bg-muted/10">
             <div className="flex items-center gap-3 text-xs text-muted-foreground">
-              <span><span className="font-semibold text-emerald-600">{rows.filter((r) => r.isSaudi).length}</span> Saudi</span>
-              <span><span className="font-semibold text-amber-600">{rows.filter((r) => !r.isSaudi).length}</span> Non-Saudi</span>
+              <span><span className="font-semibold text-emerald-600">{rows.filter((r) => r.isSaudi).length}</span> {t.upload.saudiLabel}</span>
+              <span><span className="font-semibold text-amber-600">{rows.filter((r) => !r.isSaudi).length}</span> {t.upload.nonSaudiLabel}</span>
             </div>
             <button
               onClick={handleUpload}
@@ -306,17 +291,17 @@ Finance,Accounting,Accountant,Lebanese`;
               className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-sm font-semibold rounded-lg shadow-sm hover:bg-primary/90 transition-colors"
             >
               <Upload className="w-4 h-4" />
-              Upload {rows.length} Employees
+              {t.upload.uploadBtn(rows.length)}
             </button>
           </div>
         </div>
       )}
 
-      {/* Uploading indicator */}
+      {/* Uploading */}
       {status === "upserting" && (
         <div className="flex items-center gap-3 bg-primary/5 border border-primary/20 rounded-xl p-4">
           <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin flex-shrink-0" />
-          <p className="text-sm text-foreground">Upserting records into Supabase…</p>
+          <p className="text-sm text-foreground">{t.upload.uploading}</p>
         </div>
       )}
 
@@ -326,8 +311,8 @@ Finance,Accounting,Accountant,Lebanese`;
           <div className="flex items-center gap-3 mb-4">
             <CheckCircle2 className="w-6 h-6 text-emerald-500 flex-shrink-0" />
             <div>
-              <p className="text-sm font-semibold text-foreground">Upload complete</p>
-              <p className="text-xs text-muted-foreground">{result.inserted} employee records {isSupabaseConfigured ? "inserted into Supabase" : "processed (demo mode — no database connected)"}</p>
+              <p className="text-sm font-semibold text-foreground">{t.upload.uploadComplete}</p>
+              <p className="text-xs text-muted-foreground">{t.upload.insertedRecords(result.inserted, !isSupabaseConfigured)}</p>
             </div>
           </div>
           {result.errors.length > 0 && (
@@ -345,7 +330,7 @@ Finance,Accounting,Accountant,Lebanese`;
             data-testid="btn-upload-again"
             className="mt-4 text-xs text-primary font-medium hover:underline"
           >
-            Upload another file
+            {t.upload.uploadAnother}
           </button>
         </div>
       )}
@@ -355,14 +340,14 @@ Finance,Accounting,Accountant,Lebanese`;
         <div className="flex items-start gap-3 bg-destructive/5 border border-destructive/20 rounded-xl p-4">
           <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-semibold text-destructive">Error parsing file</p>
+            <p className="text-sm font-semibold text-destructive">{t.upload.errorTitle}</p>
             <p className="text-xs text-muted-foreground mt-1">{errorMsg}</p>
             <button
               onClick={() => { setStatus("idle"); setErrorMsg(null); }}
               data-testid="btn-error-dismiss"
               className="mt-2 text-xs text-primary hover:underline"
             >
-              Try again
+              {t.upload.tryAgain}
             </button>
           </div>
         </div>

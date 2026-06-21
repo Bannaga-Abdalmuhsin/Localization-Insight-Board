@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { Search, Filter } from "lucide-react";
 import { useEmployeeData } from "@/lib/useEmployeeData";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/lib/i18n";
 
 interface PositionDetailProps {
   targetPct: number;
@@ -20,9 +21,10 @@ export default function PositionDetail({ targetPct }: PositionDetailProps) {
   const [nonSaudiOnly, setNonSaudiOnly] = useState(false);
 
   const { employees, teamMetrics, isLoading } = useEmployeeData(targetPct);
+  const { t, isRtl } = useTranslation();
 
   const teams = Array.from(
-    new Map(teamMetrics.map((t) => [t.teamId, t])).values()
+    new Map(teamMetrics.map((tm) => [tm.teamId, tm])).values()
   );
 
   const nationalities = Array.from(
@@ -47,31 +49,23 @@ export default function PositionDetail({ targetPct }: PositionDetailProps) {
     );
   }
 
+  const summaryItems = [
+    { label: t.positions.showing, value: filtered.length, className: "text-foreground" },
+    { label: t.positions.saudi, value: filtered.filter((e) => e.is_saudi).length, className: "text-emerald-600" },
+    { label: t.positions.nonSaudi, value: filtered.filter((e) => !e.is_saudi).length, className: "text-amber-600" },
+  ];
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Position Detail</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Filterable list of all positions — identify Non-Saudi roles for transition planning
-        </p>
+        <h1 className="text-2xl font-bold text-foreground">{t.positions.title}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t.positions.subtitle}</p>
       </div>
 
       {/* Summary strip */}
       <div className="flex flex-wrap gap-4">
-        {[
-          { label: "Showing", value: filtered.length, className: "text-foreground" },
-          {
-            label: "Saudi",
-            value: filtered.filter((e) => e.is_saudi).length,
-            className: "text-emerald-600",
-          },
-          {
-            label: "Non-Saudi",
-            value: filtered.filter((e) => !e.is_saudi).length,
-            className: "text-amber-600",
-          },
-        ].map((s) => (
+        {summaryItems.map((s) => (
           <div key={s.label} className="flex items-center gap-2 bg-white border border-border rounded-lg px-3 py-2 shadow-sm">
             <span className="text-xs text-muted-foreground">{s.label}</span>
             <span className={cn("text-sm font-bold tabular-nums", s.className)}>{s.value}</span>
@@ -83,14 +77,17 @@ export default function PositionDetail({ targetPct }: PositionDetailProps) {
       <div className="flex flex-wrap items-center gap-3">
         {/* Search */}
         <div className="relative flex-1 min-w-56 max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className={cn("absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground", isRtl ? "right-3" : "left-3")} />
           <input
             type="search"
-            placeholder="Search positions or nationality…"
+            placeholder={t.positions.searchPlaceholder}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             data-testid="input-search-positions"
-            className="w-full pl-9 pr-4 h-9 text-sm rounded-lg border border-border bg-white shadow-sm outline-none focus:ring-2 focus:ring-primary/30"
+            className={cn(
+              "w-full h-9 text-sm rounded-lg border border-border bg-white shadow-sm outline-none focus:ring-2 focus:ring-primary/30",
+              isRtl ? "pr-9 pl-4" : "pl-9 pr-4"
+            )}
           />
         </div>
 
@@ -101,9 +98,9 @@ export default function PositionDetail({ targetPct }: PositionDetailProps) {
           data-testid="select-team-filter"
           className="h-9 text-sm rounded-lg border border-border bg-white shadow-sm px-3 outline-none focus:ring-2 focus:ring-primary/30"
         >
-          <option value="all">All Teams</option>
-          {teams.map((t) => (
-            <option key={t.teamId} value={t.teamId}>{t.teamName} ({t.departmentName})</option>
+          <option value="all">{t.positions.allTeams}</option>
+          {teams.map((tm) => (
+            <option key={tm.teamId} value={tm.teamId}>{tm.teamName} ({tm.departmentName})</option>
           ))}
         </select>
 
@@ -114,7 +111,7 @@ export default function PositionDetail({ targetPct }: PositionDetailProps) {
           data-testid="select-nationality-filter"
           className="h-9 text-sm rounded-lg border border-border bg-white shadow-sm px-3 outline-none focus:ring-2 focus:ring-primary/30"
         >
-          <option value="all">All Nationalities</option>
+          <option value="all">{t.positions.allNationalities}</option>
           {nationalities.map((n) => (
             <option key={n} value={n}>{n}</option>
           ))}
@@ -133,7 +130,7 @@ export default function PositionDetail({ targetPct }: PositionDetailProps) {
                 : "bg-white text-muted-foreground border-border hover:border-amber-400"
             )}
           >
-            Non-Saudi Only
+            {t.positions.nonSaudiOnly}
           </button>
           <button
             onClick={() => { setSaudiOnly((v) => !v); setNonSaudiOnly(false); }}
@@ -145,7 +142,7 @@ export default function PositionDetail({ targetPct }: PositionDetailProps) {
                 : "bg-white text-muted-foreground border-border hover:border-emerald-400"
             )}
           >
-            Saudi Only
+            {t.positions.saudiOnly}
           </button>
         </div>
       </div>
@@ -154,15 +151,21 @@ export default function PositionDetail({ targetPct }: PositionDetailProps) {
       <div className="rounded-xl border border-border bg-white shadow-sm overflow-hidden">
         {filtered.length === 0 ? (
           <div className="py-16 text-center">
-            <p className="text-sm text-muted-foreground">No positions match your filters.</p>
+            <p className="text-sm text-muted-foreground">{t.positions.noResults}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="border-b border-border bg-muted/40">
                 <tr>
-                  {["Position Title", "Department", "Team", "Nationality", "Status"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wide whitespace-nowrap">
+                  {[
+                    t.positions.colPosition,
+                    t.positions.colDepartment,
+                    t.positions.colTeam,
+                    t.positions.colNationality,
+                    t.positions.colStatus,
+                  ].map((h) => (
+                    <th key={h} className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide whitespace-nowrap">
                       {h}
                     </th>
                   ))}
@@ -189,7 +192,7 @@ export default function PositionDetail({ targetPct }: PositionDetailProps) {
                             : "bg-amber-100 text-amber-700"
                         )}
                       >
-                        {emp.is_saudi ? "Saudi" : "Non-Saudi"}
+                        {emp.is_saudi ? t.positions.saudi : t.positions.nonSaudi}
                       </span>
                     </td>
                   </tr>
@@ -200,9 +203,10 @@ export default function PositionDetail({ targetPct }: PositionDetailProps) {
         )}
       </div>
 
-      {!filtered.every((e) => e.is_saudi) && (
+      {!filtered.every((e) => e.is_saudi) && filtered.length > 0 && (
         <p className="text-xs text-muted-foreground">
-          <span className="font-semibold text-amber-600">{filtered.filter((e) => !e.is_saudi).length}</span> positions currently held by Non-Saudi nationals — flagged for transition or replacement planning.
+          <span className="font-semibold text-amber-600">{filtered.filter((e) => !e.is_saudi).length}</span>{" "}
+          {t.positions.transitionNote(filtered.filter((e) => !e.is_saudi).length)}
         </p>
       )}
     </div>

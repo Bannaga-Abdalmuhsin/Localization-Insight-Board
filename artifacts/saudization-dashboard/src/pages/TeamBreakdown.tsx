@@ -6,6 +6,7 @@ import ProgressBar from "@/components/ProgressBar";
 import ScopeFilter from "@/components/ScopeFilter";
 import type { ScopeType, TeamMetrics } from "@/types";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/lib/i18n";
 
 interface TeamBreakdownProps {
   targetPct: number;
@@ -20,7 +21,8 @@ export default function TeamBreakdown({ targetPct }: TeamBreakdownProps) {
   const [sortAsc, setSortAsc] = useState(true);
   const [statusFilter, setStatusFilter] = useState<"all" | "compliant" | "action">("all");
 
-  const { teamMetrics, departmentMetrics, isLoading, error } = useEmployeeData(targetPct);
+  const { teamMetrics, departmentMetrics, isLoading } = useEmployeeData(targetPct);
+  const { t, isRtl } = useTranslation();
 
   function handleSort(key: SortKey) {
     if (sortKey === key) setSortAsc((v) => !v);
@@ -28,11 +30,11 @@ export default function TeamBreakdown({ targetPct }: TeamBreakdownProps) {
   }
 
   const filtered = teamMetrics
-    .filter((t) => {
+    .filter((tm) => {
       const q = search.toLowerCase();
-      if (q && !t.teamName.toLowerCase().includes(q) && !t.departmentName.toLowerCase().includes(q)) return false;
-      if (statusFilter === "compliant" && !t.isCompliant) return false;
-      if (statusFilter === "action" && t.isCompliant) return false;
+      if (q && !tm.teamName.toLowerCase().includes(q) && !tm.departmentName.toLowerCase().includes(q)) return false;
+      if (statusFilter === "compliant" && !tm.isCompliant) return false;
+      if (statusFilter === "action" && tm.isCompliant) return false;
       return true;
     })
     .sort((a, b) => {
@@ -52,7 +54,7 @@ export default function TeamBreakdown({ targetPct }: TeamBreakdownProps) {
   function Th({ label, k, className }: { label: string; k: SortKey; className?: string }) {
     return (
       <th
-        className={cn("px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wide cursor-pointer hover:text-foreground select-none whitespace-nowrap", className)}
+        className={cn("px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide cursor-pointer hover:text-foreground select-none whitespace-nowrap", className)}
         onClick={() => handleSort(k)}
         data-testid={`th-${k}`}
       >
@@ -77,10 +79,8 @@ export default function TeamBreakdown({ targetPct }: TeamBreakdownProps) {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Team Breakdown</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Saudization status and hiring gap for every team
-          </p>
+          <h1 className="text-2xl font-bold text-foreground">{t.teams.title}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t.teams.subtitle}</p>
         </div>
         <ScopeFilter scope={scope} onScopeChange={setScope} departmentName={primaryDept?.departmentName} />
       </div>
@@ -88,14 +88,17 @@ export default function TeamBreakdown({ targetPct }: TeamBreakdownProps) {
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-56 max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className={cn("absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground", isRtl ? "right-3" : "left-3")} />
           <input
             type="search"
-            placeholder="Search teams or departments…"
+            placeholder={t.teams.searchPlaceholder}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             data-testid="input-search-teams"
-            className="w-full pl-9 pr-4 h-9 text-sm rounded-lg border border-border bg-white shadow-sm outline-none focus:ring-2 focus:ring-primary/30"
+            className={cn(
+              "w-full h-9 text-sm rounded-lg border border-border bg-white shadow-sm outline-none focus:ring-2 focus:ring-primary/30",
+              isRtl ? "pr-9 pl-4" : "pl-9 pr-4"
+            )}
           />
         </div>
         <div className="flex items-center gap-2">
@@ -111,12 +114,12 @@ export default function TeamBreakdown({ targetPct }: TeamBreakdownProps) {
                   : "bg-white text-muted-foreground border-border hover:border-primary/50"
               )}
             >
-              {f === "all" ? "All Teams" : f === "compliant" ? "Compliant" : "Action Required"}
+              {f === "all" ? t.teams.all : f === "compliant" ? t.teams.compliant : t.teams.actionRequired}
             </button>
           ))}
         </div>
-        <div className="ml-auto text-sm text-muted-foreground">
-          {filtered.length} team{filtered.length !== 1 ? "s" : ""}
+        <div className="ms-auto text-sm text-muted-foreground">
+          {t.teams.teamCount(filtered.length)}
         </div>
       </div>
 
@@ -124,20 +127,22 @@ export default function TeamBreakdown({ targetPct }: TeamBreakdownProps) {
       <div className="rounded-xl border border-border bg-white shadow-sm overflow-hidden">
         {filtered.length === 0 ? (
           <div className="py-16 text-center">
-            <p className="text-sm text-muted-foreground">No teams match your filters.</p>
+            <p className="text-sm text-muted-foreground">{t.teams.noResults}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="border-b border-border bg-muted/40">
                 <tr>
-                  <Th label="Team" k="teamName" />
-                  <Th label="Department" k="departmentName" />
-                  <Th label="Total" k="total" />
-                  <Th label="Saudi" k="saudi" />
-                  <Th label="Saudization %" k="saudizationPct" />
-                  <Th label="Gap" k="gap" />
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wide">Status</th>
+                  <Th label={t.teams.colTeam} k="teamName" />
+                  <Th label={t.teams.colDepartment} k="departmentName" />
+                  <Th label={t.teams.colTotal} k="total" />
+                  <Th label={t.teams.colSaudi} k="saudi" />
+                  <Th label={t.teams.colSaudizationPct} k="saudizationPct" />
+                  <Th label={t.teams.colGap} k="gap" />
+                  <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                    {t.teams.colStatus}
+                  </th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
@@ -155,6 +160,7 @@ export default function TeamBreakdown({ targetPct }: TeamBreakdownProps) {
 }
 
 function TeamRow({ team, idx, targetPct }: { team: TeamMetrics; idx: number; targetPct: number }) {
+  const { t, isRtl } = useTranslation();
   return (
     <tr
       data-testid={`row-team-${team.teamId}`}
@@ -191,16 +197,19 @@ function TeamRow({ team, idx, targetPct }: { team: TeamMetrics; idx: number; tar
           )}
         >
           {team.isCompliant ? (
-            <><CheckCircle2 className="w-3 h-3" /> Compliant</>
+            <><CheckCircle2 className="w-3 h-3" /> {t.teams.compliant}</>
           ) : (
-            <><AlertTriangle className="w-3 h-3" /> Action Required</>
+            <><AlertTriangle className="w-3 h-3" /> {t.teams.actionRequired}</>
           )}
         </div>
       </td>
       <td className="px-4 py-3.5">
         <Link href={`/positions?team=${team.teamId}`}>
-          <span className="text-primary hover:underline cursor-pointer flex items-center gap-1 text-xs font-medium" data-testid={`link-positions-${team.teamId}`}>
-            Positions <ArrowRight className="w-3 h-3" />
+          <span
+            className="text-primary hover:underline cursor-pointer flex items-center gap-1 text-xs font-medium"
+            data-testid={`link-positions-${team.teamId}`}
+          >
+            {t.teams.colPositions} <ArrowRight className={cn("w-3 h-3", isRtl && "rotate-180")} />
           </span>
         </Link>
       </td>
