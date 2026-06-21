@@ -3,7 +3,7 @@ import { Languages, Lock, User, ShieldAlert } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useTranslation } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
-import AcesLogo from "@/components/AcesLogo";
+import acesLogoImg from "@assets/MSD_Logo_1782037993058.png";
 
 export default function Login() {
   const { login } = useAuth();
@@ -46,14 +46,14 @@ export default function Login() {
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-white/10">
 
-          {/* Header — dark navy with ACES logo */}
-          <div className="px-8 pt-8 pb-6 text-center" style={{ background: "#0a1d37" }}>
-            <div className="mx-auto mb-4 flex justify-center">
-              <AcesLogo variant="full" />
-            </div>
-            <p className="text-white/65 text-xs mt-2 tracking-wide">
-              {isRtl ? "الخدمات المُدارة — بوابة التوطين" : "Managed Services — Nitaqat Portal"}
-            </p>
+          {/* Header — dark background with ACES logo */}
+          <div className="text-center" style={{ background: "#000000" }}>
+            <img
+              src={acesLogoImg}
+              alt="ACES Managed Services"
+              className="w-full object-cover"
+              style={{ maxHeight: "180px", objectPosition: "center" }}
+            />
           </div>
 
           {/* Form */}
