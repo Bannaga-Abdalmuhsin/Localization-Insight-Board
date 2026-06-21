@@ -16,8 +16,6 @@ import { useEmployeeData } from "@/lib/useEmployeeData";
 import { buildDepartmentMetrics } from "@/lib/metrics";
 import MetricCard from "@/components/MetricCard";
 import ProgressBar from "@/components/ProgressBar";
-import ScopeFilter from "@/components/ScopeFilter";
-import type { ScopeType } from "@/types";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
 import acesLogo from "@assets/MSD_Logo_1782037993058.png";
@@ -32,7 +30,6 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ targetPct, onTargetChange }: DashboardProps) {
-  const [scope, setScope] = useState<ScopeType>("department");
   const [selectedDept, setSelectedDept] = useState(DEPARTMENTS[0].id);
   const { departmentMetrics, teamMetrics, isLoading, error } = useEmployeeData(targetPct);
   const { t, lang, isRtl } = useTranslation();
@@ -45,8 +42,6 @@ export default function Dashboard({ targetPct, onTargetChange }: DashboardProps)
   const overallPct = totalHeadcount > 0 ? (totalSaudi / totalHeadcount) * 100 : 0;
   const totalGap = teamMetrics.reduce((a, tm) => a + tm.gap, 0);
   const compliantTeams = teamMetrics.filter((tm) => tm.isCompliant).length;
-
-  const primaryDept = departmentMetrics[0];
 
   if (isLoading) {
     return (
@@ -108,23 +103,20 @@ export default function Dashboard({ targetPct, onTargetChange }: DashboardProps)
           </div>
         </div>
 
-        {/* Right: Target % + Scope */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-white border border-border rounded-lg px-3 py-2 shadow-sm">
-            <Target className="w-4 h-4 text-primary" />
-            <span className="text-sm text-muted-foreground font-medium">{t.dashboard.target}:</span>
-            <input
-              type="number"
-              min={1}
-              max={100}
-              value={targetPct}
-              onChange={(e) => onTargetChange(Number(e.target.value))}
-              data-testid="input-target-pct"
-              className="w-14 text-sm font-semibold text-primary bg-transparent outline-none text-center"
-            />
-            <span className="text-sm text-muted-foreground">%</span>
-          </div>
-          <ScopeFilter scope={scope} onScopeChange={setScope} departmentName={primaryDept?.departmentName} />
+        {/* Right: Target % */}
+        <div className="flex items-center gap-2 bg-white border border-border rounded-lg px-3 py-2 shadow-sm">
+          <Target className="w-4 h-4 text-primary" />
+          <span className="text-sm text-muted-foreground font-medium">{t.dashboard.target}:</span>
+          <input
+            type="number"
+            min={1}
+            max={100}
+            value={targetPct}
+            onChange={(e) => onTargetChange(Number(e.target.value))}
+            data-testid="input-target-pct"
+            className="w-14 text-sm font-semibold text-primary bg-transparent outline-none text-center"
+          />
+          <span className="text-sm text-muted-foreground">%</span>
         </div>
       </div>
 
