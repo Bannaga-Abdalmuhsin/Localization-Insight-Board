@@ -67,12 +67,14 @@ function computeCategory(
   const currentPct = total > 0 ? saudi / total : 0;
   const isCompliant = currentPct >= targetPct;
 
-  const saudiNeededToHire = isCompliant
-    ? 0
-    : Math.ceil((targetPct * total - saudi) / (1 - targetPct));
+  // Official Nitaqat formula (fixed headcount / replacement scenario):
+  // Required Saudis = ceil(target% × total); gap = required - current
+  const requiredSaudi = Math.ceil(targetPct * total);
+  const gap = isCompliant ? 0 : Math.max(0, requiredSaudi - saudi);
 
-  const targetTotal = saudi > 0 ? Math.ceil(saudi / targetPct) : 0;
-  const nonSaudiToTerminate = isCompliant ? 0 : Math.max(0, total - targetTotal);
+  const saudiNeededToHire = gap;
+  const nonSaudiToTerminate = gap;
+  const targetTotal = total; // headcount stays fixed
 
   const REGIONS = ["Central", "East", "South", "West"];
   const byRegion: RegionMetrics[] = REGIONS.map((region) => {
