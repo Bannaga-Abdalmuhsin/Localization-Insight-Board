@@ -59,7 +59,7 @@ export default function Dashboard() {
               {isAr ? "المشروع" : "Project"}
             </span>
           </div>
-          <h1 className="text-lg font-bold">STC COW MS</h1>
+          <h1 className="text-lg font-bold">stc COW MS</h1>
           <p className="text-xs opacity-60 mt-0.5">ACES-MSD</p>
         </div>
         <div className="flex items-center gap-6">
