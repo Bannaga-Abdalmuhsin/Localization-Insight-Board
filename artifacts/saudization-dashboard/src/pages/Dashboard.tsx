@@ -99,36 +99,42 @@ export default function Dashboard() {
           </h3>
         </div>
         <div className="divide-y divide-border">
-          {eng.byRegion.map((r) => (
-            <div key={r.region} className="px-5 py-3 flex items-center gap-4">
-              <span className="w-20 text-sm font-medium text-foreground">{r.region}</span>
-              <div className="flex-1 flex items-center gap-6 text-sm">
-                <span className="text-muted-foreground">
-                  {isAr ? "الإجمالي:" : "Total:"} <span className="font-semibold text-foreground">{r.total}</span>
-                </span>
-                <span className="text-muted-foreground">
-                  {isAr ? "سعودي:" : "Saudi:"} <span className="font-semibold text-emerald-600">{r.saudi}</span>
-                </span>
-                <span className="text-muted-foreground">
-                  {isAr ? "غير سعودي:" : "Non-Saudi:"} <span className="font-semibold text-foreground">{r.nonSaudi}</span>
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-28 bg-muted rounded-full h-2 overflow-hidden">
-                  <div
-                    className={cn("h-full rounded-full", r.isCompliant ? "bg-emerald-500" : "bg-red-500")}
-                    style={{ width: `${Math.min(100, r.currentPct * 100)}%` }}
-                  />
+          {eng.byRegion.map((r) => {
+            const required = Math.max(0, Math.ceil(eng.target * r.total) - r.saudi);
+            return (
+              <div key={r.region} className="px-5 py-3 flex items-center gap-4">
+                <span className="w-20 text-sm font-medium text-foreground flex-shrink-0">{r.region}</span>
+                <div className="flex-1 flex items-center gap-5 text-sm flex-wrap">
+                  <span className="text-muted-foreground">
+                    {isAr ? "الإجمالي:" : "Total:"} <span className="font-semibold text-foreground">{r.total}</span>
+                  </span>
+                  <span className="text-muted-foreground">
+                    {isAr ? "سعودي:" : "Saudi:"} <span className="font-semibold text-emerald-600">{r.saudi}</span>
+                  </span>
+                  {!r.isCompliant && (
+                    <span className="text-muted-foreground">
+                      {isAr ? "مطلوب:" : "Required:"}{" "}
+                      <span className="font-bold text-red-600">+{required}</span>
+                    </span>
+                  )}
                 </div>
-                <span className={cn("text-xs font-bold w-10 text-end", r.isCompliant ? "text-emerald-600" : "text-red-600")}>
-                  {(r.currentPct * 100).toFixed(0)}%
-                </span>
-                {r.isCompliant
-                  ? <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                  : <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="w-24 bg-muted rounded-full h-2 overflow-hidden">
+                    <div
+                      className={cn("h-full rounded-full", r.isCompliant ? "bg-emerald-500" : "bg-red-500")}
+                      style={{ width: `${Math.min(100, r.currentPct * 100)}%` }}
+                    />
+                  </div>
+                  <span className={cn("text-xs font-bold w-10 text-end", r.isCompliant ? "text-emerald-600" : "text-red-600")}>
+                    {(r.currentPct * 100).toFixed(0)}%
+                  </span>
+                  {r.isCompliant
+                    ? <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                    : <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -143,36 +149,42 @@ export default function Dashboard() {
           </h3>
         </div>
         <div className="divide-y divide-border">
-          {tech.byRegion.map((r) => (
-            <div key={r.region} className="px-5 py-3 flex items-center gap-4">
-              <span className="w-20 text-sm font-medium text-foreground">{r.region}</span>
-              <div className="flex-1 flex items-center gap-6 text-sm">
-                <span className="text-muted-foreground">
-                  {isAr ? "الإجمالي:" : "Total:"} <span className="font-semibold text-foreground">{r.total}</span>
-                </span>
-                <span className="text-muted-foreground">
-                  {isAr ? "سعودي:" : "Saudi:"} <span className="font-semibold text-emerald-600">{r.saudi}</span>
-                </span>
-                <span className="text-muted-foreground">
-                  {isAr ? "غير سعودي:" : "Non-Saudi:"} <span className="font-semibold text-foreground">{r.nonSaudi}</span>
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-28 bg-muted rounded-full h-2 overflow-hidden">
-                  <div
-                    className={cn("h-full rounded-full", r.isCompliant ? "bg-emerald-500" : "bg-red-500")}
-                    style={{ width: `${Math.min(100, r.currentPct * 100)}%` }}
-                  />
+          {tech.byRegion.map((r) => {
+            const required = Math.max(0, Math.ceil(tech.target * r.total) - r.saudi);
+            return (
+              <div key={r.region} className="px-5 py-3 flex items-center gap-4">
+                <span className="w-20 text-sm font-medium text-foreground flex-shrink-0">{r.region}</span>
+                <div className="flex-1 flex items-center gap-5 text-sm flex-wrap">
+                  <span className="text-muted-foreground">
+                    {isAr ? "الإجمالي:" : "Total:"} <span className="font-semibold text-foreground">{r.total}</span>
+                  </span>
+                  <span className="text-muted-foreground">
+                    {isAr ? "سعودي:" : "Saudi:"} <span className="font-semibold text-emerald-600">{r.saudi}</span>
+                  </span>
+                  {!r.isCompliant && (
+                    <span className="text-muted-foreground">
+                      {isAr ? "مطلوب:" : "Required:"}{" "}
+                      <span className="font-bold text-red-600">+{required}</span>
+                    </span>
+                  )}
                 </div>
-                <span className={cn("text-xs font-bold w-10 text-end", r.isCompliant ? "text-emerald-600" : "text-red-600")}>
-                  {(r.currentPct * 100).toFixed(0)}%
-                </span>
-                {r.isCompliant
-                  ? <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                  : <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="w-24 bg-muted rounded-full h-2 overflow-hidden">
+                    <div
+                      className={cn("h-full rounded-full", r.isCompliant ? "bg-emerald-500" : "bg-red-500")}
+                      style={{ width: `${Math.min(100, r.currentPct * 100)}%` }}
+                    />
+                  </div>
+                  <span className={cn("text-xs font-bold w-10 text-end", r.isCompliant ? "text-emerald-600" : "text-red-600")}>
+                    {(r.currentPct * 100).toFixed(0)}%
+                  </span>
+                  {r.isCompliant
+                    ? <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                    : <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
