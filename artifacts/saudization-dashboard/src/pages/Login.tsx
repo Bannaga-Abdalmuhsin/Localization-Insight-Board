@@ -54,10 +54,10 @@ export default function Login() {
       <div
         className={cn(
           "relative z-10 flex flex-col justify-center w-full max-w-sm min-h-screen p-8",
-          "bg-white/95 backdrop-blur-md shadow-2xl",
+          "backdrop-blur-md shadow-2xl",
           isRtl ? "mr-auto border-r-4" : "ml-auto border-l-4"
         )}
-        style={{ borderColor: "#0a1d37" }}
+        style={{ background: "#0a1d37", borderColor: "#1e3a5f" }}
       >
         {/* ACES logo */}
         <div className="mb-8 -mx-8 -mt-8" style={{ background: "#0a1d37" }}>
@@ -69,16 +69,16 @@ export default function Login() {
           />
         </div>
 
-        <p className="text-sm font-semibold text-foreground mb-6 text-center">
+        <p className="text-sm font-semibold text-white mb-6 text-center">
           {t.login.title}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Username */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-foreground">{t.login.username}</label>
+            <label className="text-xs font-semibold text-white/80">{t.login.username}</label>
             <div className="relative">
-              <User className={cn("absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground", isRtl ? "right-3" : "left-3")} />
+              <User className={cn("absolute top-1/2 -translate-y-1/2 w-4 h-4 text-white/50", isRtl ? "right-3" : "left-3")} />
               <input
                 type="text"
                 autoComplete="username"
@@ -86,7 +86,7 @@ export default function Login() {
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder={t.login.usernamePlaceholder}
                 className={cn(
-                  "w-full h-10 text-sm rounded-lg border border-border bg-muted/30 outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors",
+                  "w-full h-10 text-sm rounded-lg border border-white/20 bg-white/10 text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 transition-colors",
                   isRtl ? "pr-9 pl-4" : "pl-9 pr-4"
                 )}
                 required
@@ -97,9 +97,9 @@ export default function Login() {
 
           {/* Password */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-foreground">{t.login.password}</label>
+            <label className="text-xs font-semibold text-white/80">{t.login.password}</label>
             <div className="relative">
-              <Lock className={cn("absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground", isRtl ? "right-3" : "left-3")} />
+              <Lock className={cn("absolute top-1/2 -translate-y-1/2 w-4 h-4 text-white/50", isRtl ? "right-3" : "left-3")} />
               <input
                 type="password"
                 autoComplete="current-password"
@@ -107,7 +107,7 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder={t.login.passwordPlaceholder}
                 className={cn(
-                  "w-full h-10 text-sm rounded-lg border border-border bg-muted/30 outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors",
+                  "w-full h-10 text-sm rounded-lg border border-white/20 bg-white/10 text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 transition-colors",
                   isRtl ? "pr-9 pl-4" : "pl-9 pr-4"
                 )}
                 required
@@ -143,7 +143,7 @@ export default function Login() {
         </form>
 
         {/* Disclaimer */}
-        <p className="mt-6 text-center text-[11px] text-muted-foreground flex items-center justify-center gap-1.5">
+        <p className="mt-6 text-center text-[11px] text-white/40 flex items-center justify-center gap-1.5">
           <ShieldAlert className="w-3 h-3" />
           {t.login.unauthorized}
         </p>
