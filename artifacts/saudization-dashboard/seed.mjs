@@ -10,24 +10,34 @@ const XLSX = require('/home/runner/workspace/node_modules/.pnpm/xlsx@0.18.5/node
 const { Client } = require('/home/runner/workspace/node_modules/.pnpm/pg@8.20.0/node_modules/pg/lib/index.js');
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
-const SERVICE_KEY  = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const DB_PASSWORD  = process.env.SUPABASE_DB_PASSWORD;
 
 const projectRef = SUPABASE_URL.replace('https://', '').replace('.supabase.co', '');
 console.log('Project ref:', projectRef);
 
-// Direct Postgres connection — Supabase uses the service-role JWT as the DB password
-// in the session-mode pooler (port 5432).
-const client = new Client({
-  host: `db.${projectRef}.supabase.co`,
-  port: 5432,
-  database: 'postgres',
-  user: 'postgres',
-  password: SERVICE_KEY,
-  ssl: { rejectUnauthorized: false },
-});
+// Try direct connection first, then pooler as fallback
+async function makeClient(host, port, user) {
+  const c = new Client({ host, port, database: 'postgres', user, password: DB_PASSWORD, ssl: { rejectUnauthorized: false }, connectionTimeoutMillis: 8000 });
+  await c.connect();
+  return c;
+}
 
-await client.connect();
-console.log('Connected to Postgres ✓');
+let client;
+for (const [host, port, user] of [
+  [`db.${projectRef}.supabase.co`,           5432, 'postgres'],
+  [`${projectRef}.pooler.supabase.com`,      5432, `postgres.${projectRef}`],
+  [`${projectRef}.pooler.supabase.com`,      6543, `postgres.${projectRef}`],
+]) {
+  try {
+    console.log(`Trying ${host}:${port} user=${user} ...`);
+    client = await makeClient(host, port, user);
+    console.log(`Connected ✓  (${host}:${port})`);
+    break;
+  } catch (e) {
+    console.log(`  failed: ${e.message.slice(0, 80)}`);
+  }
+}
+if (!client) { console.error('All connection attempts failed'); process.exit(1); }
 
 // ── Schema ─────────────────────────────────────────────────────────────
 await client.query(`
