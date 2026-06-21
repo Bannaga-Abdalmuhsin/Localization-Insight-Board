@@ -18,8 +18,6 @@ import MetricCard from "@/components/MetricCard";
 import ProgressBar from "@/components/ProgressBar";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
-import acesLogo from "@assets/095e665c-844c-4d84-b6b5-80da094cd214_1782039466334.png";
-
 const DEPARTMENTS = [
   { id: "aces-msd", en: "ACES MSD", ar: "قسم المشاريع المدارة" },
 ];
@@ -70,9 +68,8 @@ export default function Dashboard({ targetPct, onTargetChange }: DashboardProps)
       {/* Header */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
 
-        {/* Left: Logo + Department dropdown */}
+        {/* Left: Department dropdown */}
         <div className="flex items-center gap-3">
-          <img src={acesLogo} alt="ACES" className="h-10 w-auto object-contain" />
           {/* Department dropdown */}
           <div className="relative">
             <div className="flex items-center gap-2 bg-white border border-border rounded-lg px-3 py-2 shadow-sm">
