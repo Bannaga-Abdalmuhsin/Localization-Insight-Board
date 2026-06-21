@@ -234,9 +234,9 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
         <p className="text-xs text-muted-foreground">
           <span className="font-semibold text-amber-600">{filteredNon}</span>{" "}
           {isAr
-            ? `وظيفة يشغلها غير سعوديين — مصنفة لتخطيط التوطين أو الاستبدال.`
+            ? `وظيفة يشغلها غير سعوديين — مصنفة لتخطيط التوطين.`
             : `position${filteredNon !== 1 ? "s" : ""} held by Non-Saudi nationals — flagged for Saudization transition planning.`}
-        </p>
+</p>
       )}
     </div>
   );
