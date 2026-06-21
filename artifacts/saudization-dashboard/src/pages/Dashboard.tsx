@@ -94,8 +94,8 @@ export default function Dashboard() {
           <MapPin className="w-4 h-4 text-primary" />
           <h3 className="text-sm font-semibold text-foreground">
             {isAr
-              ? "التوزيع الإقليمي — المهن الهندسية (Eng)"
-              : "Regional Breakdown — Engineering Category (Eng 30%)"}
+              ? "التوزيع الإقليمي — المهن الهندسية"
+              : "Regional Breakdown — Engineering Category (30%)"}
           </h3>
         </div>
         <div className="divide-y divide-border">
@@ -138,8 +138,8 @@ export default function Dashboard() {
           <MapPin className="w-4 h-4 text-primary" />
           <h3 className="text-sm font-semibold text-foreground">
             {isAr
-              ? "التوزيع الإقليمي — المهن التقنية (Tech)"
-              : "Regional Breakdown — Technical Category (Tech 25%)"}
+              ? "التوزيع الإقليمي — المهن التقنية"
+              : "Regional Breakdown — Technical Category (25%)"}
           </h3>
         </div>
         <div className="divide-y divide-border">

@@ -252,8 +252,8 @@ export default function TeamBreakdown({ targetPct: _unused }: { targetPct: numbe
                   <Th label={isAr ? "الإجمالي" : "Total"} k="total" />
                   <Th label={isAr ? "سعودي" : "Saudi"} k="saudi" />
                   <Th label={isAr ? "غير سعودي" : "Non-Saudi"} k="nonSaudi" />
-                  <Th label={isAr ? "Eng % (هدف 30%)" : "Eng % (30% target)"} k="engPct" />
-                  <Th label={isAr ? "Tech % (هدف 25%)" : "Tech % (25% target)"} k="techPct" />
+                  <Th label={isAr ? "هندسة % (هدف 30%)" : "Engineering % (30% target)"} k="engPct" />
+                  <Th label={isAr ? "تقني % (هدف 25%)" : "Technical % (25% target)"} k="techPct" />
                   <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide whitespace-nowrap">
                     {isAr ? "الحالة" : "Status"}
                   </th>

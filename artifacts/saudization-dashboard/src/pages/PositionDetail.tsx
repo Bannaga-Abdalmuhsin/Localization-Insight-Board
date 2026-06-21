@@ -54,6 +54,12 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
     NA: "bg-muted text-muted-foreground",
   };
 
+  const CODE_LABELS: Record<string, string> = {
+    Eng: "Engineering",
+    Tech: "Technical",
+    NA: "NA",
+  };
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -125,8 +131,8 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
           className="h-9 text-sm rounded-lg border border-border bg-white shadow-sm px-3 outline-none focus:ring-2 focus:ring-primary/30"
         >
           <option value="all">{isAr ? "جميع الفئات" : "All Categories"}</option>
-          <option value="Eng">Eng (30%)</option>
-          <option value="Tech">Tech (25%)</option>
+          <option value="Eng">Engineering (30%)</option>
+          <option value="Tech">Technical (25%)</option>
           <option value="NA">NA ({isAr ? "معفى" : "Exempt"})</option>
         </select>
 
@@ -204,7 +210,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
                     <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{emp.company ?? "—"}</td>
                     <td className="px-4 py-3">
                       <span className={cn("inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold", CODE_COLORS[emp.saudization_code ?? "NA"] ?? CODE_COLORS.NA)}>
-                        {emp.saudization_code ?? "NA"}
+                        {CODE_LABELS[emp.saudization_code ?? "NA"] ?? (emp.saudization_code ?? "NA")}
                       </span>
                     </td>
                     <td className="px-4 py-3 tabular-nums text-foreground">
