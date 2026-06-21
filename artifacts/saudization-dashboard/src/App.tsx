@@ -18,7 +18,7 @@ const queryClient = new QueryClient();
 const DEFAULT_TARGET_PCT = 50;
 
 function Router() {
-  const [targetPct, setTargetPct] = useState(DEFAULT_TARGET_PCT);
+  const [targetPct] = useState(DEFAULT_TARGET_PCT);
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
@@ -37,7 +37,7 @@ function Router() {
     <AppLayout>
       <Switch>
         <Route path="/">
-          <Dashboard targetPct={targetPct} onTargetChange={setTargetPct} />
+          <Dashboard />
         </Route>
         <Route path="/teams">
           <TeamBreakdown targetPct={targetPct} />
