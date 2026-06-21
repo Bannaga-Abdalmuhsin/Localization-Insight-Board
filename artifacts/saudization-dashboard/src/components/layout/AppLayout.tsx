@@ -12,7 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
-import acesNavLogo from "@assets/images_(2)_1782039144310.png";
+import acesNavLogo from "@assets/image_1782039604213.png";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -38,13 +38,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
         {/* Logo / Brand */}
         <div className="h-16 flex items-center px-4 border-b border-sidebar-border">
-          <div className="bg-white rounded-lg px-3 py-1.5">
-            <img
-              src={acesNavLogo}
-              alt="ACES"
-              className="h-7 w-auto object-contain"
-            />
-          </div>
+          <img
+            src={acesNavLogo}
+            alt="ACES"
+            className="h-9 w-auto object-contain"
+          />
         </div>
 
         {/* Nav */}
