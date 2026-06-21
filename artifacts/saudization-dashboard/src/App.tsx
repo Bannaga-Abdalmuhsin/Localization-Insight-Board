@@ -8,15 +8,30 @@ import Dashboard from "@/pages/Dashboard";
 import TeamBreakdown from "@/pages/TeamBreakdown";
 import PositionDetail from "@/pages/PositionDetail";
 import UploadData from "@/pages/UploadData";
+import Settings from "@/pages/Settings";
+import Login from "@/pages/Login";
 import NotFound from "@/pages/not-found";
 import { LanguageProvider } from "@/lib/i18n";
+import { AuthProvider, useAuth } from "@/lib/auth";
 
 const queryClient = new QueryClient();
-
 const DEFAULT_TARGET_PCT = 50;
 
 function Router() {
   const [targetPct, setTargetPct] = useState(DEFAULT_TARGET_PCT);
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Login />;
+  }
 
   return (
     <AppLayout>
@@ -33,6 +48,9 @@ function Router() {
         <Route path="/upload">
           <UploadData />
         </Route>
+        <Route path="/settings">
+          {user.is_admin ? <Settings /> : <NotFound />}
+        </Route>
         <Route component={NotFound} />
       </Switch>
     </AppLayout>
@@ -42,14 +60,16 @@ function Router() {
 function App() {
   return (
     <LanguageProvider>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <Router />
-          </WouterRouter>
-          <Toaster />
-        </TooltipProvider>
-      </QueryClientProvider>
+      <AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+              <Router />
+            </WouterRouter>
+            <Toaster />
+          </TooltipProvider>
+        </QueryClientProvider>
+      </AuthProvider>
     </LanguageProvider>
   );
 }
