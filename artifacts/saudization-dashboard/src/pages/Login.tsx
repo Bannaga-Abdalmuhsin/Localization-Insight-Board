@@ -147,6 +147,14 @@ export default function Login() {
           <ShieldAlert className="w-3 h-3" />
           {t.login.unauthorized}
         </p>
+
+        {/* Powered by */}
+        <div className="mt-6 pt-5 border-t border-white/10 flex flex-col items-center gap-1">
+          <p className="text-[10px] uppercase tracking-widest text-white/30 font-medium">Powered by</p>
+          <p className="text-sm font-bold tracking-wide text-white/60">
+            ACES<span className="text-red-400">-</span>MSD
+          </p>
+        </div>
       </div>
     </div>
   );
