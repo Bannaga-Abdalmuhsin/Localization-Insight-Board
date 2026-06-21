@@ -9,6 +9,8 @@ import {
   Target,
   UserCheck,
   UserX,
+  ChevronDown,
+  Building2,
 } from "lucide-react";
 import { useEmployeeData } from "@/lib/useEmployeeData";
 import { buildDepartmentMetrics } from "@/lib/metrics";
@@ -18,6 +20,11 @@ import ScopeFilter from "@/components/ScopeFilter";
 import type { ScopeType } from "@/types";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
+import acesLogo from "@assets/MSD_Logo_1782037993058.png";
+
+const DEPARTMENTS = [
+  { id: "aces-msd", en: "ACES MSD", ar: "قسم المشاريع المدارة" },
+];
 
 interface DashboardProps {
   targetPct: number;
@@ -26,8 +33,11 @@ interface DashboardProps {
 
 export default function Dashboard({ targetPct, onTargetChange }: DashboardProps) {
   const [scope, setScope] = useState<ScopeType>("department");
+  const [selectedDept, setSelectedDept] = useState(DEPARTMENTS[0].id);
   const { departmentMetrics, teamMetrics, isLoading, error } = useEmployeeData(targetPct);
-  const { t, isRtl } = useTranslation();
+  const { t, lang, isRtl } = useTranslation();
+
+  const activeDept = DEPARTMENTS.find((d) => d.id === selectedDept) ?? DEPARTMENTS[0];
 
   const totalHeadcount = teamMetrics.reduce((a, tm) => a + tm.total, 0);
   const totalSaudi = teamMetrics.reduce((a, tm) => a + tm.saudi, 0);
@@ -63,13 +73,43 @@ export default function Dashboard({ targetPct, onTargetChange }: DashboardProps)
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">{t.dashboard.title}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{t.dashboard.subtitle}</p>
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+
+        {/* Left: Logo + Department dropdown */}
+        <div className="flex items-center gap-3">
+          {/* ACES logo — shown on both languages, positioned at layout start */}
+          <div className="rounded-lg overflow-hidden flex-shrink-0" style={{ background: "#000", height: 44, width: 100 }}>
+            <img
+              src={acesLogo}
+              alt="ACES"
+              className="h-full w-full object-cover"
+              style={{ objectPosition: "center" }}
+            />
+          </div>
+
+          {/* Department dropdown */}
+          <div className="relative">
+            <div className="flex items-center gap-2 bg-white border border-border rounded-lg px-3 py-2 shadow-sm">
+              <Building2 className="w-4 h-4 text-primary flex-shrink-0" />
+              <select
+                value={selectedDept}
+                onChange={(e) => setSelectedDept(e.target.value)}
+                className="text-sm font-semibold text-foreground bg-transparent outline-none cursor-pointer appearance-none pe-5"
+                data-testid="select-department"
+              >
+                {DEPARTMENTS.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {lang === "ar" ? d.ar : d.en}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0 pointer-events-none" />
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-4">
-          {/* Target % control */}
+
+        {/* Right: Target % + Scope */}
+        <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 bg-white border border-border rounded-lg px-3 py-2 shadow-sm">
             <Target className="w-4 h-4 text-primary" />
             <span className="text-sm text-muted-foreground font-medium">{t.dashboard.target}:</span>
@@ -86,6 +126,12 @@ export default function Dashboard({ targetPct, onTargetChange }: DashboardProps)
           </div>
           <ScopeFilter scope={scope} onScopeChange={setScope} departmentName={primaryDept?.departmentName} />
         </div>
+      </div>
+
+      {/* Page title below header controls */}
+      <div>
+        <h1 className="text-xl font-bold text-foreground">{t.dashboard.title}</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">{t.dashboard.subtitle}</p>
       </div>
 
       {/* Overview Metrics */}
