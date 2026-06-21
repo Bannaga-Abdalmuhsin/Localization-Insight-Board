@@ -251,7 +251,7 @@ function CategoryCard({ cat, isAr }: { cat: CategoryMetrics; isAr: boolean }) {
             {isAr ? "الفئة" : "Category"}
           </p>
           <p className="text-sm font-bold text-foreground">
-            {cat.code} — {codeLabel}
+            {codeLabel}
           </p>
         </div>
         <div
