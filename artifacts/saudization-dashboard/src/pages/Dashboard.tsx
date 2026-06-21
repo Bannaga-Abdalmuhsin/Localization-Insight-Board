@@ -321,32 +321,21 @@ function CategoryCard({ cat, isAr }: { cat: CategoryMetrics; isAr: boolean }) {
               {isAr ? "الامتثال المطلوب" : "Compliance Required"}
             </p>
 
-            <div className="flex items-start gap-3 rounded-lg bg-blue-50 border border-blue-100 px-4 py-3">
-              <ArrowUpCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-              <div>
+            <div className="rounded-lg bg-slate-50 border border-slate-200 px-4 py-3 space-y-2">
+              <div className="flex items-center gap-3">
+                <ArrowUpCircle className="w-5 h-5 text-blue-600 flex-shrink-0" />
                 <p className="text-sm font-semibold text-blue-800">
-                  {isAr ? `توظيف ${cat.saudiNeededToHire} سعودي` : `Hire ${cat.saudiNeededToHire} Saudi national${cat.saudiNeededToHire !== 1 ? "s" : ""}`}
-                </p>
-                <p className="text-xs text-blue-600 mt-0.5">
                   {isAr
-                    ? `الإجمالي يرتفع إلى ${cat.total + cat.saudiNeededToHire} موظف مع ${cat.saudi + cat.saudiNeededToHire} سعودي`
-                    : `Total rises to ${cat.total + cat.saudiNeededToHire} — ${cat.saudi + cat.saudiNeededToHire} Saudi out of ${cat.total + cat.saudiNeededToHire}`}
+                    ? `توظيف ${cat.saudiNeededToHire} سعودي`
+                    : `Hire ${cat.saudiNeededToHire} Saudi national${cat.saudiNeededToHire !== 1 ? "s" : ""}`}
                 </p>
               </div>
-            </div>
-
-            <div className="flex items-start gap-3 rounded-lg bg-amber-50 border border-amber-100 px-4 py-3">
-              <MinusCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-amber-800">
+              <div className="flex items-center gap-3">
+                <MinusCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+                <p className="text-sm font-semibold text-red-700">
                   {isAr
                     ? `إنهاء عقود ${cat.nonSaudiToTerminate} غير سعودي`
                     : `Terminate ${cat.nonSaudiToTerminate} Non-Saudi contract${cat.nonSaudiToTerminate !== 1 ? "s" : ""}`}
-                </p>
-                <p className="text-xs text-amber-600 mt-0.5">
-                  {isAr
-                    ? `الفريق ينخفض إلى ${cat.targetTotal} موظف — ${cat.saudi} سعودي من ${cat.targetTotal}`
-                    : `Team reduces to ${cat.targetTotal} — ${cat.saudi} Saudi out of ${cat.targetTotal} (exactly ${targetPct}%)`}
                 </p>
               </div>
             </div>
