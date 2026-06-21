@@ -318,7 +318,7 @@ function CategoryCard({ cat, isAr }: { cat: CategoryMetrics; isAr: boolean }) {
         {!cat.isCompliant && (
           <div className="space-y-2">
             <p className="text-xs font-semibold text-foreground uppercase tracking-wide">
-              {isAr ? "خيارات الامتثال" : "Compliance Options"}
+              {isAr ? "الامتثال المطلوب" : "Compliance Required"}
             </p>
 
             <div className="flex items-start gap-3 rounded-lg bg-blue-50 border border-blue-100 px-4 py-3">
