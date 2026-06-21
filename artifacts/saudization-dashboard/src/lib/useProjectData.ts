@@ -67,7 +67,7 @@ function computeCategory(
   const currentPct = total > 0 ? saudi / total : 0;
   const isCompliant = currentPct >= targetPct;
 
-  // Official Nitaqat formula (fixed headcount / replacement scenario):
+  // Localization formula (fixed headcount / replacement scenario):
   // Required Saudis = ceil(target% × total); gap = required - current
   const requiredSaudi = Math.ceil(targetPct * total);
   const gap = isCompliant ? 0 : Math.max(0, requiredSaudi - saudi);

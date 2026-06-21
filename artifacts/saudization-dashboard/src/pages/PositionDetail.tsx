@@ -71,7 +71,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
           <p className="text-sm text-muted-foreground mt-1">
             {isAr
               ? "قائمة كاملة بالموظفين — مع تصفية حسب المنطقة والشركة وفئة التوطين"
-              : "Full employee list — filterable by region, company, and Nitaqat category"}
+              : "Full employee list — filterable by region, company, and Localization category"}
           </p>
         </div>
       </div>
@@ -186,7 +186,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
                     isAr ? "المسمى الوظيفي" : "Job Title",
                     isAr ? "المنطقة" : "Region",
                     isAr ? "الشركة" : "Company",
-                    isAr ? "فئة التوطين" : "Nitaqat Cat.",
+                    isAr ? "فئة التوطين" : "Category",
                     isAr ? "النسبة المطلوبة" : "Required %",
                     isAr ? "الحالة" : "Status",
                   ].map((h) => (

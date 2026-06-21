@@ -151,8 +151,8 @@ export default function TeamBreakdown({ targetPct: _unused }: { targetPct: numbe
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           {isAr
-            ? "حالة الامتثال لنطاقات حسب المنطقة أو الشركة — مشروع STC COW MS"
-            : "Nitaqat compliance by Region or Company — STC COW MS project"}
+            ? "حالة الامتثال للتوطين حسب المنطقة أو الشركة — مشروع stc COW MS"
+            : "Localization compliance by Region or Company — stc COW MS project"}
         </p>
       </div>
 

@@ -167,7 +167,7 @@ const translations = {
   en: {
     nav: {
       brand: "ACES",
-      brandSub: "Nitaqat Dashboard",
+      brandSub: "Localization Dashboard",
       dashboard: "Dashboard",
       teamBreakdown: "Team Breakdown",
       positionDetail: "Position Detail",
@@ -177,7 +177,7 @@ const translations = {
     },
     login: {
       title: "Welcome",
-      subtitle: "ACES Managed Services — Nitaqat Portal",
+      subtitle: "ACES Managed Services — Localization Portal",
       username: "Username",
       password: "Password",
       usernamePlaceholder: "Enter your username",
@@ -210,7 +210,7 @@ const translations = {
       passwordPlaceholder: "Strong password",
     },
     dashboard: {
-      title: "ACES Nitaqat Dashboard",
+      title: "ACES Localization Dashboard",
       subtitle: "Workforce compliance overview — Current Saudization status by department and team",
       target: "Target",
       scope: "Scope",
@@ -232,9 +232,9 @@ const translations = {
       actionRequired: "Action Required",
       ofTeamsCompliant: "of teams compliant",
       details: "Details",
-      overallProgress: "Overall Nitaqat Progress",
+      overallProgress: "Overall Localization Progress",
       overallProgressSub: "Current vs. target across all teams",
-      allCompliant: "All teams meet the Nitaqat target.",
+      allCompliant: "All teams meet the Localization target.",
       loading: "Loading dashboard data…",
       errorLoading: "Error loading data:",
       errorHint: "Check your Supabase connection and try refreshing.",
@@ -244,7 +244,7 @@ const translations = {
     },
     teams: {
       title: "Team Breakdown",
-      subtitle: "Nitaqat status and hiring gap for every team",
+      subtitle: "Localization status and hiring gap for every team",
       searchPlaceholder: "Search teams or departments…",
       all: "All Teams",
       compliant: "Compliant",
@@ -253,7 +253,7 @@ const translations = {
       colDepartment: "Department",
       colTotal: "Total",
       colSaudi: "Saudi",
-      colSaudizationPct: "Nitaqat %",
+      colSaudizationPct: "Localization %",
       colGap: "Gap",
       colStatus: "Status",
       colPositions: "Positions",

@@ -64,8 +64,8 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-6">
           <Stat label={isAr ? "إجمالي العمالة" : "Total Workforce"} value={totalAll} />
-          <Stat label={isAr ? "خاضعون لنطاقات" : "Nitaqat Scoped"} value={scopedTotal} />
-          <Stat label={isAr ? "سعوديون (نطاقات)" : "Saudi (Scoped)"} value={scopedSaudi} />
+          <Stat label={isAr ? "خاضعون للتوطين" : "Localization Scoped"} value={scopedTotal} />
+          <Stat label={isAr ? "سعوديون (التوطين)" : "Saudi (Scoped)"} value={scopedSaudi} />
           <Stat
             label={isAr ? "الامتثال الكلي" : "Overall Compliance"}
             value={`${(scopedPct * 100).toFixed(1)}%`}
@@ -78,7 +78,7 @@ export default function Dashboard() {
       <div className="flex items-center gap-2">
         <ShieldAlert className="w-5 h-5 text-amber-500" />
         <h2 className="text-base font-bold text-foreground">
-          {isAr ? "حالة الامتثال لنطاقات" : "Nitaqat Compliance Status"}
+          {isAr ? "حالة الامتثال للتوطين" : "Localization Compliance Status"}
         </h2>
       </div>
 
@@ -181,12 +181,12 @@ export default function Dashboard() {
         <Briefcase className="w-5 h-5 text-muted-foreground flex-shrink-0" />
         <div>
           <p className="text-sm font-semibold text-foreground">
-            {isAr ? `${naTotal} موظف — فئة NA (معفاة من نطاقات)` : `${naTotal} Employees — NA Category (Exempt from Nitaqat)`}
+            {isAr ? `${naTotal} موظف — فئة NA (معفاة من التوطين)` : `${naTotal} Employees — NA Category (Exempt from Localization)`}
           </p>
           <p className="text-xs text-muted-foreground mt-0.5">
             {isAr
-              ? "هذه الوظائف (عمال إنشاءات، كهربائيون، نجارون...) لا تدخل في احتساب نطاقات قطاع الاتصالات."
-              : "These roles (construction workers, electricians, carpenters…) fall outside the Nitaqat classification for the telecom sector."}
+              ? "هذه الوظائف (عمال إنشاءات، كهربائيون، نجارون...) لا تدخل في احتساب التوطين لقطاع الاتصالات."
+              : "These roles (construction workers, electricians, carpenters…) fall outside the Localization classification for the telecom sector."}
           </p>
         </div>
       </div>
@@ -343,7 +343,7 @@ function CategoryCard({ cat, isAr }: { cat: CategoryMetrics; isAr: boolean }) {
           <div className="flex items-center gap-2 rounded-lg bg-emerald-50 border border-emerald-100 px-4 py-3">
             <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
             <p className="text-sm font-semibold text-emerald-700">
-              {isAr ? "مستوفٍ لاشتراطات نطاقات" : "Nitaqat requirements met"}
+              {isAr ? "مستوفٍ لاشتراطات التوطين" : "Localization requirements met"}
             </p>
           </div>
         )}
