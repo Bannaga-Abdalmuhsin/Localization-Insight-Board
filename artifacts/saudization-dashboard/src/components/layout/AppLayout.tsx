@@ -3,7 +3,6 @@ import {
   LayoutDashboard,
   Users,
   Briefcase,
-  Upload,
   ChevronRight,
   Languages,
   Settings,
@@ -27,7 +26,6 @@ export default function AppLayout({ children }: AppLayoutProps) {
     { label: t.nav.dashboard, href: "/", icon: LayoutDashboard },
     { label: t.nav.teamBreakdown, href: "/teams", icon: Users },
     { label: t.nav.positionDetail, href: "/positions", icon: Briefcase },
-    { label: t.nav.uploadData, href: "/upload", icon: Upload },
     ...(user?.is_admin ? [{ label: t.nav.settings, href: "/settings", icon: Settings }] : []),
   ];
 

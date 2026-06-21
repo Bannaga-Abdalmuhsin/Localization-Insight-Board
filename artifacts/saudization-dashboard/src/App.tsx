@@ -7,7 +7,6 @@ import AppLayout from "@/components/layout/AppLayout";
 import Dashboard from "@/pages/Dashboard";
 import TeamBreakdown from "@/pages/TeamBreakdown";
 import PositionDetail from "@/pages/PositionDetail";
-import UploadData from "@/pages/UploadData";
 import Settings from "@/pages/Settings";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/not-found";
@@ -44,9 +43,6 @@ function Router() {
         </Route>
         <Route path="/positions">
           <PositionDetail targetPct={targetPct} />
-        </Route>
-        <Route path="/upload">
-          <UploadData />
         </Route>
         <Route path="/settings">
           {user.is_admin ? <Settings /> : <NotFound />}
