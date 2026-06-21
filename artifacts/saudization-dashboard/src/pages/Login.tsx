@@ -55,11 +55,12 @@ export default function Login() {
         className={cn(
           "relative z-10 flex flex-col justify-center w-full max-w-sm min-h-screen p-8",
           "bg-white/95 backdrop-blur-md shadow-2xl",
-          isRtl ? "mr-auto" : "ml-auto"
+          isRtl ? "mr-auto border-r-4" : "ml-auto border-l-4"
         )}
+        style={{ borderColor: "#0a1d37" }}
       >
         {/* ACES logo */}
-        <div className="mb-8 -mx-8 -mt-8" style={{ background: "#000000" }}>
+        <div className="mb-8 -mx-8 -mt-8" style={{ background: "#0a1d37" }}>
           <img
             src={acesLogoImg}
             alt="ACES Managed Services"
@@ -128,9 +129,9 @@ export default function Login() {
             type="submit"
             disabled={loading || !username.trim() || !password}
             className="w-full h-10 text-white text-sm font-semibold rounded-lg shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            style={{ background: loading ? "#004a9a" : "#0056b3" }}
-            onMouseEnter={(e) => { if (!loading) (e.currentTarget as HTMLButtonElement).style.background = "#004a9a"; }}
-            onMouseLeave={(e) => { if (!loading) (e.currentTarget as HTMLButtonElement).style.background = "#0056b3"; }}
+            style={{ background: loading ? "#8b0000" : "#a00000" }}
+            onMouseEnter={(e) => { if (!loading) (e.currentTarget as HTMLButtonElement).style.background = "#8b0000"; }}
+            onMouseLeave={(e) => { if (!loading) (e.currentTarget as HTMLButtonElement).style.background = "#a00000"; }}
           >
             {loading ? (
               <>
