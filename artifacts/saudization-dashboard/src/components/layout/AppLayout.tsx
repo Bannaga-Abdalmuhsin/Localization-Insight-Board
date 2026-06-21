@@ -12,6 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
+import AcesLogo from "@/components/AcesLogo";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -32,23 +33,20 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* Sidebar */}
+      {/* Sidebar — ACES dark navy */}
       <aside className="w-64 flex-shrink-0 border-e border-sidebar-border bg-sidebar flex flex-col">
+
         {/* Logo / Brand */}
-        <div className="h-16 flex items-center px-6 border-b border-sidebar-border">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">A</span>
-            </div>
-            <div>
-              <p className="font-semibold text-sidebar-foreground text-sm leading-tight">{t.nav.brand}</p>
-              <p className="text-xs text-muted-foreground leading-tight">{t.nav.brandSub}</p>
-            </div>
+        <div className="h-16 flex items-center px-4 border-b border-sidebar-border gap-2">
+          <AcesLogo variant="compact" />
+          <div>
+            <p className="text-sm font-bold text-white leading-tight">ACES</p>
+            <p className="text-[10px] text-sidebar-foreground/55 leading-tight">{t.nav.brandSub}</p>
           </div>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-1">
+        <nav className="flex-1 px-3 py-4 space-y-0.5">
           {NAV_ITEMS.map((item) => {
             const active = location === item.href || (item.href !== "/" && location.startsWith(item.href));
             return (
@@ -58,7 +56,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                   className={cn(
                     "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium cursor-pointer transition-colors",
                     active
-                      ? "bg-primary text-primary-foreground shadow-sm"
+                      ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
                       : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   )}
                 >
@@ -74,11 +72,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
         </nav>
 
         {/* Bottom controls */}
-        <div className="px-4 pb-4 space-y-2 border-t border-sidebar-border pt-3">
+        <div className="px-4 pb-4 border-t border-sidebar-border pt-3 space-y-2">
           {/* Language toggle */}
           <button
             onClick={() => setLang(lang === "ar" ? "en" : "ar")}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-sidebar-border text-xs font-medium text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-sidebar-border text-xs font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
             data-testid="btn-lang-toggle"
           >
             <Languages className="w-3.5 h-3.5" />
@@ -87,8 +85,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
           {/* User info + logout */}
           <div className="flex items-center gap-2 px-2 py-1.5">
-            <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0">
-              <span className="text-xs font-semibold text-primary">
+            <div className="w-7 h-7 rounded-full bg-sidebar-primary/30 flex items-center justify-center flex-shrink-0 border border-sidebar-primary/40">
+              <span className="text-xs font-semibold text-white">
                 {user?.username?.[0]?.toUpperCase() ?? "?"}
               </span>
             </div>
@@ -98,7 +96,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
             <button
               onClick={logout}
               title={t.nav.logout}
-              className="p-1 text-muted-foreground hover:text-destructive transition-colors rounded"
+              className="p-1.5 text-sidebar-foreground/50 hover:text-red-400 transition-colors rounded"
               data-testid="btn-logout"
             >
               <LogOut className="w-3.5 h-3.5" />

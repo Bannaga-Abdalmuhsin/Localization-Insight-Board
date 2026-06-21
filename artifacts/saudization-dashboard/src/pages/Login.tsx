@@ -3,6 +3,7 @@ import { Languages, Lock, User, ShieldAlert } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useTranslation } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import AcesLogo from "@/components/AcesLogo";
 
 export default function Login() {
   const { login } = useAuth();
@@ -25,12 +26,15 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-100 flex items-center justify-center p-4">
-      {/* Language toggle — top corner */}
+    <div
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{ background: "linear-gradient(135deg, #0a1d37 0%, #0e2a4f 50%, #0a1d37 100%)" }}
+    >
+      {/* Language toggle */}
       <button
         onClick={() => setLang(lang === "ar" ? "en" : "ar")}
         className={cn(
-          "fixed top-4 flex items-center gap-1.5 px-3 py-1.5 bg-white border border-border rounded-lg text-xs font-medium text-muted-foreground shadow-sm hover:text-foreground transition-colors",
+          "fixed top-4 flex items-center gap-1.5 px-3 py-1.5 bg-white/10 border border-white/20 rounded-lg text-xs font-medium text-white/80 hover:text-white hover:bg-white/20 transition-colors backdrop-blur-sm",
           isRtl ? "left-4" : "right-4"
         )}
       >
@@ -40,21 +44,21 @@ export default function Login() {
 
       <div className="w-full max-w-sm">
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-border/60 overflow-hidden">
-          {/* Header band */}
-          <div className="bg-primary px-8 pt-8 pb-6 text-center">
-            <div className="w-14 h-14 rounded-xl bg-white/20 flex items-center justify-center mx-auto mb-4">
-              <span className="text-white font-bold text-2xl">A</span>
+        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-white/10">
+
+          {/* Header — dark navy with ACES logo */}
+          <div className="px-8 pt-8 pb-6 text-center" style={{ background: "#0a1d37" }}>
+            <div className="mx-auto mb-4 flex justify-center">
+              <AcesLogo variant="full" />
             </div>
-            <h1 className="text-white font-bold text-xl tracking-wide">ACES</h1>
-            <p className="text-white/70 text-xs mt-1">
+            <p className="text-white/65 text-xs mt-2 tracking-wide">
               {isRtl ? "الخدمات المُدارة — بوابة التوطين" : "Managed Services — Nitaqat Portal"}
             </p>
           </div>
 
           {/* Form */}
           <div className="px-8 py-7">
-            <p className="text-center text-sm text-muted-foreground mb-6">
+            <p className="text-center text-sm font-semibold text-foreground mb-6">
               {t.login.title}
             </p>
 
@@ -113,7 +117,10 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading || !username.trim() || !password}
-                className="w-full h-10 bg-primary text-primary-foreground text-sm font-semibold rounded-lg shadow-sm hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full h-10 text-white text-sm font-semibold rounded-lg shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                style={{ background: loading ? "#004a9a" : "#0056b3" }}
+                onMouseEnter={(e) => { if (!loading) (e.currentTarget as HTMLButtonElement).style.background = "#004a9a"; }}
+                onMouseLeave={(e) => { if (!loading) (e.currentTarget as HTMLButtonElement).style.background = "#0056b3"; }}
               >
                 {loading ? (
                   <>
@@ -127,7 +134,7 @@ export default function Login() {
         </div>
 
         {/* Disclaimer */}
-        <p className="mt-4 text-center text-[11px] text-muted-foreground flex items-center justify-center gap-1.5">
+        <p className="mt-4 text-center text-[11px] text-white/40 flex items-center justify-center gap-1.5">
           <ShieldAlert className="w-3 h-3" />
           {t.login.unauthorized}
         </p>
