@@ -7,128 +7,87 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 
 const XLSX = require('/home/runner/workspace/node_modules/.pnpm/xlsx@0.18.5/node_modules/xlsx/xlsx.js');
-const { Client } = require('/home/runner/workspace/node_modules/.pnpm/pg@8.20.0/node_modules/pg/lib/index.js');
+const { createClient } = require(resolve(__dirname, 'node_modules/@supabase/supabase-js/dist/index.cjs'));
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
-const DB_PASSWORD  = process.env.SUPABASE_DB_PASSWORD;
+const SERVICE_KEY  = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-const projectRef = SUPABASE_URL.replace('https://', '').replace('.supabase.co', '');
-console.log('Project ref:', projectRef);
-
-// Try direct connection first, then pooler as fallback
-async function makeClient(host, port, user) {
-  const c = new Client({ host, port, database: 'postgres', user, password: DB_PASSWORD, ssl: { rejectUnauthorized: false }, connectionTimeoutMillis: 8000 });
-  await c.connect();
-  return c;
+if (!SUPABASE_URL || !SERVICE_KEY) {
+  console.error('Missing VITE_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
+  process.exit(1);
 }
 
-let client;
-for (const [host, port, user] of [
-  [`db.${projectRef}.supabase.co`,           5432, 'postgres'],
-  [`${projectRef}.pooler.supabase.com`,      5432, `postgres.${projectRef}`],
-  [`${projectRef}.pooler.supabase.com`,      6543, `postgres.${projectRef}`],
-]) {
-  try {
-    console.log(`Trying ${host}:${port} user=${user} ...`);
-    client = await makeClient(host, port, user);
-    console.log(`Connected ✓  (${host}:${port})`);
-    break;
-  } catch (e) {
-    console.log(`  failed: ${e.message.slice(0, 80)}`);
-  }
+const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
+  auth: { persistSession: false }
+});
+
+// ── Verify tables exist ────────────────────────────────────────────────
+const { error: pingErr } = await supabase.from('departments').select('id').limit(1);
+if (pingErr) {
+  console.error('Cannot reach departments table:', pingErr.message);
+  process.exit(1);
 }
-if (!client) { console.error('All connection attempts failed'); process.exit(1); }
-
-// ── Schema ─────────────────────────────────────────────────────────────
-await client.query(`
-  CREATE TABLE IF NOT EXISTS departments (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    name text UNIQUE NOT NULL,
-    created_at timestamptz DEFAULT now()
-  );
-
-  CREATE TABLE IF NOT EXISTS teams (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    department_id uuid REFERENCES departments(id) ON DELETE CASCADE,
-    name text NOT NULL,
-    created_at timestamptz DEFAULT now(),
-    UNIQUE(name, department_id)
-  );
-
-  CREATE TABLE IF NOT EXISTS employees (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    team_id uuid REFERENCES teams(id) ON DELETE CASCADE,
-    department_id uuid REFERENCES departments(id) ON DELETE CASCADE,
-    position_title text NOT NULL,
-    nationality text NOT NULL,
-    is_saudi boolean NOT NULL DEFAULT false,
-    created_at timestamptz DEFAULT now()
-  );
-
-  ALTER TABLE departments DISABLE ROW LEVEL SECURITY;
-  ALTER TABLE teams DISABLE ROW LEVEL SECURITY;
-  ALTER TABLE employees DISABLE ROW LEVEL SECURITY;
-`);
-console.log('Schema ready ✓');
+console.log('Connected to Supabase REST API ✓');
 
 // ── Parse Excel ────────────────────────────────────────────────────────
 const buf  = readFileSync(resolve(__dirname, '../../attached_assets/saudization_template_1782033451185.xlsx'));
 const wb   = XLSX.read(buf, { type: 'buffer' });
 const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
-console.log(`Parsed ${rows.length} rows ✓`);
+console.log(`Parsed ${rows.length} rows from Excel ✓`);
 
 const SAUDI = ['saudi','saudi arabian','saudi national','ksa','سعودي','سعودية'];
 const isSaudi = (n) => SAUDI.includes((n||'').trim().toLowerCase());
 
-// ── Departments ────────────────────────────────────────────────────────
+// ── Upsert departments ─────────────────────────────────────────────────
 const deptNames = [...new Set(rows.map(r => r['Department']).filter(Boolean))];
-for (const name of deptNames) {
-  await client.query(`INSERT INTO departments (name) VALUES ($1) ON CONFLICT (name) DO NOTHING`, [name]);
-}
-const { rows: depts } = await client.query(`SELECT id, name FROM departments`);
-const deptMap = new Map(depts.map(d => [d.name, d.id]));
+const { data: deptData, error: deptErr } = await supabase
+  .from('departments')
+  .upsert(deptNames.map(name => ({ name })), { onConflict: 'name' })
+  .select();
+if (deptErr) { console.error('Dept upsert error:', deptErr.message); process.exit(1); }
+
+const { data: allDepts } = await supabase.from('departments').select('id, name');
+const deptMap = new Map(allDepts.map(d => [d.name, d.id]));
 console.log('Departments:', [...deptMap.keys()]);
 
-// ── Teams ──────────────────────────────────────────────────────────────
-const teamKeys = [...new Set(rows.map(r => JSON.stringify([r['Department'], r['Coampany']])))].map(s => JSON.parse(s));
-for (const [dept, team] of teamKeys) {
-  const deptId = deptMap.get(dept);
-  if (!deptId) continue;
-  await client.query(
-    `INSERT INTO teams (department_id, name) VALUES ($1, $2) ON CONFLICT (name, department_id) DO NOTHING`,
-    [deptId, team]
-  );
-}
-const { rows: teams } = await client.query(`SELECT id, name, department_id FROM teams`);
-const teamMap = new Map(teams.map(t => [`${t.department_id}|${t.name}`, t.id]));
-console.log(`Teams: ${teams.length} inserted ✓`);
+// ── Upsert teams ───────────────────────────────────────────────────────
+const teamSet = [...new Set(rows.map(r => JSON.stringify([r['Department'], r['Coampany']])))].map(s => JSON.parse(s));
+const teamInserts = teamSet.map(([dept, team]) => ({
+  department_id: deptMap.get(dept),
+  name: team,
+})).filter(t => t.department_id);
 
-// ── Employees ──────────────────────────────────────────────────────────
+const { error: teamErr } = await supabase
+  .from('teams')
+  .upsert(teamInserts, { onConflict: 'name,department_id' });
+if (teamErr) { console.error('Team upsert error:', teamErr.message); process.exit(1); }
+
+const { data: allTeams } = await supabase.from('teams').select('id, name, department_id');
+const teamMap = new Map(allTeams.map(t => [`${t.department_id}|${t.name}`, t.id]));
+console.log(`Teams loaded: ${allTeams.length}`);
+
+// ── Insert employees ───────────────────────────────────────────────────
 const empRows = rows.map(r => {
   const deptId = deptMap.get(r['Department']);
   const teamId = teamMap.get(`${deptId}|${r['Coampany']}`);
   if (!deptId || !teamId) return null;
   const nat = (r['Nationality'] || '').trim();
-  const pos = (r['Position_Title'] || r['Iqama_Proffession'] || r['Team'] || 'Unknown').trim();
-  return [deptId, teamId, pos, nat, isSaudi(nat)];
+  const pos = (r['Position_Title'] || r['Iqama_Proffession'] || 'Unknown').trim();
+  return { department_id: deptId, team_id: teamId, position_title: pos, nationality: nat, is_saudi: isSaudi(nat) };
 }).filter(Boolean);
 
-console.log(`Inserting ${empRows.length} employees...`);
+console.log(`\nInserting ${empRows.length} employees...`);
 const BATCH = 50;
 let inserted = 0;
 for (let i = 0; i < empRows.length; i += BATCH) {
   const batch = empRows.slice(i, i + BATCH);
-  const vals  = batch.map((_, j) => {
-    const o = j * 5;
-    return `($${o+1},$${o+2},$${o+3},$${o+4},$${o+5})`;
-  }).join(',');
-  await client.query(
-    `INSERT INTO employees (department_id, team_id, position_title, nationality, is_saudi) VALUES ${vals}`,
-    batch.flat()
-  );
-  inserted += batch.length;
-  process.stdout.write('.');
+  const { error } = await supabase.from('employees').insert(batch);
+  if (error) {
+    console.error(`\nBatch ${Math.floor(i/BATCH)+1} error:`, error.message);
+  } else {
+    inserted += batch.length;
+    process.stdout.write('.');
+  }
 }
 
-await client.end();
-console.log(`\n\n✓ Done — ${inserted} employees loaded into Supabase.`);
+console.log(`\n\n✓ Done — ${inserted} / ${empRows.length} employees inserted into Supabase.`);
