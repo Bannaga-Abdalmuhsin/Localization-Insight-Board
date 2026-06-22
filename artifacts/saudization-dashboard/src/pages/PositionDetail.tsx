@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Search, Filter, UserCheck, UserX, Download } from "lucide-react";
+import CompanyLogo, { REGION_AR } from "@/components/CompanyLogo";
 import { useProjectData } from "@/lib/useProjectData";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
@@ -111,7 +112,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
           className="h-9 text-sm rounded-lg border border-border bg-white shadow-sm px-3 outline-none focus:ring-2 focus:ring-primary/30"
         >
           <option value="all">{isAr ? "جميع المناطق" : "All Regions"}</option>
-          {regions.map((r) => <option key={r} value={r}>{r}</option>)}
+          {regions.map((r) => <option key={r} value={r}>{isAr ? (REGION_AR[r] ?? r) : r}</option>)}
         </select>
 
         {/* Company */}
@@ -211,8 +212,12 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
                         <p className="text-xs text-muted-foreground mt-0.5">{emp.iqama_profession}</p>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{emp.region ?? "—"}</td>
-                    <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{emp.company ?? "—"}</td>
+                    <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
+                      {emp.region ? (isAr ? (REGION_AR[emp.region] ?? emp.region) : emp.region) : "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      {emp.company ? <CompanyLogo company={emp.company} className="h-6" /> : <span className="text-muted-foreground">—</span>}
+                    </td>
                     <td className="px-4 py-3">
                       <span className={cn("inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold", CODE_COLORS[emp.saudization_code ?? "NA"] ?? CODE_COLORS.NA)}>
                         {CODE_LABELS[emp.saudization_code ?? "NA"] ?? (emp.saudization_code ?? "NA")}

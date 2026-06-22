@@ -13,6 +13,7 @@ import {
   ShieldAlert,
   ShieldCheck,
 } from "lucide-react";
+import CompanyLogo, { REGION_AR } from "@/components/CompanyLogo";
 import { useProjectData, CategoryMetrics, RegionMetrics } from "@/lib/useProjectData";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
@@ -367,7 +368,7 @@ function RegionalTable({
                   ? <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
                   : <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />}
                 <div>
-                  <p className="text-base font-bold text-foreground">{r.region}</p>
+                  <p className="text-base font-bold text-foreground">{isAr ? (REGION_AR[r.region] ?? r.region) : r.region}</p>
                   <p className={cn("text-sm font-semibold", r.isCompliant ? "text-emerald-600" : "text-red-500")}>
                     {pct}%
                   </p>

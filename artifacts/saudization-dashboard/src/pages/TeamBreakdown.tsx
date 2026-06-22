@@ -13,6 +13,7 @@ import {
 import { useProjectData, ProjectEmployee } from "@/lib/useProjectData";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
+import CompanyLogo, { REGION_AR } from "@/components/CompanyLogo";
 
 type GroupBy = "region" | "company";
 type SortKey = "name" | "total" | "saudi" | "nonSaudi" | "engPct" | "techPct";
@@ -267,7 +268,11 @@ export default function TeamBreakdown({ targetPct: _unused }: { targetPct: numbe
                       key={row.name}
                       className={cn("hover:bg-muted/30 transition-colors", idx % 2 === 0 ? "bg-white" : "bg-muted/10")}
                     >
-                      <td className="px-4 py-3.5 font-semibold text-foreground whitespace-nowrap">{row.name}</td>
+                      <td className="px-4 py-3.5 font-semibold text-foreground whitespace-nowrap">
+                        {groupBy === "company"
+                          ? <CompanyLogo company={row.name} className="h-7" />
+                          : (isAr ? (REGION_AR[row.name] ?? row.name) : row.name)}
+                      </td>
                       <td className="px-4 py-3.5 tabular-nums text-foreground">{row.total}</td>
                       <td className="px-4 py-3.5 tabular-nums text-emerald-600 font-medium">{row.saudi}</td>
                       <td className="px-4 py-3.5 tabular-nums text-foreground">{row.nonSaudi}</td>
