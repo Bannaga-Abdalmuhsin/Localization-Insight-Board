@@ -377,31 +377,29 @@ function RegionalTable({
                 {r.isCompliant
                   ? <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
                   : <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />}
-                <div>
-                  <p className="text-base font-bold text-foreground">{isAr ? (REGION_AR[r.region] ?? r.region) : r.region}</p>
-                  <p className={cn("text-sm font-semibold", r.isCompliant ? "text-emerald-600" : "text-red-500")}>
-                    {pct}%
-                  </p>
-                </div>
+                <p className="text-base font-bold text-foreground whitespace-nowrap">{isAr ? (REGION_AR[r.region] ?? r.region) : r.region}</p>
+                <p className={cn("text-sm font-semibold whitespace-nowrap", r.isCompliant ? "text-emerald-600" : "text-red-500")}>
+                  {pct}%
+                </p>
               </div>
 
               {/* Per-company */}
               {r.byCompany.map((c) => (
-                <div key={c.company} className={cn("px-4 py-5 text-center border-r border-border", companyBg[c.company])}>
+                <div key={c.company} className={cn("px-4 py-5 flex items-center justify-center gap-2 border-r border-border", companyBg[c.company])}>
                   {c.total === 0 ? (
                     <p className="text-xl font-bold text-muted-foreground/40">—</p>
                   ) : (
                     <>
-                      <p className="text-xl font-bold text-foreground">
+                      <p className="text-xl font-bold text-foreground whitespace-nowrap">
                         {c.saudi}
                         <span className="text-base font-normal text-muted-foreground"> / {c.total}</span>
                       </p>
                       {c.required > 0 ? (
-                        <span className="inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-sm font-bold bg-red-100 text-red-700">
+                        <span className="inline-block px-2.5 py-0.5 rounded-full text-sm font-bold bg-red-100 text-red-700 whitespace-nowrap">
                           +{c.required}
                         </span>
                       ) : (
-                        <span className="inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-sm font-bold bg-emerald-100 text-emerald-700">
+                        <span className="inline-block px-2.5 py-0.5 rounded-full text-sm font-bold bg-emerald-100 text-emerald-700 whitespace-nowrap">
                           ✓
                         </span>
                       )}
@@ -411,17 +409,17 @@ function RegionalTable({
               ))}
 
               {/* Total */}
-              <div className="px-6 py-5 text-center bg-slate-50">
-                <p className="text-xl font-bold text-foreground">
+              <div className="px-6 py-5 flex items-center justify-center gap-2 bg-slate-50">
+                <p className="text-xl font-bold text-foreground whitespace-nowrap">
                   {r.saudi}
                   <span className="text-base font-normal text-muted-foreground"> / {r.total}</span>
                 </p>
                 {!r.isCompliant ? (
-                  <span className="inline-block mt-1.5 px-3 py-0.5 rounded-full text-sm font-bold bg-red-100 text-red-700">
+                  <span className="inline-block px-3 py-0.5 rounded-full text-sm font-bold bg-red-100 text-red-700 whitespace-nowrap">
                     +{totalRequired} {isAr ? "مطلوب" : "needed"}
                   </span>
                 ) : (
-                  <span className="inline-block mt-1.5 px-3 py-0.5 rounded-full text-sm font-bold bg-emerald-100 text-emerald-700">
+                  <span className="inline-block px-3 py-0.5 rounded-full text-sm font-bold bg-emerald-100 text-emerald-700 whitespace-nowrap">
                     {isAr ? "ممتثل" : "Compliant"}
                   </span>
                 )}
