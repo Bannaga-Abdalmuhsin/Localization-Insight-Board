@@ -327,7 +327,7 @@ function RegionalTable({
       </div>
 
       {/* Column headers */}
-      <div className="grid grid-cols-[minmax(190px,1.6fr)_auto_auto_auto_minmax(140px,auto)] border-b border-border">
+      <div className="grid grid-cols-[minmax(200px,1.4fr)_1fr_1fr_1fr_minmax(150px,1.2fr)] border-b border-border">
         <div className="px-6 py-3 bg-muted/30 flex items-end">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
             {isAr ? "المنطقة" : "Region"}
@@ -368,7 +368,7 @@ function RegionalTable({
             <div
               key={r.region}
               className={cn(
-                "grid grid-cols-[minmax(190px,1.6fr)_auto_auto_auto_minmax(140px,auto)] items-stretch",
+                "grid grid-cols-[minmax(200px,1.4fr)_1fr_1fr_1fr_minmax(150px,1.2fr)] items-stretch",
                 !r.isCompliant && "bg-red-50/30"
               )}
             >
