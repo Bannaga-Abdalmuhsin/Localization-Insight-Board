@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Search, CheckCircle2, AlertTriangle, HelpCircle, Download, CircleDot } from "lucide-react";
 import { useProjectData } from "@/lib/useProjectData";
-import { matchProfession, MatchStatus } from "@/lib/professionMatch";
+import { matchProfession, localizeProfession, MatchStatus } from "@/lib/professionMatch";
 import CompanyLogo, { REGION_AR } from "@/components/CompanyLogo";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
@@ -38,9 +38,11 @@ export default function RoleAlignment() {
   const rows = employees.map((emp) => ({
     emp,
     result: matchProfession(emp.job_title, emp.iqama_profession),
+    title: localizeProfession(emp.job_title, lang),
+    profession: localizeProfession(emp.iqama_profession, lang),
   }));
 
-  const filtered = rows.filter(({ emp, result }) => {
+  const filtered = rows.filter(({ emp, result, title, profession }) => {
     if (statusFilter  !== "all" && result.status !== statusFilter)   return false;
     if (companyFilter !== "all" && emp.company !== companyFilter)     return false;
     if (regionFilter  !== "all" && emp.region  !== regionFilter)      return false;
@@ -48,8 +50,10 @@ export default function RoleAlignment() {
       const q = search.toLowerCase();
       if (
         !emp.employee_name.toLowerCase().includes(q) &&
-        !(emp.job_title        ?? "").toLowerCase().includes(q) &&
-        !(emp.iqama_profession ?? "").toLowerCase().includes(q)
+        !title.text.toLowerCase().includes(q) &&
+        !title.original.toLowerCase().includes(q) &&
+        !profession.text.toLowerCase().includes(q) &&
+        !profession.original.toLowerCase().includes(q)
       ) return false;
     }
     return true;
@@ -63,14 +67,16 @@ export default function RoleAlignment() {
   };
 
   function exportCsv() {
-    const header = ["#", "Employee Name", "Company", "Region", "Job Title", "Iqama Profession", "Status", "Confidence", "Job Category", "Iqama Category", "Explanation"];
-    const csvRows = filtered.map(({ emp, result }, i) => [
+    const header = ["#", "Employee Name", "Company", "Region", "Job Title", "Job Title (original)", "Iqama Profession", "Iqama Profession (original)", "Status", "Confidence", "Job Category", "Iqama Category", "Explanation"];
+    const csvRows = filtered.map(({ emp, result, title, profession }, i) => [
       (emp.employee_no ?? i + 1),
       `"${emp.employee_name}"`,
       emp.company ?? "",
       emp.region  ?? "",
-      `"${emp.job_title ?? ""}"`,
-      `"${emp.iqama_profession ?? ""}"`,
+      `"${title.text}"`,
+      `"${title.original}"`,
+      `"${profession.text}"`,
+      `"${profession.original}"`,
       result.status,
       `${result.confidence}%`,
       result.jobCategory  ?? "",
@@ -187,8 +193,8 @@ export default function RoleAlignment() {
           </span>
           <span className="text-xs text-muted-foreground">
             {isAr
-              ? "المطابقة تستند إلى تحليل الكلمات المفتاحية في المسمى والمهنة"
-              : "Matching is based on keyword analysis of title and profession"}
+              ? "تم توحيد المسمى والمهنة إلى اللغة العربية؛ النص الأصلي يظهر أسفل كل قيمة للمراجعة"
+              : "Title & profession unified to English; the original text appears beneath each value for audit"}
           </span>
         </div>
 
@@ -218,7 +224,7 @@ export default function RoleAlignment() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {filtered.map(({ emp, result }, idx) => {
+                {filtered.map(({ emp, result, title, profession }, idx) => {
                   const cfg = STATUS_CONFIG[result.status];
                   const Icon = cfg.icon;
                   return (
@@ -240,9 +246,27 @@ export default function RoleAlignment() {
                         {emp.region ? (isAr ? (REGION_AR[emp.region] ?? emp.region) : emp.region) : "—"}
                       </td>
 
-                      <td className="px-4 py-3 text-foreground">{emp.job_title ?? "—"}</td>
+                      <td className="px-4 py-3 text-foreground">
+                        {title.text ? (
+                          <div className="flex flex-col">
+                            <span className={cn(!title.classified && "text-amber-700")}>{title.text}</span>
+                            {title.changed && (
+                              <span className="text-[10px] text-muted-foreground" dir="auto">{title.original}</span>
+                            )}
+                          </div>
+                        ) : "—"}
+                      </td>
 
-                      <td className="px-4 py-3 text-foreground">{emp.iqama_profession ?? "—"}</td>
+                      <td className="px-4 py-3 text-foreground">
+                        {profession.text ? (
+                          <div className="flex flex-col">
+                            <span className={cn(!profession.classified && "text-amber-700")}>{profession.text}</span>
+                            {profession.changed && (
+                              <span className="text-[10px] text-muted-foreground" dir="auto">{profession.original}</span>
+                            )}
+                          </div>
+                        ) : "—"}
+                      </td>
 
                       {/* Detected categories */}
                       <td className="px-4 py-3">

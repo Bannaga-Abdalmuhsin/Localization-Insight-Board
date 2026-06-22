@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { matchProfession, classify, normalizeArabic, normalizeTitle } from "./professionMatch";
+import { matchProfession, classify, normalizeArabic, normalizeTitle, localizeProfession } from "./professionMatch";
 
 describe("normalizeArabic", () => {
   it("unifies alef variants to ا", () => {
@@ -45,6 +45,42 @@ describe("normalizeTitle", () => {
   it("matches definite-article forms against bare keywords", () => {
     expect(classify("المهندس")?.category.family).toBe("engineer");
     expect(matchProfession("Engineer", "المهندس").status).toBe("match");
+  });
+});
+
+describe("localizeProfession", () => {
+  it("translates an English title to Arabic when lang is ar", () => {
+    const r = localizeProfession("Engineer", "ar");
+    expect(r.text).toBe("مهندس");
+    expect(r.classified).toBe(true);
+    expect(r.changed).toBe(true);
+    expect(r.original).toBe("Engineer");
+  });
+
+  it("translates an Arabic profession to English when lang is en", () => {
+    const r = localizeProfession("مهندس", "en");
+    expect(r.text).toBe("Engineer");
+    expect(r.classified).toBe(true);
+    expect(r.changed).toBe(true);
+  });
+
+  it("keeps a value that is already in the target language", () => {
+    const r = localizeProfession("Engineer", "en");
+    expect(r.text).toBe("Engineer");
+    expect(r.changed).toBe(false);
+  });
+
+  it("returns the original text for unclassifiable values", () => {
+    const r = localizeProfession("Zzxq Random", "ar");
+    expect(r.text).toBe("Zzxq Random");
+    expect(r.classified).toBe(false);
+    expect(r.changed).toBe(false);
+  });
+
+  it("handles null/empty input", () => {
+    const r = localizeProfession(null, "en");
+    expect(r.text).toBe("");
+    expect(r.classified).toBe(false);
   });
 });
 

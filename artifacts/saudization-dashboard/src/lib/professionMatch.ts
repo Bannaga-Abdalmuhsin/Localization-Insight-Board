@@ -312,6 +312,42 @@ function isRelated(famA: string, famB: string): boolean {
   return Boolean(RELATED[famA]?.includes(famB)) || Boolean(RELATED[famB]?.includes(famA));
 }
 
+export interface LocalizedProfession {
+  /** Canonical label in the requested language, or the original text if it could not be classified. */
+  text: string;
+  /** The original, trimmed raw value (kept for audit). */
+  original: string;
+  /** True if the raw value was recognised and mapped to a canonical category. */
+  classified: boolean;
+  /** True if the displayed text differs from the original (i.e. it was translated/normalized). */
+  changed: boolean;
+}
+
+/**
+ * Render a raw job title / iqama profession into ONE language (the active UI
+ * language) using the same classifier that powers matching. English UI → English
+ * canonical label; Arabic UI → Arabic canonical label. Unrecognised values are
+ * returned unchanged so they remain visible for manual audit.
+ */
+export function localizeProfession(
+  raw: string | null | undefined,
+  lang: "en" | "ar",
+): LocalizedProfession {
+  const original = (raw ?? "").trim();
+  if (!original) return { text: "", original: "", classified: false, changed: false };
+
+  const c = classify(original);
+  if (!c) return { text: original, original, classified: false, changed: false };
+
+  const label = lang === "ar" ? c.category.labelAr : c.category.labelEn;
+  return {
+    text: label,
+    original,
+    classified: true,
+    changed: normalizeTitle(label) !== normalizeTitle(original),
+  };
+}
+
 export interface MatchResult {
   status: MatchStatus;
   confidence: number;
