@@ -183,7 +183,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
                     isAr ? "#" : "#",
                     isAr ? "اسم الموظف" : "Employee Name",
                     isAr ? "الجنسية" : "Nationality",
-                    isAr ? "المسمى الوظيفي" : "Job Title",
+                    isAr ? "المسمى الوظيفي" : "Position",
                     isAr ? "المنطقة" : "Region",
                     isAr ? "الشركة" : "Company",
                     isAr ? "فئة التوطين" : "Category",
@@ -205,7 +205,12 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
                     <td className="px-4 py-3 tabular-nums text-muted-foreground text-xs">{emp.employee_no ?? idx + 1}</td>
                     <td className="px-4 py-3 font-medium text-foreground whitespace-nowrap">{emp.employee_name}</td>
                     <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{emp.nationality}</td>
-                    <td className="px-4 py-3 text-foreground">{emp.job_title ?? "—"}</td>
+                    <td className="px-4 py-3">
+                      <p className="text-foreground font-medium">{emp.job_title ?? "—"}</p>
+                      {emp.iqama_profession && (
+                        <p className="text-xs text-muted-foreground mt-0.5">{emp.iqama_profession}</p>
+                      )}
+                    </td>
                     <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{emp.region ?? "—"}</td>
                     <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{emp.company ?? "—"}</td>
                     <td className="px-4 py-3">
