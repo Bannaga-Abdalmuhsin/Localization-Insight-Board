@@ -48,6 +48,70 @@ describe("normalizeTitle", () => {
   });
 });
 
+describe("engineer specialties vs trades", () => {
+  it("مهندس كهربائي → Electrical Engineer (engineer family, NOT electrician)", () => {
+    const r = classify("مهندس كهربائي");
+    expect(r?.category.id).toBe("electrical_eng");
+    expect(r?.category.family).toBe("engineer");
+  });
+
+  it("Electrical Engineer (EN) → engineer family, not the trade", () => {
+    const r = classify("Electrical Engineer");
+    expect(r?.category.family).toBe("engineer");
+    expect(r?.category.id).not.toBe("electrician");
+  });
+
+  it("plain electrician still maps to the trade", () => {
+    expect(classify("كهربائي")?.category.id).toBe("electrician");
+    expect(classify("Electrician")?.category.id).toBe("electrician");
+  });
+
+  it("مهندس ميكانيكي → Mechanical Engineer (not mechanic)", () => {
+    const r = classify("مهندس ميكانيكي");
+    expect(r?.category.id).toBe("mechanical_eng");
+    expect(r?.category.family).toBe("engineer");
+  });
+
+  it("مهندس مدني → Civil Engineer (engineer family, not civil/construction)", () => {
+    const r = classify("مهندس مدني");
+    expect(r?.category.id).toBe("civil_eng");
+    expect(r?.category.family).toBe("engineer");
+  });
+
+  it("مهندس معماري / Architect → architect (engineer family)", () => {
+    expect(classify("مهندس معماري")?.category.id).toBe("architect");
+    expect(classify("Architect")?.category.family).toBe("engineer");
+  });
+
+  it("localizes مهندس كهربائي to 'Electrical Engineer' and back", () => {
+    expect(localizeProfession("مهندس كهربائي", "en").text).toBe("Electrical Engineer");
+    expect(localizeProfession("Electrical Engineer", "ar").text).toBe("مهندس كهربائي");
+  });
+
+  it("electrical engineer vs مهندس → match (same engineer family)", () => {
+    expect(matchProfession("Electrical Engineer", "مهندس").status).toBe("match");
+  });
+
+  it("electrical engineer vs electrician → conditional (related, not mismatch)", () => {
+    expect(matchProfession("مهندس كهربائي", "كهربائي").status).toBe("conditional");
+  });
+
+  it("لحام / Welder classifies as welder (was unclassified)", () => {
+    expect(classify("لحام")?.category.id).toBe("welder");
+    expect(classify("Welder")?.category.id).toBe("welder");
+  });
+
+  it("حداد / Steel Fixer classifies as blacksmith (was unclassified)", () => {
+    expect(classify("حداد")?.category.id).toBe("blacksmith");
+    expect(classify("Steel Fixer")?.category.id).toBe("blacksmith");
+  });
+
+  it("مهندس برمجيات → developer, consistent with Software Engineer (EN)", () => {
+    expect(classify("مهندس برمجيات")?.category.id).toBe("developer");
+    expect(classify("Software Engineer")?.category.id).toBe("developer");
+  });
+});
+
 describe("localizeProfession", () => {
   it("translates an English title to Arabic when lang is ar", () => {
     const r = localizeProfession("Engineer", "ar");
@@ -129,8 +193,8 @@ describe("classify — multi-role titles pick the most relevant category", () =>
     expect(classify("QA/QC Engineer")?.category.id).toBe("quality");
   });
 
-  it("Site Civil Engineer → civil", () => {
-    expect(classify("Site Civil Engineer")?.category.id).toBe("civil");
+  it("Site Civil Engineer → civil_eng (engineer family)", () => {
+    expect(classify("Site Civil Engineer")?.category.id).toBe("civil_eng");
   });
 
   it("Technical Manager → manager", () => {
