@@ -110,6 +110,13 @@ describe("engineer specialties vs trades", () => {
     expect(classify("مهندس برمجيات")?.category.id).toBe("developer");
     expect(classify("Software Engineer")?.category.id).toBe("developer");
   });
+
+  it("data entry keeps its own label, not generic admin/clerk", () => {
+    expect(classify("Project data entry")?.category.id).toBe("data_entry");
+    expect(classify("مدخل بيانات")?.category.id).toBe("data_entry");
+    expect(localizeProfession("Project data entry", "ar").text).toBe("إدخال بيانات");
+    expect(localizeProfession("data entry", "en").text).toBe("Data Entry");
+  });
 });
 
 describe("localizeProfession", () => {
