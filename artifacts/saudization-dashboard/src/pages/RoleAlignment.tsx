@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, CheckCircle2, AlertTriangle, HelpCircle, Download } from "lucide-react";
+import { Search, CheckCircle2, AlertTriangle, HelpCircle, Download, CircleDot } from "lucide-react";
 import { useProjectData } from "@/lib/useProjectData";
 import { matchProfession, MatchStatus } from "@/lib/professionMatch";
 import CompanyLogo, { REGION_AR } from "@/components/CompanyLogo";
@@ -7,9 +7,10 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
 
 const STATUS_CONFIG: Record<MatchStatus, { icon: React.ElementType; labelEn: string; labelAr: string; badge: string; row: string }> = {
-  match:    { icon: CheckCircle2,  labelEn: "Match",        labelAr: "متطابق",       badge: "bg-emerald-100 text-emerald-700", row: "" },
-  mismatch: { icon: AlertTriangle, labelEn: "Mismatch",     labelAr: "غير متطابق",   badge: "bg-red-100 text-red-700",        row: "bg-red-50/40" },
-  review:   { icon: HelpCircle,    labelEn: "Needs Review", labelAr: "يحتاج مراجعة", badge: "bg-amber-100 text-amber-700",    row: "bg-amber-50/30" },
+  match:       { icon: CheckCircle2,  labelEn: "Match",        labelAr: "متطابق",       badge: "bg-emerald-100 text-emerald-700", row: "" },
+  conditional: { icon: CircleDot,     labelEn: "Conditional",  labelAr: "مشروط",        badge: "bg-sky-100 text-sky-700",        row: "bg-sky-50/30" },
+  mismatch:    { icon: AlertTriangle, labelEn: "Mismatch",     labelAr: "غير متطابق",   badge: "bg-red-100 text-red-700",        row: "bg-red-50/40" },
+  review:      { icon: HelpCircle,    labelEn: "Needs Review", labelAr: "يحتاج مراجعة", badge: "bg-amber-100 text-amber-700",    row: "bg-amber-50/30" },
 };
 
 export default function RoleAlignment() {
@@ -55,13 +56,14 @@ export default function RoleAlignment() {
   });
 
   const counts = {
-    match:    rows.filter((r) => r.result.status === "match").length,
-    mismatch: rows.filter((r) => r.result.status === "mismatch").length,
-    review:   rows.filter((r) => r.result.status === "review").length,
+    match:       rows.filter((r) => r.result.status === "match").length,
+    conditional: rows.filter((r) => r.result.status === "conditional").length,
+    mismatch:    rows.filter((r) => r.result.status === "mismatch").length,
+    review:      rows.filter((r) => r.result.status === "review").length,
   };
 
   function exportCsv() {
-    const header = ["#", "Employee Name", "Company", "Region", "Job Title", "Iqama Profession", "Status", "Job Category", "Iqama Category"];
+    const header = ["#", "Employee Name", "Company", "Region", "Job Title", "Iqama Profession", "Status", "Confidence", "Job Category", "Iqama Category", "Explanation"];
     const csvRows = filtered.map(({ emp, result }, i) => [
       (emp.employee_no ?? i + 1),
       `"${emp.employee_name}"`,
@@ -70,8 +72,10 @@ export default function RoleAlignment() {
       `"${emp.job_title ?? ""}"`,
       `"${emp.iqama_profession ?? ""}"`,
       result.status,
+      `${result.confidence}%`,
       result.jobCategory  ?? "",
       result.iqamaCategory ?? "",
+      `"${result.explanation.replace(/"/g, "'")}"`,
     ].join(","));
     const blob = new Blob([[header.join(","), ...csvRows].join("\n")], { type: "text/csv" });
     const url  = URL.createObjectURL(blob);
@@ -106,12 +110,13 @@ export default function RoleAlignment() {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {[
-          { key: "all",      label: isAr ? "إجمالي الموظفين" : "Total Employees", value: rows.length,    badge: "bg-slate-100 text-slate-700",   icon: null },
-          { key: "match",    label: isAr ? "متطابق"          : "Match",           value: counts.match,    badge: STATUS_CONFIG.match.badge,    icon: CheckCircle2  },
-          { key: "mismatch", label: isAr ? "غير متطابق"      : "Mismatch",        value: counts.mismatch, badge: STATUS_CONFIG.mismatch.badge, icon: AlertTriangle },
-          { key: "review",   label: isAr ? "يحتاج مراجعة"   : "Needs Review",    value: counts.review,   badge: STATUS_CONFIG.review.badge,   icon: HelpCircle    },
+          { key: "all",         label: isAr ? "إجمالي الموظفين" : "Total Employees", value: rows.length,        badge: "bg-slate-100 text-slate-700",   icon: null },
+          { key: "match",       label: isAr ? "متطابق"          : "Match",           value: counts.match,       badge: STATUS_CONFIG.match.badge,       icon: CheckCircle2  },
+          { key: "conditional", label: isAr ? "مشروط"           : "Conditional",     value: counts.conditional, badge: STATUS_CONFIG.conditional.badge, icon: CircleDot     },
+          { key: "mismatch",    label: isAr ? "غير متطابق"      : "Mismatch",        value: counts.mismatch,    badge: STATUS_CONFIG.mismatch.badge,    icon: AlertTriangle },
+          { key: "review",      label: isAr ? "يحتاج مراجعة"   : "Needs Review",    value: counts.review,      badge: STATUS_CONFIG.review.badge,      icon: HelpCircle    },
         ].map((s) => (
           <button
             key={s.key}
@@ -150,6 +155,7 @@ export default function RoleAlignment() {
         >
           <option value="all">{isAr ? "جميع الحالات" : "All Statuses"}</option>
           <option value="match">{isAr ? "متطابق" : "Match"}</option>
+          <option value="conditional">{isAr ? "مشروط" : "Conditional"}</option>
           <option value="mismatch">{isAr ? "غير متطابق" : "Mismatch"}</option>
           <option value="review">{isAr ? "يحتاج مراجعة" : "Needs Review"}</option>
         </select>
@@ -257,12 +263,17 @@ export default function RoleAlignment() {
                         </div>
                       </td>
 
-                      {/* Status badge */}
-                      <td className="px-4 py-3">
-                        <span className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap", cfg.badge)}>
-                          <Icon className="w-3.5 h-3.5" />
-                          {isAr ? cfg.labelAr : cfg.labelEn}
-                        </span>
+                      {/* Status badge + confidence */}
+                      <td className="px-4 py-3" title={result.explanation}>
+                        <div className="flex flex-col items-start gap-1">
+                          <span className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap", cfg.badge)}>
+                            <Icon className="w-3.5 h-3.5" />
+                            {isAr ? cfg.labelAr : cfg.labelEn}
+                          </span>
+                          <span className="text-[10px] tabular-nums text-muted-foreground">
+                            {isAr ? `الثقة ${result.confidence}%` : `${result.confidence}% conf.`}
+                          </span>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -285,6 +296,14 @@ export default function RoleAlignment() {
           {isAr
             ? "المسمى الوظيفي ومهنة الإقامة ينتميان لنفس الفئة المهنية (مهندس، فني، مشرف...)"
             : "Job title and Iqama profession belong to the same role category (engineer, technician, supervisor…)"}
+        </p>
+        <p>
+          <span className={cn("inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold me-2", STATUS_CONFIG.conditional.badge)}>
+            <CircleDot className="w-3 h-3" />{isAr ? "مشروط" : "Conditional"}
+          </span>
+          {isAr
+            ? "الفئتان مختلفتان لكنهما مرتبطتان مهنياً (مثل مهندس يشغل وظيفة مدير) — مقبول مع التنويه"
+            : "Categories differ but are professionally related (e.g. an engineer in a manager role) — acceptable, flagged for awareness"}
         </p>
         <p>
           <span className={cn("inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold me-2", STATUS_CONFIG.mismatch.badge)}>

@@ -1,0 +1,117 @@
+Enhance the profession matching engine for production use with the following requirements:
+
+1. Replace the current "first keyword wins" logic with a scoring-based classifier.
+
+   * Scan all categories.
+   * Count matched keywords for each category.
+   * Select the category with the highest score.
+   * Prioritize exact phrase matches over partial matches.
+   * If two categories have similar scores, return a low-confidence result and mark for review.
+
+2. Improve keyword matching.
+
+   * Use word-boundary matching for English keywords instead of simple string includes().
+   * Keep Arabic matching but normalize text before comparison.
+   * Prevent short keywords from matching inside unrelated words.
+
+3. Add Arabic normalization.
+
+   * Convert (أ, إ, آ) to ا.
+   * Convert ى to ي.
+   * Remove diacritics.
+   * Trim extra spaces.
+   * Apply normalization to both input text and Arabic keywords.
+
+4. Remove risky generic keywords that cause false classifications:
+
+   * Remove "officer" from Safety.
+   * Remove "office" from Admin.
+   * Remove overly generic keywords that can misclassify professions.
+   * Replace them with more specific phrases such as:
+
+     * safety officer
+     * hse officer
+     * logistics coordinator
+     * office administrator
+     * office clerk
+
+5. Add confidence scoring.
+
+   * Extend MatchResult with:
+     confidence: number
+   * Return a value between 0 and 100.
+   * Exact phrase match = highest confidence.
+   * Multiple keyword matches increase confidence.
+   * Weak or ambiguous matches reduce confidence.
+
+6. Add a new status:
+
+   * match
+   * conditional
+   * mismatch
+   * review
+
+7. Update compatibility logic.
+
+   * Direct profession alignment should return "match".
+   * Related professions should return "conditional".
+   * Unrelated professions should return "mismatch".
+   * Unknown or ambiguous classifications should return "review".
+
+8. Expand profession categories to better support Saudi labor-market and Iqama professions:
+
+   * Telecom Engineer
+   * RF Engineer
+   * Site Engineer
+   * Field Engineer
+   * Fiber Technician
+   * Doctor
+   * Nurse
+   * Pharmacist
+   * Teacher
+   * HR
+   * Recruitment
+   * Sales
+   * Marketing
+   * Business Development
+
+9. Add support for multi-role titles:
+   Examples:
+
+   * Network Engineer
+   * HSE Engineer
+   * QA/QC Engineer
+   * Site Civil Engineer
+   * Technical Manager
+     The engine should identify the most relevant category rather than relying on category order.
+
+10. Extend MatchResult to include:
+    {
+    status,
+    confidence,
+    detectedJobCategoryId,
+    detectedIqamaCategoryId,
+    jobCategory,
+    iqamaCategory,
+    jobCategoryAr,
+    iqamaCategoryAr,
+    explanation
+    }
+
+11. Generate a human-readable explanation describing:
+
+* Which keywords were matched.
+* Why the classification was selected.
+* Why the result is Match, Conditional, Mismatch, or Review.
+
+12. Add comprehensive unit tests covering:
+
+* English professions.
+* Arabic professions.
+* Mixed Arabic/English input.
+* Telecom and construction professions.
+* Ambiguous professions.
+* False-positive keyword scenarios.
+* Compatibility and conditional-match scenarios.
+
+Maintain backward compatibility with existing UI components and TypeScript typing wherever possible.
