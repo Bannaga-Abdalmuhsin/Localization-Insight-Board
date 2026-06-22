@@ -33,6 +33,13 @@ export interface CategoryMetrics {
   byRegion: RegionMetrics[];
 }
 
+export interface CompanySlice {
+  company: string;
+  total: number;
+  saudi: number;
+  required: number;
+}
+
 export interface RegionMetrics {
   region: string;
   total: number;
@@ -40,6 +47,7 @@ export interface RegionMetrics {
   nonSaudi: number;
   currentPct: number;
   isCompliant: boolean;
+  byCompany: CompanySlice[];
 }
 
 export interface ProjectMetrics {
@@ -77,12 +85,22 @@ function computeCategory(
   const targetTotal = total; // headcount stays fixed
 
   const REGIONS = ["Central", "East", "South", "West"];
+  const COMPANIES = ["Aces", "Mac", "Anet"];
   const byRegion: RegionMetrics[] = REGIONS.map((region) => {
     const rg = group.filter(
       (e) => (e.region ?? "").toLowerCase() === region.toLowerCase()
     );
     const rs = rg.filter((e) => e.is_saudi).length;
     const rt = rg.length;
+    const byCompany: CompanySlice[] = COMPANIES.map((company) => {
+      const cg = rg.filter(
+        (e) => (e.company ?? "").toLowerCase() === company.toLowerCase()
+      );
+      const cs = cg.filter((e) => e.is_saudi).length;
+      const ct = cg.length;
+      const req = Math.max(0, Math.ceil(targetPct * ct) - cs);
+      return { company, total: ct, saudi: cs, required: req };
+    });
     return {
       region,
       total: rt,
@@ -90,6 +108,7 @@ function computeCategory(
       nonSaudi: rt - rs,
       currentPct: rt > 0 ? rs / rt : 0,
       isCompliant: rt > 0 ? rs / rt >= targetPct : true,
+      byCompany,
     };
   }).filter((r) => r.total > 0);
 

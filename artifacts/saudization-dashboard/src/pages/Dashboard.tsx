@@ -13,7 +13,7 @@ import {
   ShieldAlert,
   ShieldCheck,
 } from "lucide-react";
-import { useProjectData, CategoryMetrics } from "@/lib/useProjectData";
+import { useProjectData, CategoryMetrics, RegionMetrics } from "@/lib/useProjectData";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
 
@@ -89,104 +89,18 @@ export default function Dashboard() {
       </div>
 
       {/* Regional breakdown — Eng */}
-      <div className="rounded-xl border border-border bg-white shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-border flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-primary" />
-          <h3 className="text-sm font-semibold text-foreground">
-            {isAr
-              ? "التوزيع الإقليمي — المهن الهندسية"
-              : "Regional Breakdown — Engineering Category (30%)"}
-          </h3>
-        </div>
-        <div className="divide-y divide-border">
-          {eng.byRegion.map((r) => {
-            const required = Math.max(0, Math.ceil(eng.target * r.total) - r.saudi);
-            return (
-              <div key={r.region} className="px-5 py-3 flex items-center gap-4">
-                <span className="w-20 text-sm font-medium text-foreground flex-shrink-0">{r.region}</span>
-                <div className="flex-1 flex items-center gap-5 text-sm flex-wrap">
-                  <span className="text-muted-foreground">
-                    {isAr ? "الإجمالي:" : "Total:"} <span className="font-semibold text-foreground">{r.total}</span>
-                  </span>
-                  <span className="text-muted-foreground">
-                    {isAr ? "سعودي:" : "Saudi:"} <span className="font-semibold text-emerald-600">{r.saudi}</span>
-                  </span>
-                  {!r.isCompliant && (
-                    <span className="text-muted-foreground">
-                      {isAr ? "مطلوب:" : "Required:"}{" "}
-                      <span className="font-bold text-red-600">+{required}</span>
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <div className="w-24 bg-muted rounded-full h-2 overflow-hidden">
-                    <div
-                      className={cn("h-full rounded-full", r.isCompliant ? "bg-emerald-500" : "bg-red-500")}
-                      style={{ width: `${Math.min(100, r.currentPct * 100)}%` }}
-                    />
-                  </div>
-                  <span className={cn("text-xs font-bold w-10 text-end", r.isCompliant ? "text-emerald-600" : "text-red-600")}>
-                    {(r.currentPct * 100).toFixed(0)}%
-                  </span>
-                  {r.isCompliant
-                    ? <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                    : <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <RegionalTable
+        title={isAr ? "التوزيع الإقليمي — المهن الهندسية" : "Regional Breakdown — Engineering Category (30%)"}
+        cat={eng}
+        isAr={isAr}
+      />
 
       {/* Regional breakdown — Tech */}
-      <div className="rounded-xl border border-border bg-white shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-border flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-primary" />
-          <h3 className="text-sm font-semibold text-foreground">
-            {isAr
-              ? "التوزيع الإقليمي — المهن التقنية"
-              : "Regional Breakdown — Technical Category (25%)"}
-          </h3>
-        </div>
-        <div className="divide-y divide-border">
-          {tech.byRegion.map((r) => {
-            const required = Math.max(0, Math.ceil(tech.target * r.total) - r.saudi);
-            return (
-              <div key={r.region} className="px-5 py-3 flex items-center gap-4">
-                <span className="w-20 text-sm font-medium text-foreground flex-shrink-0">{r.region}</span>
-                <div className="flex-1 flex items-center gap-5 text-sm flex-wrap">
-                  <span className="text-muted-foreground">
-                    {isAr ? "الإجمالي:" : "Total:"} <span className="font-semibold text-foreground">{r.total}</span>
-                  </span>
-                  <span className="text-muted-foreground">
-                    {isAr ? "سعودي:" : "Saudi:"} <span className="font-semibold text-emerald-600">{r.saudi}</span>
-                  </span>
-                  {!r.isCompliant && (
-                    <span className="text-muted-foreground">
-                      {isAr ? "مطلوب:" : "Required:"}{" "}
-                      <span className="font-bold text-red-600">+{required}</span>
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <div className="w-24 bg-muted rounded-full h-2 overflow-hidden">
-                    <div
-                      className={cn("h-full rounded-full", r.isCompliant ? "bg-emerald-500" : "bg-red-500")}
-                      style={{ width: `${Math.min(100, r.currentPct * 100)}%` }}
-                    />
-                  </div>
-                  <span className={cn("text-xs font-bold w-10 text-end", r.isCompliant ? "text-emerald-600" : "text-red-600")}>
-                    {(r.currentPct * 100).toFixed(0)}%
-                  </span>
-                  {r.isCompliant
-                    ? <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                    : <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <RegionalTable
+        title={isAr ? "التوزيع الإقليمي — المهن التقنية" : "Regional Breakdown — Technical Category (25%)"}
+        cat={tech}
+        isAr={isAr}
+      />
 
       {/* NA Exempt banner */}
       <div className="rounded-xl border border-border bg-muted/40 px-5 py-4 flex items-center gap-3">
@@ -359,6 +273,99 @@ function CategoryCard({ cat, isAr }: { cat: CategoryMetrics; isAr: boolean }) {
             </p>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+const COMPANY_LABELS: Record<string, { label: string; color: string }> = {
+  Aces: { label: "ACES", color: "text-primary" },
+  Mac:  { label: "MAC",  color: "text-violet-700" },
+  Anet: { label: "ANET", color: "text-amber-700" },
+};
+
+function RegionalTable({
+  title,
+  cat,
+  isAr,
+}: {
+  title: string;
+  cat: CategoryMetrics;
+  isAr: boolean;
+}) {
+  const companies = ["Aces", "Mac", "Anet"];
+  return (
+    <div className="rounded-xl border border-border bg-white shadow-sm overflow-hidden">
+      <div className="px-5 py-4 border-b border-border flex items-center gap-2">
+        <MapPin className="w-4 h-4 text-primary" />
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+      </div>
+
+      {/* Table header */}
+      <div className="grid grid-cols-[120px_1fr_1fr_1fr_auto] gap-0 border-b border-border bg-muted/40 px-5 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+        <span>{isAr ? "المنطقة" : "Region"}</span>
+        {companies.map((c) => (
+          <span key={c} className={cn("text-center", COMPANY_LABELS[c].color)}>
+            {COMPANY_LABELS[c].label}
+          </span>
+        ))}
+        <span className="text-end w-24">{isAr ? "الإجمالي" : "Total"}</span>
+      </div>
+
+      {/* Rows */}
+      <div className="divide-y divide-border">
+        {cat.byRegion.map((r: RegionMetrics) => {
+          const totalRequired = Math.max(0, Math.ceil(cat.target * r.total) - r.saudi);
+          return (
+            <div
+              key={r.region}
+              className="grid grid-cols-[120px_1fr_1fr_1fr_auto] gap-0 px-5 py-3 items-center"
+            >
+              {/* Region label */}
+              <div className="flex items-center gap-1.5">
+                {r.isCompliant
+                  ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                  : <AlertTriangle className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />}
+                <span className="text-sm font-medium text-foreground">{r.region}</span>
+              </div>
+
+              {/* Per-company columns */}
+              {r.byCompany.map((c) => (
+                <div key={c.company} className="text-center space-y-0.5">
+                  <p className="text-sm font-semibold text-foreground">{c.saudi}<span className="text-muted-foreground font-normal">/{c.total}</span></p>
+                  {c.required > 0 && (
+                    <p className="text-xs font-bold text-red-600">+{c.required}</p>
+                  )}
+                  {c.required === 0 && c.total > 0 && (
+                    <p className="text-xs text-emerald-600">✓</p>
+                  )}
+                  {c.total === 0 && (
+                    <p className="text-xs text-muted-foreground">—</p>
+                  )}
+                </div>
+              ))}
+
+              {/* Total column */}
+              <div className="w-24 text-end space-y-0.5">
+                <p className="text-sm font-semibold text-foreground">
+                  {r.saudi}<span className="text-muted-foreground font-normal">/{r.total}</span>
+                </p>
+                {!r.isCompliant && (
+                  <p className="text-xs font-bold text-red-600">+{totalRequired}</p>
+                )}
+                {r.isCompliant && (
+                  <p className="text-xs text-emerald-600">{(r.currentPct * 100).toFixed(0)}%</p>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Legend */}
+      <div className="px-5 py-2.5 border-t border-border bg-muted/20 flex items-center gap-4 text-xs text-muted-foreground">
+        <span>{isAr ? "القراءة: سعودي / إجمالي" : "Read as: Saudi / Total"}</span>
+        <span className="text-red-600 font-semibold">+N = {isAr ? "مطلوب" : "Required"}</span>
       </div>
     </div>
   );
