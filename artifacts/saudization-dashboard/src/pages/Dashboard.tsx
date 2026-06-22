@@ -323,10 +323,14 @@ function RegionalTable({
           </span>
         </div>
         {companies.map((c) => (
-          <div key={c} className={cn("px-4 py-3 text-center", companyHeaderBg[c])}>
-            <span className="text-sm font-bold text-white tracking-wide">
-              {COMPANY_LABELS[c].label}
-            </span>
+          <div key={c} className={cn("px-4 py-3 flex items-center justify-center", c === "Mac" ? "bg-white border-b-2 border-violet-300" : companyHeaderBg[c])}>
+            {c === "Mac" ? (
+              <img src="/mac-logo.png" alt="MAC" className="h-10 w-auto object-contain" />
+            ) : (
+              <span className="text-sm font-bold text-white tracking-wide">
+                {COMPANY_LABELS[c].label}
+              </span>
+            )}
           </div>
         ))}
         <div className="px-6 py-3 bg-slate-700 text-center">
