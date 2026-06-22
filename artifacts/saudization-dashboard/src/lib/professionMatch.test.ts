@@ -117,6 +117,25 @@ describe("engineer specialties vs trades", () => {
     expect(localizeProfession("Project data entry", "ar").text).toBe("إدخال بيانات");
     expect(localizeProfession("data entry", "en").text).toBe("Data Entry");
   });
+
+  it("Project Field GRO / ضابط علاقات عامة classify as gov_relations", () => {
+    expect(classify("Project Field GRO")?.category.id).toBe("gov_relations");
+    expect(classify("ضابط علاقات عامة")?.category.id).toBe("gov_relations");
+  });
+
+  it("GRO ↔ ضابط علاقات عامة → match", () => {
+    expect(matchProfession("Project Field GRO", "ضابط علاقات عامة").status).toBe("match");
+  });
+
+  it("أخصائي إداري classifies firmly as admin (no longer ambiguous)", () => {
+    const r = classify("أخصائي إداري");
+    expect(r?.category.id).toBe("admin");
+    expect(r?.ambiguous).toBe(false);
+  });
+
+  it("GRO ↔ أخصائي إداري → match (both admin family)", () => {
+    expect(matchProfession("Project Field GRO", "أخصائي إداري").status).toBe("match");
+  });
 });
 
 describe("localizeProfession", () => {
