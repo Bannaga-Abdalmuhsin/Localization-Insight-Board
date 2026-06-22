@@ -138,6 +138,16 @@ describe("engineer specialties vs trades", () => {
   it("GRO ↔ أخصائي إداري → match (both admin family)", () => {
     expect(matchProfession("Project Field GRO", "أخصائي إداري").status).toBe("match");
   });
+
+  it("Manager ↔ Civil / Construction → mismatch (unrelated roles)", () => {
+    expect(matchProfession("Project Movement Manager", "Construction").status).toBe("mismatch");
+    expect(matchProfession("Project Movement Manager", "اعمال مدنية").status).toBe("mismatch");
+  });
+
+  it("Technician ↔ Blacksmith / Steel Fixer → mismatch (unrelated trades)", () => {
+    expect(matchProfession("Field Maintinace Technician-EM", "Steel Fixer").status).toBe("mismatch");
+    expect(matchProfession("Field Maintinace Technician-EM", "حداد").status).toBe("mismatch");
+  });
 });
 
 describe("localizeProfession", () => {
