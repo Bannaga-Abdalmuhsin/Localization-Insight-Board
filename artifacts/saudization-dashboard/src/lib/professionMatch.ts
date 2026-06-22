@@ -57,7 +57,7 @@ const CATEGORIES: Category[] = [
     arKeywords: ["فني الياف", "فني ألياف بصرية", "لحام الياف"] },
   { id: "technician", family: "technician", priority: 1, labelEn: "Technician", labelAr: "فني / تقني",
     enKeywords: ["technician", "technical", "tech"],
-    arKeywords: ["فني", "تقني", "تقنية"] },
+    arKeywords: ["فني صيانة", "فني", "تقني", "تقنية"] },
   { id: "electrician", family: "electrician", priority: 2, labelEn: "Electrician", labelAr: "كهربائي",
     enKeywords: ["electrician", "electrical"],
     arKeywords: ["كهربائي", "كهرباء"] },
@@ -87,7 +87,7 @@ const CATEGORIES: Category[] = [
 
   // ---- HSE / Quality ----
   { id: "safety", family: "safety", priority: 2, labelEn: "HSE / Safety", labelAr: "سلامة / صحة مهنية",
-    enKeywords: ["safety officer", "hse officer", "hse engineer", "safety engineer", "occupational safety", "health and safety", "hse", "hsse", "qhse", "osh", "safety"],
+    enKeywords: ["safety officer", "safty officer", "hse officer", "hse engineer", "safety engineer", "occupational safety", "health and safety", "hse", "hsse", "qhse", "osh", "safety", "safty"],
     arKeywords: ["سلامة", "صحة مهنية", "امن وسلامة", "سلامه"] },
   { id: "quality", family: "quality", priority: 2, labelEn: "Quality / Inspector", labelAr: "جودة / مفتش",
     enKeywords: ["qa/qc engineer", "qaqc engineer", "quality engineer", "qc engineer", "qa engineer", "quality control", "quality assurance", "quality", "inspector", "inspection"],

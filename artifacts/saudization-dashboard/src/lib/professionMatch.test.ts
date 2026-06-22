@@ -160,6 +160,26 @@ describe("engineer specialties vs trades", () => {
       matchProfession("Field Rigger-Civil", "فني هندسة اتصالات لاسلكية").status,
     ).toBe("match");
   });
+
+  it("'Safty' misspelling still classifies as HSE / Safety", () => {
+    expect(classify("Project Safty Officer")?.category.family).toBe("safety");
+    expect(
+      matchProfession("Project Safty Officer", "مهندس سلامة وصحة مهنية").status,
+    ).toBe("match");
+  });
+
+  it("فني صيانة شبكات كهربائية → technician (maintenance tech), not ambiguous", () => {
+    const r = classify("فني صيانة شبكات كهربائية");
+    expect(r?.category.family).toBe("technician");
+    expect(r?.ambiguous).toBe(false);
+    expect(
+      matchProfession("Field Maintinace Technician-EM", "فني صيانة شبكات كهربائية").status,
+    ).toBe("match");
+  });
+
+  it("'فني صيانة' phrase does not pull مهندس صيانة away from engineer", () => {
+    expect(classify("مهندس صيانة")?.category.family).toBe("engineer");
+  });
 });
 
 describe("localizeProfession", () => {
