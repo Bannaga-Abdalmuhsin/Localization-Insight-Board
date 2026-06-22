@@ -46,7 +46,7 @@ export default function Dashboard() {
     );
   }
 
-  const { eng30, eng25, tech, totalAll, scopedTotal, scopedSaudi, scopedPct, naTotal } = metrics;
+  const { eng30, eng25, tech, totalAll, scopedTotal, scopedSaudi, scopedPct } = metrics;
 
   return (
     <div className="p-6 space-y-6">
@@ -111,20 +111,6 @@ export default function Dashboard() {
         isAr={isAr}
       />
 
-      {/* NA Exempt banner */}
-      <div className="rounded-xl border border-border bg-muted/40 px-5 py-4 flex items-center gap-3">
-        <Briefcase className="w-5 h-5 text-muted-foreground flex-shrink-0" />
-        <div>
-          <p className="text-sm font-semibold text-foreground">
-            {isAr ? `${naTotal} موظف — فئة NA (معفاة من التوطين)` : `${naTotal} Employees — NA Category (Exempt from Localization)`}
-          </p>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {isAr
-              ? "هذه الوظائف (عمال إنشاءات، كهربائيون، نجارون...) لا تدخل في احتساب التوطين لقطاع الاتصالات."
-              : "These roles (construction workers, electricians, carpenters…) fall outside the Localization classification for the telecom sector."}
-          </p>
-        </div>
-      </div>
     </div>
   );
 }
