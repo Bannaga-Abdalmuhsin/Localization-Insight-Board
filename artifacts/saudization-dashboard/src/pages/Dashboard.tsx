@@ -116,12 +116,12 @@ export default function Dashboard() {
         <Briefcase className="w-5 h-5 text-muted-foreground flex-shrink-0" />
         <div>
           <p className="text-sm font-semibold text-foreground">
-            {isAr ? `${naTotal} موظف — فئة NA (معفاة من التوطين)` : `${naTotal} Employees — NA Category (Exempt from Localization)`}
+            {isAr ? `${naTotal} وظيفة (معفاة من التوطين)` : `${naTotal} Positions (Exempt from Localization)`}
           </p>
           <p className="text-xs text-muted-foreground mt-0.5">
             {isAr
-              ? "هذه الوظائف (عمال إنشاءات، كهربائيون، نجارون...) لا تدخل في احتساب التوطين لقطاع الاتصالات."
-              : "These roles (construction workers, electricians, carpenters…) fall outside the Localization classification for the telecom sector."}
+              ? "هذه الوظائف لا تدخل في احتساب نسبة التوطين"
+              : "These positions are not included in the Localization percentage calculation."}
           </p>
         </div>
       </div>
