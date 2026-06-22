@@ -1,11 +1,15 @@
 import { describe, it, expect } from "vitest";
-import { matchProfession, classify, normalizeArabic } from "./professionMatch";
+import { matchProfession, classify, normalizeArabic, normalizeTitle } from "./professionMatch";
 
 describe("normalizeArabic", () => {
   it("unifies alef variants to ا", () => {
     expect(normalizeArabic("أحمد")).toBe("احمد");
-    expect(normalizeArabic("إدارة")).toBe("ادارة");
-    expect(normalizeArabic("آلة")).toBe("الة");
+    expect(normalizeArabic("آلة")).toBe("اله");
+  });
+
+  it("unifies Teh Marbuta ة to ه", () => {
+    expect(normalizeArabic("إدارة")).toBe("اداره");
+    expect(normalizeArabic("هندسة")).toBe("هندسه");
   });
 
   it("converts ى to ي", () => {
@@ -19,6 +23,28 @@ describe("normalizeArabic", () => {
 
   it("collapses extra whitespace", () => {
     expect(normalizeArabic("  مهندس   اتصالات  ")).toBe("مهندس اتصالات");
+  });
+});
+
+describe("normalizeTitle", () => {
+  it("lowercases and strips punctuation", () => {
+    expect(normalizeTitle("QA/QC Engineer")).toBe("qa qc engineer");
+    expect(normalizeTitle("Project-Manager (Sr.)")).toBe("project manager sr");
+  });
+
+  it("strips the Arabic definite article ال", () => {
+    expect(normalizeTitle("المهندس")).toBe("مهندس");
+    expect(normalizeTitle("مهندس الاتصالات")).toBe("مهندس اتصالات");
+  });
+
+  it("returns empty string for null/empty input", () => {
+    expect(normalizeTitle(null)).toBe("");
+    expect(normalizeTitle("")).toBe("");
+  });
+
+  it("matches definite-article forms against bare keywords", () => {
+    expect(classify("المهندس")?.category.family).toBe("engineer");
+    expect(matchProfession("Engineer", "المهندس").status).toBe("match");
   });
 });
 

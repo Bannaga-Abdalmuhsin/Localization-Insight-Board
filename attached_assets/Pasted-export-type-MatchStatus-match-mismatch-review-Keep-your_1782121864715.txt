@@ -1,0 +1,101 @@
+export type MatchStatus = "match" | "mismatch" | "review";
+
+// ... (Keep your CATEGORIES and COMPATIBLE maps exactly as they are)
+
+/**
+ * Stage 1: Unifies and sanitizes strings to minimize variations.
+ * Handles case insensitivity, spacing, and Arabic character normalization.
+ */
+function normalizeTitle(text: string | null): string {
+  if (!text) return "";
+
+  let normalized = text.toLowerCase().trim();
+
+  // 1. Remove common punctuation and special characters
+  normalized = normalized.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()\[\]]/g, " ");
+
+  // 2. Normalize Arabic characters (e.g., Teh Marbuta, Alef Hamza variations)
+  normalized = normalized
+    .replace(/[أإآا]/g, "ا")             // Unify Alef forms
+    .replace(/ة/g, "ه")                 // Unify Teh Marbuta with Heh
+    .replace(/ى/g, "ي")                 // Unify Alef Maksura with Yeh
+    .replace(/\s+/g, " ");              // Collapse multiple spaces into one
+
+  // 3. Strip Arabic definite article "ال" (Al-) if it prefixes a word
+  // This ensures "المهندس" matches the keyword "مهندس"
+  normalized = normalized.split(" ")
+    .map(word => word.startsWith("ال") ? word.substring(2) : word)
+    .join(" ");
+
+  return normalized.trim();
+}
+
+/**
+ * Stage 2: Category Detection using exact word boundary matching on normalized text.
+ */
+function detectCategory(normalizedText: string): Category | null {
+  if (!normalizedText) return null;
+
+  for (const cat of CATEGORIES) {
+    // English Word Boundary Match (\bword\b)
+    for (const kw of cat.enKeywords) {
+      const regex = new RegExp(`\\b${kw}\\b`, 'i');
+      if (regex.test(normalizedText)) return cat;
+    }
+
+    // Arabic Word Boundary Match (Using spaces/boundaries)
+    for (const kw of cat.arKeywords) {
+      const regex = new RegExp(`(^|\\s)${kw}(\\s|$)`, 'i');
+      if (regex.test(normalizedText)) return cat;
+    }
+  }
+  return null;
+}
+
+function isCompatible(iqamaCatId: string, jobCatId: string): boolean {
+  const allowed = COMPATIBLE[iqamaCatId];
+  if (!allowed) return iqamaCatId === jobCatId;
+  return allowed.includes(jobCatId);
+}
+
+export interface MatchResult {
+  status: MatchStatus;
+  jobCategory: string | null;
+  iqamaCategory: string | null;
+  jobCategoryAr: string | null;
+  iqamaCategoryAr: string | null;
+}
+
+/**
+ * Public API: Pipes inputs through normalization before checking compatibility criteria
+ */
+export function matchProfession(jobTitle: string | null, iqamaProfession: string | null): MatchResult {
+  // Apply Stage 1: Unification
+  const normalizedJob   = normalizeTitle(jobTitle);
+  const normalizedIqama = normalizeTitle(iqamaProfession);
+
+  // Apply Stage 2: Detection
+  const jobCat   = detectCategory(normalizedJob);
+  const iqamaCat = detectCategory(normalizedIqama);
+
+  if (!jobCat || !iqamaCat) {
+    return {
+      status: "review",
+      jobCategory:    jobCat?.labelEn   ?? null,
+      iqamaCategory:  iqamaCat?.labelEn ?? null,
+      jobCategoryAr:  jobCat?.labelAr   ?? null,
+      iqamaCategoryAr: iqamaCat?.labelAr ?? null,
+    };
+  }
+
+  const compatible = isCompatible(iqamaCat.id, jobCat.id);
+
+  return {
+    status: compatible ? "match" : "mismatch",
+    jobCategory:    jobCat.labelEn,
+    iqamaCategory:  iqamaCat.labelEn,
+    jobCategoryAr:  jobCat.labelAr,
+    iqamaCategoryAr: iqamaCat.labelAr,
+  };
+}
+}

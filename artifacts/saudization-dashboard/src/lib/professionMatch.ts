@@ -179,20 +179,40 @@ const RELATED: Record<string, string[]> = {
 
 const REVIEW_THRESHOLD = 40;
 
-/** Normalize Arabic text: unify alef/yaa, strip diacritics & tatweel, collapse spaces. */
+/**
+ * Letter-level Arabic normalization: unify alef forms, Teh Marbuta (ة→ه),
+ * Alef Maksura (ى→ي), strip diacritics & tatweel, collapse spaces.
+ */
 export function normalizeArabic(input: string): string {
   return input
     .replace(/[أإآ]/g, "ا")
-    .replace(/ى/g, "ي")
-    .replace(/[\u064B-\u0652\u0670]/g, "") // tashkeel / superscript alef
-    .replace(/\u0640/g, "")                 // tatweel
+    .replace(/ة/g, "ه")                     // Teh Marbuta → Heh
+    .replace(/ى/g, "ي")                     // Alef Maksura → Yeh
+    .replace(/[\u064B-\u0652\u0670]/g, "")  // tashkeel / superscript alef
+    .replace(/\u0640/g, "")                  // tatweel
     .replace(/\s+/g, " ")
     .trim();
 }
 
-/** Lowercase + Arabic-normalize. Latin chars are untouched by the Arabic rules. */
-function normalize(input: string): string {
-  return normalizeArabic(input.toLowerCase());
+const PUNCT = /[.,/#!$%^&*;:{}=\-_`~()[\]?'"+|<>«»]/g;
+
+/**
+ * Full title normalization pipeline applied to BOTH input text and keywords
+ * so they always compare on equal footing:
+ *  1. lowercase
+ *  2. punctuation → space (e.g. "QA/QC" → "qa qc")
+ *  3. Arabic letter normalization
+ *  4. strip Arabic definite article "ال" prefix (so "المهندس" matches "مهندس")
+ */
+export function normalizeTitle(input: string | null | undefined): string {
+  if (!input) return "";
+  let s = input.toLowerCase().replace(PUNCT, " ");
+  s = normalizeArabic(s);
+  s = s
+    .split(" ")
+    .map((w) => (w.length > 2 && w.startsWith("ال") ? w.slice(2) : w))
+    .join(" ");
+  return s.replace(/\s+/g, " ").trim();
 }
 
 function escapeRegex(s: string): string {
@@ -220,8 +240,8 @@ function scoreCategory(normText: string, cat: Category): ScoredCategory {
   const matched: string[] = [];
 
   for (const kw of cat.enKeywords) {
-    const nkw = kw.toLowerCase();
-    if (matchEn(normText, nkw)) {
+    const nkw = normalizeTitle(kw);
+    if (nkw && matchEn(normText, nkw)) {
       const phrase = nkw.includes(" ");
       score += phrase ? 3 : 1;
       if (phrase) hasPhrase = true;
@@ -230,7 +250,7 @@ function scoreCategory(normText: string, cat: Category): ScoredCategory {
     }
   }
   for (const kw of cat.arKeywords) {
-    const nkw = normalizeArabic(kw.toLowerCase());
+    const nkw = normalizeTitle(kw);
     if (nkw && normText.includes(nkw)) {
       const phrase = nkw.includes(" ");
       score += phrase ? 3 : 1;
@@ -252,7 +272,7 @@ export interface ClassifyResult {
 
 /** Scoring-based classifier: best category wins; ties at equal priority are flagged ambiguous. */
 export function classify(text: string | null | undefined): ClassifyResult | null {
-  const normText = normalize(text ?? "");
+  const normText = normalizeTitle(text);
   if (!normText) return null;
 
   const scored = CATEGORIES

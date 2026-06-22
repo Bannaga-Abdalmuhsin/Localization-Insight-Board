@@ -1,0 +1,1 @@
+- [Vitest in Vite app artifacts](vitest-in-vite-artifacts.md) — add a dedicated vitest.config.ts so vitest doesn't load vite.config.ts (which throws when PORT is unset outside the workflow).
