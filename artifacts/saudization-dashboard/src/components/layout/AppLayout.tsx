@@ -7,6 +7,7 @@ import {
   Languages,
   Settings,
   LogOut,
+  GitCompareArrows,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
@@ -26,6 +27,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
     { label: t.nav.dashboard, href: "/", icon: LayoutDashboard },
     { label: t.nav.teamBreakdown, href: "/teams", icon: Users },
     { label: t.nav.positionDetail, href: "/positions", icon: Briefcase },
+    { label: t.nav.roleAlignment,  href: "/alignment", icon: GitCompareArrows },
     ...(user?.is_admin ? [{ label: t.nav.settings, href: "/settings", icon: Settings }] : []),
   ];
 
