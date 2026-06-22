@@ -58,7 +58,8 @@ export interface ProjectMetrics {
   scopedPct: number;
   naTotal: number;
   naSaudi: number;
-  eng: CategoryMetrics;
+  eng30: CategoryMetrics;
+  eng25: CategoryMetrics;
   tech: CategoryMetrics;
   employees: ProjectEmployee[];
 }
@@ -66,9 +67,14 @@ export interface ProjectMetrics {
 function computeCategory(
   employees: ProjectEmployee[],
   code: string,
-  targetPct: number
+  targetPct: number,
+  filterRequiredPct?: number
 ): CategoryMetrics {
-  const group = employees.filter((e) => e.saudization_code === code);
+  const group = employees.filter(
+    (e) =>
+      e.saudization_code === code &&
+      (filterRequiredPct === undefined || e.required_saudization_pct === filterRequiredPct)
+  );
   const saudi = group.filter((e) => e.is_saudi).length;
   const total = group.length;
   const nonSaudi = total - saudi;
@@ -140,7 +146,8 @@ function computeMetrics(employees: ProjectEmployee[]): ProjectMetrics {
     scopedPct: scoped.length > 0 ? scopedSaudi / scoped.length : 0,
     naTotal: na.length,
     naSaudi: na.filter((e) => e.is_saudi).length,
-    eng: computeCategory(employees, "Eng", 0.3),
+    eng30: computeCategory(employees, "Eng", 0.3, 0.3),
+    eng25: computeCategory(employees, "Eng", 0.25, 0.25),
     tech: computeCategory(employees, "Tech", 0.25),
     employees,
   };

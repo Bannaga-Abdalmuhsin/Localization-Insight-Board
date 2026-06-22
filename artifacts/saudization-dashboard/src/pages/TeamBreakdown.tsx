@@ -16,17 +16,21 @@ import { useTranslation } from "@/lib/i18n";
 import CompanyLogo, { REGION_AR } from "@/components/CompanyLogo";
 
 type GroupBy = "region" | "company";
-type SortKey = "name" | "total" | "saudi" | "nonSaudi" | "engPct" | "techPct";
+type SortKey = "name" | "total" | "saudi" | "nonSaudi" | "eng30Pct" | "eng25Pct" | "techPct";
 
 interface GroupRow {
   name: string;
   total: number;
   saudi: number;
   nonSaudi: number;
-  engTotal: number;
-  engSaudi: number;
-  engPct: number;
-  engCompliant: boolean;
+  eng30Total: number;
+  eng30Saudi: number;
+  eng30Pct: number;
+  eng30Compliant: boolean;
+  eng25Total: number;
+  eng25Saudi: number;
+  eng25Pct: number;
+  eng25Compliant: boolean;
   techTotal: number;
   techSaudi: number;
   techPct: number;
@@ -45,9 +49,12 @@ function buildGroups(employees: ProjectEmployee[], groupBy: GroupBy): GroupRow[]
 
   return Array.from(map.entries()).map(([name, emps]) => {
     const saudi = emps.filter((e) => e.is_saudi).length;
-    const eng = emps.filter((e) => e.saudization_code === "Eng");
-    const engSaudi = eng.filter((e) => e.is_saudi).length;
-    const engPct = eng.length > 0 ? engSaudi / eng.length : 0;
+    const eng30 = emps.filter((e) => e.saudization_code === "Eng" && e.required_saudization_pct === 0.3);
+    const eng30Saudi = eng30.filter((e) => e.is_saudi).length;
+    const eng30Pct = eng30.length > 0 ? eng30Saudi / eng30.length : 0;
+    const eng25 = emps.filter((e) => e.saudization_code === "Eng" && e.required_saudization_pct === 0.25);
+    const eng25Saudi = eng25.filter((e) => e.is_saudi).length;
+    const eng25Pct = eng25.length > 0 ? eng25Saudi / eng25.length : 0;
     const tech = emps.filter((e) => e.saudization_code === "Tech");
     const techSaudi = tech.filter((e) => e.is_saudi).length;
     const techPct = tech.length > 0 ? techSaudi / tech.length : 0;
@@ -56,10 +63,14 @@ function buildGroups(employees: ProjectEmployee[], groupBy: GroupBy): GroupRow[]
       total: emps.length,
       saudi,
       nonSaudi: emps.length - saudi,
-      engTotal: eng.length,
-      engSaudi,
-      engPct,
-      engCompliant: eng.length === 0 || engPct >= 0.3,
+      eng30Total: eng30.length,
+      eng30Saudi,
+      eng30Pct,
+      eng30Compliant: eng30.length === 0 || eng30Pct >= 0.3,
+      eng25Total: eng25.length,
+      eng25Saudi,
+      eng25Pct,
+      eng25Compliant: eng25.length === 0 || eng25Pct >= 0.25,
       techTotal: tech.length,
       techSaudi,
       techPct,
@@ -121,7 +132,7 @@ export default function TeamBreakdown({ targetPct: _unused }: { targetPct: numbe
   const filtered = rows
     .filter((r) => {
       if (search && !r.name.toLowerCase().includes(search.toLowerCase())) return false;
-      const overallCompliant = r.engCompliant && r.techCompliant;
+      const overallCompliant = r.eng30Compliant && r.eng25Compliant && r.techCompliant;
       if (statusFilter === "compliant" && !overallCompliant) return false;
       if (statusFilter === "action" && overallCompliant) return false;
       return true;
@@ -134,14 +145,15 @@ export default function TeamBreakdown({ targetPct: _unused }: { targetPct: numbe
         case "total": av = a.total; bv = b.total; break;
         case "saudi": av = a.saudi; bv = b.saudi; break;
         case "nonSaudi": av = a.nonSaudi; bv = b.nonSaudi; break;
-        case "engPct": av = a.engPct; bv = b.engPct; break;
+        case "eng30Pct": av = a.eng30Pct; bv = b.eng30Pct; break;
+        case "eng25Pct": av = a.eng25Pct; bv = b.eng25Pct; break;
         case "techPct": av = a.techPct; bv = b.techPct; break;
       }
       const cmp = typeof av === "string" ? av.localeCompare(bv as string) : (av as number) - (bv as number);
       return sortAsc ? cmp : -cmp;
     });
 
-  const compliantCount = filtered.filter((r) => r.engCompliant && r.techCompliant).length;
+  const compliantCount = filtered.filter((r) => r.eng30Compliant && r.eng25Compliant && r.techCompliant).length;
 
   return (
     <div className="p-6 space-y-6">
@@ -253,7 +265,8 @@ export default function TeamBreakdown({ targetPct: _unused }: { targetPct: numbe
                   <Th label={isAr ? "الإجمالي" : "Total"} k="total" />
                   <Th label={isAr ? "سعودي" : "Saudi"} k="saudi" />
                   <Th label={isAr ? "غير سعودي" : "Non-Saudi"} k="nonSaudi" />
-                  <Th label={isAr ? "هندسة % (هدف 30%)" : "Engineering % (30% target)"} k="engPct" />
+                  <Th label={isAr ? "هندسة % (30%)" : "Engineering % (30%)"} k="eng30Pct" />
+                  <Th label={isAr ? "هندسة % (25%)" : "Engineering % (25%)"} k="eng25Pct" />
                   <Th label={isAr ? "تقني % (هدف 25%)" : "Technical % (25% target)"} k="techPct" />
                   <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide whitespace-nowrap">
                     {isAr ? "الحالة" : "Status"}
@@ -262,7 +275,7 @@ export default function TeamBreakdown({ targetPct: _unused }: { targetPct: numbe
               </thead>
               <tbody className="divide-y divide-border">
                 {filtered.map((row, idx) => {
-                  const overallCompliant = row.engCompliant && row.techCompliant;
+                  const overallCompliant = row.eng30Compliant && row.eng25Compliant && row.techCompliant;
                   return (
                     <tr
                       key={row.name}
@@ -277,20 +290,40 @@ export default function TeamBreakdown({ targetPct: _unused }: { targetPct: numbe
                       <td className="px-4 py-3.5 tabular-nums text-emerald-600 font-medium">{row.saudi}</td>
                       <td className="px-4 py-3.5 tabular-nums text-foreground">{row.nonSaudi}</td>
 
-                      {/* Eng cell */}
+                      {/* Eng 30% cell */}
                       <td className="px-4 py-3.5">
-                        {row.engTotal > 0 ? (
+                        {row.eng30Total > 0 ? (
                           <div className="flex items-center gap-2">
-                            <div className="w-24 bg-muted rounded-full h-2 overflow-hidden">
+                            <div className="w-20 bg-muted rounded-full h-2 overflow-hidden">
                               <div
-                                className={cn("h-full rounded-full", row.engCompliant ? "bg-emerald-500" : "bg-red-500")}
-                                style={{ width: `${Math.min(100, (row.engPct / 0.3) * 100)}%` }}
+                                className={cn("h-full rounded-full", row.eng30Compliant ? "bg-emerald-500" : "bg-red-500")}
+                                style={{ width: `${Math.min(100, (row.eng30Pct / 0.3) * 100)}%` }}
                               />
                             </div>
-                            <span className={cn("text-xs font-bold tabular-nums", row.engCompliant ? "text-emerald-600" : "text-red-600")}>
-                              {(row.engPct * 100).toFixed(0)}%
+                            <span className={cn("text-xs font-bold tabular-nums", row.eng30Compliant ? "text-emerald-600" : "text-red-600")}>
+                              {(row.eng30Pct * 100).toFixed(0)}%
                             </span>
-                            <span className="text-xs text-muted-foreground">({row.engSaudi}/{row.engTotal})</span>
+                            <span className="text-xs text-muted-foreground">({row.eng30Saudi}/{row.eng30Total})</span>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
+                      </td>
+
+                      {/* Eng 25% cell */}
+                      <td className="px-4 py-3.5">
+                        {row.eng25Total > 0 ? (
+                          <div className="flex items-center gap-2">
+                            <div className="w-20 bg-muted rounded-full h-2 overflow-hidden">
+                              <div
+                                className={cn("h-full rounded-full", row.eng25Compliant ? "bg-emerald-500" : "bg-red-500")}
+                                style={{ width: `${Math.min(100, (row.eng25Pct / 0.25) * 100)}%` }}
+                              />
+                            </div>
+                            <span className={cn("text-xs font-bold tabular-nums", row.eng25Compliant ? "text-emerald-600" : "text-red-600")}>
+                              {(row.eng25Pct * 100).toFixed(0)}%
+                            </span>
+                            <span className="text-xs text-muted-foreground">({row.eng25Saudi}/{row.eng25Total})</span>
                           </div>
                         ) : (
                           <span className="text-xs text-muted-foreground">—</span>

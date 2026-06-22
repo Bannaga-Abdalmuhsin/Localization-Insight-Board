@@ -46,7 +46,7 @@ export default function Dashboard() {
     );
   }
 
-  const { eng, tech, totalAll, scopedTotal, scopedSaudi, scopedPct, naTotal } = metrics;
+  const { eng30, eng25, tech, totalAll, scopedTotal, scopedSaudi, scopedPct, naTotal } = metrics;
 
   return (
     <div className="p-6 space-y-6">
@@ -83,16 +83,24 @@ export default function Dashboard() {
         </h2>
       </div>
 
-      {/* Two category cards */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-        <CategoryCard cat={eng} isAr={isAr} />
+      {/* Three category cards */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
+        <CategoryCard cat={eng30} isAr={isAr} />
+        <CategoryCard cat={eng25} isAr={isAr} />
         <CategoryCard cat={tech} isAr={isAr} />
       </div>
 
-      {/* Regional breakdown — Eng */}
+      {/* Regional breakdown — Eng 30% */}
       <RegionalTable
-        title={isAr ? "التوزيع الإقليمي — المهن الهندسية" : "Regional Breakdown — Engineering Category (30%)"}
-        cat={eng}
+        title={isAr ? "التوزيع الإقليمي — الهندسية 30%" : "Regional Breakdown — Engineering Category (30%)"}
+        cat={eng30}
+        isAr={isAr}
+      />
+
+      {/* Regional breakdown — Eng 25% */}
+      <RegionalTable
+        title={isAr ? "التوزيع الإقليمي — الهندسية 25%" : "Regional Breakdown — Engineering Category (25%)"}
+        cat={eng25}
         isAr={isAr}
       />
 
@@ -155,8 +163,10 @@ function CategoryCard({ cat, isAr }: { cat: CategoryMetrics; isAr: boolean }) {
   const gapPct = targetPct - currentPct;
 
   const codeLabel =
-    cat.code === "Eng"
-      ? isAr ? "المهن الهندسية" : "Engineering"
+    cat.code === "Eng" && cat.target === 0.3
+      ? isAr ? "الهندسية (30%)" : "Engineering (30%)"
+      : cat.code === "Eng" && cat.target === 0.25
+      ? isAr ? "الهندسية (25%)" : "Engineering (25%)"
       : isAr ? "المهن التقنية" : "Technical";
 
   return (

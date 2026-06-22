@@ -32,7 +32,11 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
   const filtered = employees.filter((e) => {
     if (regionFilter !== "all" && e.region !== regionFilter) return false;
     if (companyFilter !== "all" && e.company !== companyFilter) return false;
-    if (codeFilter !== "all" && e.saudization_code !== codeFilter) return false;
+    if (codeFilter === "Eng30" && !(e.saudization_code === "Eng" && e.required_saudization_pct === 0.3)) return false;
+    if (codeFilter === "Eng25" && !(e.saudization_code === "Eng" && e.required_saudization_pct === 0.25)) return false;
+    if (codeFilter === "Tech" && e.saudization_code !== "Tech") return false;
+    if (codeFilter === "NA" && e.saudization_code !== "NA") return false;
+    if (codeFilter !== "all" && codeFilter !== "Eng30" && codeFilter !== "Eng25" && codeFilter !== "Tech" && codeFilter !== "NA") return false;
     if (saudiFilter === "saudi" && !e.is_saudi) return false;
     if (saudiFilter === "non-saudi" && e.is_saudi) return false;
     const q = search.toLowerCase();
@@ -55,11 +59,13 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
     NA: "bg-muted text-muted-foreground",
   };
 
-  const CODE_LABELS: Record<string, string> = {
-    Eng: "Engineering",
-    Tech: "Technical",
-    NA: "NA",
-  };
+  function getCodeLabel(emp: { saudization_code: string | null; required_saudization_pct: number | null }): string {
+    if (emp.saudization_code === "Eng") {
+      return emp.required_saudization_pct === 0.25 ? "Engineering (25%)" : "Engineering (30%)";
+    }
+    if (emp.saudization_code === "Tech") return "Technical (25%)";
+    return emp.saudization_code ?? "NA";
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -132,8 +138,9 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
           className="h-9 text-sm rounded-lg border border-border bg-white shadow-sm px-3 outline-none focus:ring-2 focus:ring-primary/30"
         >
           <option value="all">{isAr ? "جميع الفئات" : "All Categories"}</option>
-          <option value="Eng">Engineering (30%)</option>
-          <option value="Tech">Technical (25%)</option>
+          <option value="Eng30">{isAr ? "هندسة (30%)" : "Engineering (30%)"}</option>
+          <option value="Eng25">{isAr ? "هندسة (25%)" : "Engineering (25%)"}</option>
+          <option value="Tech">{isAr ? "تقني (25%)" : "Technical (25%)"}</option>
           <option value="NA">NA ({isAr ? "معفى" : "Exempt"})</option>
         </select>
 
@@ -220,7 +227,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
                     </td>
                     <td className="px-4 py-3">
                       <span className={cn("inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold", CODE_COLORS[emp.saudization_code ?? "NA"] ?? CODE_COLORS.NA)}>
-                        {CODE_LABELS[emp.saudization_code ?? "NA"] ?? (emp.saudization_code ?? "NA")}
+                        {getCodeLabel(emp)}
                       </span>
                     </td>
                     <td className="px-4 py-3 tabular-nums text-foreground">
