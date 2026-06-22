@@ -43,9 +43,12 @@ const CATEGORIES: Category[] = [
     arKeywords: ["مهندس معماري", "معماري"] },
 
   // ---- Technical / telecom ----
-  { id: "network", family: "network", priority: 2, labelEn: "Network / Telecom", labelAr: "شبكات / اتصالات",
-    enKeywords: ["network engineer", "network", "telecom", "telecommunication", "fiber optic", "transmission", "core network", "ran", "bss"],
-    arKeywords: ["شبكات", "اتصالات", "شبكة", "نقل"] },
+  { id: "telecom", family: "network", priority: 2, labelEn: "Telecom", labelAr: "اتصالات",
+    enKeywords: ["telecommunications", "telecommunication", "telecom", "transmission"],
+    arKeywords: ["اتصالات", "نظم اتصالات", "انظمة اتصالات"] },
+  { id: "network", family: "network", priority: 2, labelEn: "Network", labelAr: "شبكات",
+    enKeywords: ["network engineer", "network", "fiber optic", "core network", "ran", "bss"],
+    arKeywords: ["شبكات", "شبكة", "نقل"] },
   { id: "fiber_tech", family: "fiber_tech", priority: 2, labelEn: "Fiber Technician", labelAr: "فني ألياف بصرية",
     enKeywords: ["fiber technician", "fiber optic technician", "fiber splicer", "splicing technician"],
     arKeywords: ["فني الياف", "فني ألياف بصرية", "لحام الياف"] },

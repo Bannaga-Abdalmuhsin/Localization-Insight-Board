@@ -192,6 +192,17 @@ describe("classify — multi-role titles pick the most relevant category", () =>
     expect(classify("Network Engineer")?.category.id).toBe("network");
   });
 
+  it("فني نظم اتصالات → telecom, localized as اتصالات (not network)", () => {
+    expect(classify("فني نظم اتصالات")?.category.id).toBe("telecom");
+    expect(localizeProfession("فني نظم اتصالات", "ar").text).toBe("اتصالات");
+    expect(localizeProfession("فني نظم اتصالات", "en").text).toBe("Telecom");
+  });
+
+  it("فني شبكات → network, localized as شبكات", () => {
+    expect(classify("فني شبكات")?.category.id).toBe("network");
+    expect(localizeProfession("فني شبكات", "ar").text).toBe("شبكات");
+  });
+
   it("HSE Engineer → safety", () => {
     expect(classify("HSE Engineer")?.category.id).toBe("safety");
   });
