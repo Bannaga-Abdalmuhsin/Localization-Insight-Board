@@ -1,1 +1,2 @@
 - [Vitest in Vite app artifacts](vitest-in-vite-artifacts.md) — add a dedicated vitest.config.ts so vitest doesn't load vite.config.ts (which throws when PORT is unset outside the workflow).
+- [Profession matcher](profession-matcher.md) — category/family-based engine; per-person exceptions cannot be encoded as category rules; STC telecom domain (e.g. rigger=telecom tower tech).
