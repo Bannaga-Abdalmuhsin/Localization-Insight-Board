@@ -137,6 +137,40 @@ const CATEGORIES: Category[] = [
   },
 ];
 
+/**
+ * Compatibility map — which job-title categories are acceptable for each
+ * Iqama-profession category.
+ *
+ * Key   = Iqama profession category id
+ * Value = set of job-title category ids that are considered a "match"
+ *
+ * Rationale:
+ *  - Engineers often hold manager / supervisor / specialist / coordinator titles.
+ *  - Technicians often become field supervisors or team leads.
+ *  - Specialists / analysts can be promoted to manager roles.
+ *  - A "Project Manager" whose Iqama says "مهندس اتصالات" is perfectly normal.
+ */
+const COMPATIBLE: Record<string, string[]> = {
+  engineer:    ["engineer", "manager", "supervisor", "specialist", "network", "electrician", "mechanic", "civil", "surveyor", "developer", "technician"],
+  network:     ["network", "engineer", "manager", "supervisor", "technician", "specialist"],
+  electrician: ["electrician", "engineer", "supervisor", "technician"],
+  mechanic:    ["mechanic", "engineer", "supervisor", "technician"],
+  civil:       ["civil", "engineer", "supervisor", "surveyor"],
+  surveyor:    ["surveyor", "civil", "engineer"],
+  technician:  ["technician", "engineer", "supervisor", "worker", "specialist"],
+  manager:     ["manager", "engineer", "specialist", "supervisor", "admin", "developer"],
+  supervisor:  ["supervisor", "engineer", "manager", "technician", "specialist"],
+  specialist:  ["specialist", "engineer", "manager", "supervisor", "admin", "developer", "accountant"],
+  developer:   ["developer", "specialist", "manager", "engineer"],
+  accountant:  ["accountant", "specialist", "admin", "manager"],
+  admin:       ["admin", "accountant", "specialist", "manager", "developer"],
+  driver:      ["driver"],
+  security:    ["security", "supervisor"],
+  worker:      ["worker", "technician"],
+  carpenter:   ["carpenter", "worker"],
+  plumber:     ["plumber", "worker"],
+};
+
 function detectCategory(text: string): Category | null {
   if (!text) return null;
   const lower = text.toLowerCase().trim();
@@ -152,6 +186,12 @@ function detectCategory(text: string): Category | null {
   return null;
 }
 
+function isCompatible(iqamaCatId: string, jobCatId: string): boolean {
+  const allowed = COMPATIBLE[iqamaCatId];
+  if (!allowed) return iqamaCatId === jobCatId;
+  return allowed.includes(jobCatId);
+}
+
 export interface MatchResult {
   status: MatchStatus;
   jobCategory: string | null;
@@ -161,24 +201,25 @@ export interface MatchResult {
 }
 
 export function matchProfession(jobTitle: string | null, iqamaProfession: string | null): MatchResult {
-  const jobCat = detectCategory(jobTitle ?? "");
+  const jobCat   = detectCategory(jobTitle ?? "");
   const iqamaCat = detectCategory(iqamaProfession ?? "");
 
   if (!jobCat || !iqamaCat) {
     return {
       status: "review",
-      jobCategory: jobCat?.labelEn ?? null,
-      iqamaCategory: iqamaCat?.labelEn ?? null,
-      jobCategoryAr: jobCat?.labelAr ?? null,
+      jobCategory:    jobCat?.labelEn   ?? null,
+      iqamaCategory:  iqamaCat?.labelEn ?? null,
+      jobCategoryAr:  jobCat?.labelAr   ?? null,
       iqamaCategoryAr: iqamaCat?.labelAr ?? null,
     };
   }
 
+  const compatible = isCompatible(iqamaCat.id, jobCat.id);
   return {
-    status: jobCat.id === iqamaCat.id ? "match" : "mismatch",
-    jobCategory: jobCat.labelEn,
-    iqamaCategory: iqamaCat.labelEn,
-    jobCategoryAr: jobCat.labelAr,
+    status: compatible ? "match" : "mismatch",
+    jobCategory:    jobCat.labelEn,
+    iqamaCategory:  iqamaCat.labelEn,
+    jobCategoryAr:  jobCat.labelAr,
     iqamaCategoryAr: iqamaCat.labelAr,
   };
 }
