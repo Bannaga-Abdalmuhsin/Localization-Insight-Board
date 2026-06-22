@@ -135,6 +135,27 @@ const CATEGORIES: Category[] = [
     enKeywords: ["surveyor", "survey"],
     arKeywords: ["مساح", "مساحة"],
   },
+  {
+    id: "safety",
+    labelEn: "HSE / Safety",
+    labelAr: "سلامة / صحة مهنية",
+    enKeywords: ["safety", "hse", "hsse", "qhse", "osh", "environment", "health safety", "officer"],
+    arKeywords: ["سلامة", "صحة مهنية", "بيئة", "مهنية", "سلامه"],
+  },
+  {
+    id: "quality",
+    labelEn: "Quality / Inspector",
+    labelAr: "جودة / مفتش",
+    enKeywords: ["quality", "qc", "qa", "inspector", "inspection", "qaqc"],
+    arKeywords: ["جودة", "مفتش", "تفتيش", "ضبط الجودة"],
+  },
+  {
+    id: "procurement",
+    labelEn: "Procurement / Logistics",
+    labelAr: "مشتريات / لوجستيات",
+    enKeywords: ["procurement", "logistics", "supply", "warehouse", "store", "storekeeper"],
+    arKeywords: ["مشتريات", "لوجستيات", "مستودع", "تموين", "مخازن"],
+  },
 ];
 
 /**
@@ -151,7 +172,7 @@ const CATEGORIES: Category[] = [
  *  - A "Project Manager" whose Iqama says "مهندس اتصالات" is perfectly normal.
  */
 const COMPATIBLE: Record<string, string[]> = {
-  engineer:    ["engineer", "manager", "supervisor", "specialist", "network", "electrician", "mechanic", "civil", "surveyor", "developer", "technician"],
+  engineer:    ["engineer", "manager", "supervisor", "specialist", "network", "electrician", "mechanic", "civil", "surveyor", "developer", "technician", "safety", "quality"],
   network:     ["network", "engineer", "manager", "supervisor", "technician", "specialist"],
   electrician: ["electrician", "engineer", "supervisor", "technician"],
   mechanic:    ["mechanic", "engineer", "supervisor", "technician"],
@@ -169,6 +190,9 @@ const COMPATIBLE: Record<string, string[]> = {
   worker:      ["worker", "technician"],
   carpenter:   ["carpenter", "worker"],
   plumber:     ["plumber", "worker"],
+  safety:      ["safety", "engineer", "manager", "supervisor", "specialist", "quality"],
+  quality:     ["quality", "engineer", "manager", "supervisor", "specialist", "safety"],
+  procurement: ["procurement", "admin", "manager", "specialist", "supervisor"],
 };
 
 function detectCategory(text: string): Category | null {
