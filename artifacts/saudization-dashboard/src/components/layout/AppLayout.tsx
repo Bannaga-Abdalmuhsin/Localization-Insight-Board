@@ -30,9 +30,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
   ];
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar — ACES dark navy */}
-      <aside className="w-64 flex-shrink-0 border-e border-sidebar-border bg-sidebar flex flex-col">
+      <aside className="w-64 flex-shrink-0 border-e border-sidebar-border bg-sidebar flex flex-col h-screen overflow-hidden">
 
         {/* Logo / Brand */}
         <div className="h-16 flex items-center px-4 border-b border-sidebar-border">
@@ -104,7 +104,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col h-screen overflow-hidden">
         <main className="flex-1 overflow-y-auto">
           {children}
         </main>
