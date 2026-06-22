@@ -35,7 +35,8 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
     if (codeFilter === "Eng30" && !(e.saudization_code === "Eng" && e.required_saudization_pct === 0.3)) return false;
     if (codeFilter === "Eng25" && !(e.saudization_code === "Eng" && e.required_saudization_pct === 0.25)) return false;
     if (codeFilter === "Tech" && e.saudization_code !== "Tech") return false;
-    if (codeFilter !== "all" && codeFilter !== "Eng30" && codeFilter !== "Eng25" && codeFilter !== "Tech") return false;
+    if (codeFilter === "NA" && e.saudization_code !== "NA") return false;
+    if (codeFilter !== "all" && codeFilter !== "Eng30" && codeFilter !== "Eng25" && codeFilter !== "Tech" && codeFilter !== "NA") return false;
     if (saudiFilter === "saudi" && !e.is_saudi) return false;
     if (saudiFilter === "non-saudi" && e.is_saudi) return false;
     const q = search.toLowerCase();
@@ -55,6 +56,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
   const CODE_COLORS: Record<string, string> = {
     Eng: "bg-blue-100 text-blue-700",
     Tech: "bg-violet-100 text-violet-700",
+    NA: "bg-muted text-muted-foreground",
   };
 
   function getCodeLabel(emp: { saudization_code: string | null; required_saudization_pct: number | null }): string {
@@ -139,6 +141,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
           <option value="Eng30">{isAr ? "هندسة (30%)" : "Engineering (30%)"}</option>
           <option value="Eng25">{isAr ? "هندسة (25%)" : "Engineering (25%)"}</option>
           <option value="Tech">{isAr ? "تقني (25%)" : "Technical (25%)"}</option>
+          <option value="NA">NA ({isAr ? "معفى" : "Exempt"})</option>
         </select>
 
         {/* Saudi / Non-Saudi quick filter */}

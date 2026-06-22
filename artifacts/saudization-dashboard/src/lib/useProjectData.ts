@@ -56,6 +56,8 @@ export interface ProjectMetrics {
   scopedSaudi: number;
   scopedNonSaudi: number;
   scopedPct: number;
+  naTotal: number;
+  naSaudi: number;
   eng30: CategoryMetrics;
   eng25: CategoryMetrics;
   tech: CategoryMetrics;
@@ -133,6 +135,7 @@ function computeCategory(
 
 function computeMetrics(employees: ProjectEmployee[]): ProjectMetrics {
   const scoped = employees.filter((e) => e.saudization_code !== "NA");
+  const na = employees.filter((e) => e.saudization_code === "NA");
   const scopedSaudi = scoped.filter((e) => e.is_saudi).length;
 
   return {
@@ -141,6 +144,8 @@ function computeMetrics(employees: ProjectEmployee[]): ProjectMetrics {
     scopedSaudi,
     scopedNonSaudi: scoped.length - scopedSaudi,
     scopedPct: scoped.length > 0 ? scopedSaudi / scoped.length : 0,
+    naTotal: na.length,
+    naSaudi: na.filter((e) => e.is_saudi).length,
     eng30: computeCategory(employees, "Eng", 0.3, 0.3),
     eng25: computeCategory(employees, "Eng", 0.25, 0.25),
     tech: computeCategory(employees, "Tech", 0.25),
