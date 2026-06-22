@@ -215,6 +215,18 @@ const RELATED: Record<string, string[]> = {
 const REVIEW_THRESHOLD = 40;
 
 /**
+ * Manually confirmed (job, iqama) pairs that the domain owner accepts as a given
+ * status even though the two roles fall in different categories. Matched by exact
+ * NORMALIZED job + iqama text, so this is per-pair only — it never broadens any
+ * category/family rule (e.g. it will not make other data/asset roles match
+ * mechanical engineers across the dataset).
+ */
+const MATCH_OVERRIDES: { job: string; iqama: string; status: MatchStatus }[] = [
+  // Mechanical engineer working in asset/database management — accepted by the domain owner.
+  { job: "Project Asset and data base", iqama: "مهندس ميكانيكي", status: "match" },
+];
+
+/**
  * Letter-level Arabic normalization: unify alef forms, Teh Marbuta (ة→ه),
  * Alef Maksura (ى→ي), strip diacritics & tatweel, collapse spaces.
  */
@@ -445,6 +457,21 @@ export function matchProfession(
     jobCategoryAr: job?.category.labelAr ?? null,
     iqamaCategoryAr: iqama?.category.labelAr ?? null,
   };
+
+  // Domain-owner confirmed exact-pair overrides take precedence over category logic.
+  const jobN = normalizeTitle(jobTitle);
+  const iqamaN = normalizeTitle(iqamaProfession);
+  const override = MATCH_OVERRIDES.find(
+    (o) => normalizeTitle(o.job) === jobN && normalizeTitle(o.iqama) === iqamaN,
+  );
+  if (override) {
+    return {
+      ...base,
+      status: override.status,
+      confidence: 100,
+      explanation: `Manually confirmed alignment (domain override): "${(jobTitle ?? "").trim()}" ↔ "${(iqamaProfession ?? "").trim()}" → ${override.status}.`,
+    };
+  }
 
   // One or both sides unclassified → needs manual review.
   if (!job || !iqama) {

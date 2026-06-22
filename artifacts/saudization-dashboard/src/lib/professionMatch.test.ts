@@ -180,6 +180,17 @@ describe("engineer specialties vs trades", () => {
   it("'فني صيانة' phrase does not pull مهندس صيانة away from engineer", () => {
     expect(classify("مهندس صيانة")?.category.family).toBe("engineer");
   });
+
+  it("manual override: Project Asset and data base ↔ مهندس ميكانيكي → match", () => {
+    expect(
+      matchProfession("Project Asset and data base", "مهندس ميكانيكي").status,
+    ).toBe("match");
+  });
+
+  it("override is per-pair only — other data roles do NOT match mechanical engineer", () => {
+    expect(matchProfession("Data Entry", "مهندس ميكانيكي").status).not.toBe("match");
+    expect(matchProfession("Project Asset and data base", "محاسب").status).not.toBe("match");
+  });
 });
 
 describe("localizeProfession", () => {
