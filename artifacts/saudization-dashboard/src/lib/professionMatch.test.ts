@@ -148,6 +148,18 @@ describe("engineer specialties vs trades", () => {
     expect(matchProfession("Field Maintinace Technician-EM", "Steel Fixer").status).toBe("mismatch");
     expect(matchProfession("Field Maintinace Technician-EM", "حداد").status).toBe("mismatch");
   });
+
+  it("Field Rigger-Civil → rigger (network family), beats the 'civil' keyword", () => {
+    const r = classify("Field Rigger-Civil");
+    expect(r?.category.id).toBe("rigger");
+    expect(r?.category.family).toBe("network");
+  });
+
+  it("Field Rigger-Civil ↔ telecom technician iqama → match", () => {
+    expect(
+      matchProfession("Field Rigger-Civil", "فني هندسة اتصالات لاسلكية").status,
+    ).toBe("match");
+  });
 });
 
 describe("localizeProfession", () => {
