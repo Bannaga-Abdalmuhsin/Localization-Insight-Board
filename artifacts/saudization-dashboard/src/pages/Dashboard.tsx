@@ -327,14 +327,14 @@ function RegionalTable({
       </div>
 
       {/* Column headers */}
-      <div className="grid grid-cols-[160px_1fr_1fr_1fr_140px] border-b border-border">
+      <div className="grid grid-cols-[minmax(190px,1.6fr)_auto_auto_auto_minmax(140px,auto)] border-b border-border">
         <div className="px-6 py-3 bg-muted/30 flex items-end">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
             {isAr ? "المنطقة" : "Region"}
           </span>
         </div>
         {companies.map((c) => (
-          <div key={c} className={cn("px-4 py-3 flex items-center justify-center",
+          <div key={c} className={cn("px-3 py-3 flex items-center justify-center",
             c === "Mac"  ? "bg-white border-b-2 border-violet-300" :
             c === "Aces" ? "bg-white border-b-2 border-blue-300" :
             c === "Anet" ? "bg-white border-b-2 border-amber-300" :
@@ -368,7 +368,7 @@ function RegionalTable({
             <div
               key={r.region}
               className={cn(
-                "grid grid-cols-[160px_1fr_1fr_1fr_140px] items-stretch",
+                "grid grid-cols-[minmax(190px,1.6fr)_auto_auto_auto_minmax(140px,auto)] items-stretch",
                 !r.isCompliant && "bg-red-50/30"
               )}
             >
@@ -385,7 +385,7 @@ function RegionalTable({
 
               {/* Per-company */}
               {r.byCompany.map((c) => (
-                <div key={c.company} className={cn("px-4 py-5 flex items-center justify-center gap-2 border-r border-border", companyBg[c.company])}>
+                <div key={c.company} className={cn("px-3 py-5 flex items-center justify-center gap-1.5 border-r border-border", companyBg[c.company])}>
                   {c.total === 0 ? (
                     <p className="text-xl font-bold text-muted-foreground/40">—</p>
                   ) : (
