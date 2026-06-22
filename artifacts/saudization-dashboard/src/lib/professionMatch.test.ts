@@ -127,10 +127,12 @@ describe("engineer specialties vs trades", () => {
     expect(matchProfession("Project Field GRO", "ضابط علاقات عامة").status).toBe("match");
   });
 
-  it("أخصائي إداري classifies firmly as admin (no longer ambiguous)", () => {
+  it("أخصائي إداري → Administration Specialist (admin family, not ambiguous)", () => {
     const r = classify("أخصائي إداري");
-    expect(r?.category.id).toBe("admin");
+    expect(r?.category.id).toBe("admin_specialist");
+    expect(r?.category.family).toBe("admin");
     expect(r?.ambiguous).toBe(false);
+    expect(localizeProfession("أخصائي إداري", "en").text).toBe("Administration Specialist");
   });
 
   it("GRO ↔ أخصائي إداري → match (both admin family)", () => {
