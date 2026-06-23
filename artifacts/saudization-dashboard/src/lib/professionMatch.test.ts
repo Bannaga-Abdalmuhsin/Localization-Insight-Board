@@ -191,6 +191,18 @@ describe("engineer specialties vs trades", () => {
     expect(matchProfession("Data Entry", "مهندس ميكانيكي").status).not.toBe("match");
     expect(matchProfession("Project Asset and data base", "محاسب").status).not.toBe("match");
   });
+
+  it("manual override: Project Field Region Manager ↔ مشغل الحاسب الالي → conditional", () => {
+    expect(
+      matchProfession("Project Field Region Manager", "مشغل الحاسب الالي").status,
+    ).toBe("conditional");
+  });
+
+  it("conditional override is per-pair only — other managers are not forced conditional", () => {
+    expect(
+      matchProfession("General Manager", "مشغل الحاسب الالي").status,
+    ).not.toBe("conditional");
+  });
 });
 
 describe("localizeProfession", () => {

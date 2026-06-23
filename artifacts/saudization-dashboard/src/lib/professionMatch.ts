@@ -224,6 +224,8 @@ const REVIEW_THRESHOLD = 40;
 const MATCH_OVERRIDES: { job: string; iqama: string; status: MatchStatus }[] = [
   // Mechanical engineer working in asset/database management — accepted by the domain owner.
   { job: "Project Asset and data base", iqama: "مهندس ميكانيكي", status: "match" },
+  // Field region manager carrying a "computer operator" iqama — accepted as a partial (conditional) alignment.
+  { job: "Project Field Region Manager", iqama: "مشغل الحاسب الالي", status: "conditional" },
 ];
 
 /**
