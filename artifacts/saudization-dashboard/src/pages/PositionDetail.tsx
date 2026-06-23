@@ -141,7 +141,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
           <option value="Eng30">{isAr ? "هندسة (30%)" : "Engineering (30%)"}</option>
           <option value="Eng25">{isAr ? "هندسة (25%)" : "Engineering (25%)"}</option>
           <option value="Tech">{isAr ? "تقني (25%)" : "Technical (25%)"}</option>
-          <option value="NA">NA ({isAr ? "معفى" : "Exempt"})</option>
+          <option value="NA">NA ({isAr ? "معفى" : "Excluded"})</option>
         </select>
 
         {/* Saudi / Non-Saudi quick filter */}
@@ -233,7 +233,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
                     <td className="px-4 py-3 tabular-nums text-foreground">
                       {emp.required_saudization_pct != null
                         ? `${(emp.required_saudization_pct * 100).toFixed(0)}%`
-                        : <span className="text-muted-foreground text-xs">{isAr ? "معفى" : "Exempt"}</span>}
+                        : <span className="text-muted-foreground text-xs">{isAr ? "معفى" : "Excluded"}</span>}
                     </td>
                     <td className="px-4 py-3">
                       <span className={cn(

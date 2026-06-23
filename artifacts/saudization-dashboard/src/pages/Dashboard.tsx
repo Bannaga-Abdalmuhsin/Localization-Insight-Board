@@ -116,7 +116,7 @@ export default function Dashboard() {
         <Briefcase className="w-5 h-5 text-muted-foreground flex-shrink-0" />
         <div>
           <p className="text-sm font-semibold text-foreground">
-            {isAr ? `${naTotal} موظف (معفاة من التوطين)` : `${naTotal} Employees (Exempt from Localization)`}
+            {isAr ? `${naTotal} موظف (معفاة من التوطين)` : `${naTotal} Employees (Excluded from Localization)`}
           </p>
           <p className="text-xs text-muted-foreground mt-0.5">
             {isAr
