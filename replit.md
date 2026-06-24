@@ -53,6 +53,24 @@ CREATE TABLE employees (
   is_saudi boolean NOT NULL DEFAULT false,
   created_at timestamptz DEFAULT now()
 );
+
+-- Login audit log: who logged in, when, from which device and IP.
+-- RLS is enabled with an INSERT-only policy so the dashboard (anon key) can
+-- append entries but can NEVER read them back. Review the logs in the Supabase
+-- Table Editor / SQL editor (service role bypasses RLS).
+CREATE TABLE login_logs (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid,
+  username text,
+  ip_address text,
+  user_agent text,
+  device text,
+  logged_in_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE login_logs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "anon can insert login logs" ON login_logs
+  FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE INDEX login_logs_logged_in_at_idx ON login_logs (logged_in_at DESC);
 ```
 
 ## Gap Formula

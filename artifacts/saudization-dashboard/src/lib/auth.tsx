@@ -40,6 +40,62 @@ async function hashPassword(password: string): Promise<string> {
     .join("");
 }
 
+/** Produce a short, human-readable device label from a user-agent string. */
+function describeDevice(ua: string): string {
+  const browser = /edg/i.test(ua)
+    ? "Edge"
+    : /opr|opera/i.test(ua)
+    ? "Opera"
+    : /chrome|crios/i.test(ua)
+    ? "Chrome"
+    : /firefox|fxios/i.test(ua)
+    ? "Firefox"
+    : /safari/i.test(ua)
+    ? "Safari"
+    : "Browser";
+  const os = /windows/i.test(ua)
+    ? "Windows"
+    : /iphone|ipad|ipod/i.test(ua)
+    ? "iOS"
+    : /android/i.test(ua)
+    ? "Android"
+    : /mac os x|macintosh/i.test(ua)
+    ? "macOS"
+    : /linux/i.test(ua)
+    ? "Linux"
+    : "Unknown OS";
+  return `${browser} on ${os}`;
+}
+
+/**
+ * Write a login audit entry to the `login_logs` table (who, when, device, IP).
+ * Fire-and-forget: it must never block or break the login flow. The table is
+ * insert-only for the anon client (RLS), so logs are never read back into the UI.
+ */
+async function recordLogin(user: AppUser): Promise<void> {
+  if (!isSupabaseConfigured) return;
+  try {
+    const userAgent = typeof navigator !== "undefined" ? navigator.userAgent : "";
+    const device = describeDevice(userAgent);
+    let ip: string | null = null;
+    try {
+      const res = await fetch("https://api.ipify.org?format=json");
+      if (res.ok) ip = ((await res.json()) as { ip?: string }).ip ?? null;
+    } catch {
+      // IP lookup is best-effort; ignore failures.
+    }
+    await supabase.from("login_logs").insert({
+      user_id: user.id,
+      username: user.username,
+      ip_address: ip,
+      user_agent: userAgent,
+      device,
+    });
+  } catch {
+    // Audit logging must never interfere with authentication.
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -95,6 +151,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
       setUser(sessionUser);
       localStorage.setItem(SESSION_KEY, JSON.stringify(sessionUser));
+      void recordLogin(sessionUser);
       return { ok: true };
     } catch (e) {
       return { ok: false, error: (e as Error).message };
