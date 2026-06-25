@@ -200,10 +200,10 @@ const RAW: Record<string, OccupationCode> = {
     confidence: "confirmed",
   },
   "حداد": {
-    code: "722103",
-    officialAr: "حدّاد مطرقة آلية",
-    officialEn: "Blacksmith (power hammer)",
-    confidence: "review",
+    code: "722101",
+    officialAr: "حدّاد",
+    officialEn: "Blacksmith",
+    confidence: "confirmed",
   },
   "مهندس سلامة وصحة مهنية": {
     code: "214105",

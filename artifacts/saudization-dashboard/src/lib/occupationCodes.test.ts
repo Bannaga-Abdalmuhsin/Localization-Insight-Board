@@ -10,8 +10,8 @@ describe("getOccupationCode", () => {
 
   it("matches despite shadda diacritics (حدّاد → حداد key)", () => {
     const oc = getOccupationCode("حدّاد");
-    expect(oc?.code).toBe("722103");
-    expect(oc?.confidence).toBe("review");
+    expect(oc?.code).toBe("722101");
+    expect(oc?.confidence).toBe("confirmed");
   });
 
   it("matches the alternate spelling of construction worker", () => {
