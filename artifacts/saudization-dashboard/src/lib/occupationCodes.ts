@@ -197,7 +197,7 @@ const RAW: Record<string, OccupationCode> = {
     code: "711502",
     officialAr: "نجار",
     officialEn: "Carpenter",
-    confidence: "review",
+    confidence: "confirmed",
   },
   "حداد": {
     code: "722103",
