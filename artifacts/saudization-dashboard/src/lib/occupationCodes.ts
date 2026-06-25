@@ -214,10 +214,10 @@ const RAW: Record<string, OccupationCode> = {
 
   // ---------- Pending: no reliable code located; ISCO family noted ----------
   "عامل تحميل وتنزيل": {
-    code: null,
-    officialAr: "عامل مناولة شحن (مجموعة 9333)",
-    officialEn: "Freight handler / loader (ISCO 9333) — code to verify",
-    confidence: "pending",
+    code: "933301",
+    officialAr: "عامل تحميل وتنزيل",
+    officialEn: "Freight handler / loader",
+    confidence: "confirmed",
   },
   "أخصائي إداري": {
     code: "242121",
