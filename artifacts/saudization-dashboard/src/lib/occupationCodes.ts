@@ -232,10 +232,10 @@ const RAW: Record<string, OccupationCode> = {
     confidence: "confirmed",
   },
   "مشغل الحاسب الالي": {
-    code: null,
-    officialAr: "مشغل حاسب آلي (مجموعة 3511)",
-    officialEn: "Computer operator (ISCO 3511) — code to verify",
-    confidence: "pending",
+    code: "413204",
+    officialAr: "مشغل حاسب آلي",
+    officialEn: "Computer operator",
+    confidence: "confirmed",
   },
   "بناء": {
     code: "711101",
