@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Search, Filter, UserCheck, UserX, Download } from "lucide-react";
 import CompanyLogo, { REGION_AR } from "@/components/CompanyLogo";
 import { useProjectData } from "@/lib/useProjectData";
+import { getOccupationCode } from "@/lib/occupationCodes";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
 
@@ -45,7 +46,8 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
       !e.employee_name.toLowerCase().includes(q) &&
       !(e.job_title ?? "").toLowerCase().includes(q) &&
       !(e.nationality ?? "").toLowerCase().includes(q) &&
-      !(e.iqama_profession ?? "").toLowerCase().includes(q)
+      !(e.iqama_profession ?? "").toLowerCase().includes(q) &&
+      !(getOccupationCode(e.iqama_profession)?.code ?? "").includes(q)
     ) return false;
     return true;
   });
@@ -192,6 +194,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
                     isAr ? "اسم الموظف" : "Employee Name",
                     isAr ? "الجنسية" : "Nationality",
                     isAr ? "المسمى الوظيفي" : "Position",
+                    isAr ? "رمز المهنة (HRSD)" : "HRSD Code",
                     isAr ? "المنطقة" : "Region",
                     isAr ? "الشركة" : "Company",
                     isAr ? "فئة التوطين" : "Category",
@@ -218,6 +221,44 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
                       {emp.iqama_profession && (
                         <p className="text-xs text-muted-foreground mt-0.5">{emp.iqama_profession}</p>
                       )}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      {(() => {
+                        const oc = getOccupationCode(emp.iqama_profession);
+                        // No mapping, or a "pending" mapping with no code → explicit "to verify"
+                        // (never silently blank, so unmapped records stay auditable).
+                        if (!oc || oc.confidence === "pending" || !oc.code) {
+                          const title = oc ? `${oc.officialAr}\n${oc.officialEn}` : undefined;
+                          return (
+                            <span
+                              title={title}
+                              className="inline-flex items-center gap-1 text-xs text-muted-foreground italic cursor-help"
+                            >
+                              {isAr ? "بانتظار التحقق" : "to verify"}
+                            </span>
+                          );
+                        }
+                        const title = `${oc.officialAr}\n${oc.officialEn}`;
+                        const isReview = oc.confidence === "review";
+                        return (
+                          <span
+                            title={title}
+                            className={cn(
+                              "inline-flex items-center gap-1.5 font-mono text-sm tabular-nums cursor-help",
+                              isReview ? "text-amber-700" : "text-foreground"
+                            )}
+                          >
+                            <span
+                              className={cn(
+                                "w-1.5 h-1.5 rounded-full shrink-0",
+                                isReview ? "bg-amber-500" : "bg-emerald-500"
+                              )}
+                            />
+                            {/* "~" prefix keeps the approximate caveat even when the value is copied out of context */}
+                            {isReview ? `~${oc.code}` : oc.code}
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
                       {emp.region ? (isAr ? (REGION_AR[emp.region] ?? emp.region) : emp.region) : "—"}
@@ -251,6 +292,23 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
             </table>
           </div>
         )}
+      </div>
+
+      {/* HRSD code legend */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
+        <span className="font-medium">{isAr ? "رمز المهنة (HRSD):" : "HRSD Code:"}</span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          {isAr ? "مطابقة مؤكدة للمسمى الرسمي" : "Confirmed exact official title"}
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+          {isAr ? "‏~ أقرب مهنة في نفس التصنيف — يُنصح بالتحقق" : "~ Closest occupation in family — verify"}
+        </span>
+        <span className="inline-flex items-center gap-1.5 italic">
+          {isAr ? "«بانتظار التحقق» = لم يُعثر على رمز موثوق بعد" : "“to verify” = no reliable code located yet"}
+        </span>
+        <span>{isAr ? "مرّر فوق الرمز لعرض المسمى الرسمي." : "Hover a code to see the official title."}</span>
       </div>
 
       {filteredNon > 0 && (
