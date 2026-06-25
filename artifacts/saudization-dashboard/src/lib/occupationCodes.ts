@@ -176,10 +176,10 @@ const RAW: Record<string, OccupationCode> = {
     confidence: "confirmed",
   },
   "فني صيانة شبكات كهربائية": {
-    code: "311306",
-    officialAr: "فني صيانة أجهزة كهربائية",
-    officialEn: "Electrical equipment maintenance technician",
-    confidence: "review",
+    code: "311307",
+    officialAr: "فني صيانة شبكات كهربائية",
+    officialEn: "Electrical networks maintenance technician",
+    confidence: "confirmed",
   },
   "فني كهربائي صيانة الات": {
     code: "311908",
