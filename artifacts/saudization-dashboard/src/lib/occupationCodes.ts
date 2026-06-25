@@ -183,9 +183,9 @@ const RAW: Record<string, OccupationCode> = {
   },
   "فني كهربائي صيانة الات": {
     code: "311908",
-    officialAr: "فني صيانة آلات",
-    officialEn: "Machinery maintenance technician",
-    confidence: "review",
+    officialAr: "فني كهربائي صيانة آلات",
+    officialEn: "Machinery electrical maintenance technician",
+    confidence: "confirmed",
   },
   "مبرمج حاسب آلي": {
     code: "251401",
