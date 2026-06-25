@@ -220,10 +220,10 @@ const RAW: Record<string, OccupationCode> = {
     confidence: "pending",
   },
   "أخصائي إداري": {
-    code: null,
-    officialAr: "أخصائي إداري (مجموعة 334/242)",
-    officialEn: "Administrative specialist (ISCO 334/242) — code to verify",
-    confidence: "pending",
+    code: "242121",
+    officialAr: "أخصائي إداري",
+    officialEn: "Administrative specialist",
+    confidence: "confirmed",
   },
   "خياط": {
     code: "753301",
