@@ -238,10 +238,10 @@ const RAW: Record<string, OccupationCode> = {
     confidence: "pending",
   },
   "بناء": {
-    code: null,
-    officialAr: "بنّاء (مجموعة 7112)",
-    officialEn: "Bricklayer / mason (ISCO 7112) — code to verify",
-    confidence: "pending",
+    code: "711101",
+    officialAr: "بنّاء",
+    officialEn: "Bricklayer / mason",
+    confidence: "confirmed",
   },
   "ضابط علاقات عامة": {
     code: null,

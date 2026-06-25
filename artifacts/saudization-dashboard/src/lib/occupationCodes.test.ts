@@ -36,7 +36,7 @@ describe("getOccupationCode", () => {
   });
 
   it("returns a pending entry with a null code for unlocated professions", () => {
-    const oc = getOccupationCode("بناء");
+    const oc = getOccupationCode("ضابط علاقات عامة");
     expect(oc?.confidence).toBe("pending");
     expect(oc?.code).toBeNull();
   });
