@@ -104,10 +104,10 @@ const RAW: Record<string, OccupationCode> = {
 
   // ---------- Review: closest official occupation in the correct ISCO family ----------
   "مهندس حاسب آلي": {
-    code: "215205",
-    officialAr: "مهندس حاسب آلي تقني",
-    officialEn: "Computer engineer (technical)",
-    confidence: "review",
+    code: "215204",
+    officialAr: "مهندس حاسب آلي",
+    officialEn: "Computer engineer",
+    confidence: "confirmed",
   },
   "عامل إنشاءات": {
     code: "931201",
