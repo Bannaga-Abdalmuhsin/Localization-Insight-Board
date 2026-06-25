@@ -26,8 +26,15 @@ describe("getOccupationCode", () => {
     expect(oc?.code).toBe("214201");
   });
 
+  it("resolves HRSD-confirmed craft codes", () => {
+    expect(getOccupationCode("خياط")?.code).toBe("753301");
+    expect(getOccupationCode("خياط")?.confidence).toBe("confirmed");
+    expect(getOccupationCode("مراقب الجودة")?.code).toBe("754301");
+    expect(getOccupationCode("مراقب الجودة")?.confidence).toBe("confirmed");
+  });
+
   it("returns a pending entry with a null code for unlocated professions", () => {
-    const oc = getOccupationCode("خياط");
+    const oc = getOccupationCode("بناء");
     expect(oc?.confidence).toBe("pending");
     expect(oc?.code).toBeNull();
   });

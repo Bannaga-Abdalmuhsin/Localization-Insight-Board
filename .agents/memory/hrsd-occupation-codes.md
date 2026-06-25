@@ -10,15 +10,21 @@ The dashboard shows an official HRSD 6-digit occupation code per `iqama_professi
 `src/lib/occupationCodes.ts` (hardcoded lookup, keyed by `normalizeTitle` of the
 Arabic profession, reusing the normalizer from `professionMatch.ts`).
 
-## Sourcing method (the portal is NOT scrapeable)
-- hrsd.gov.sa skills-taxonomy is Next.js + Cloudflare + Drupal on an unreachable
-  origin. Pagination / `?combine=` search / `/views/ajax` are all client-side AJAX;
-  `webFetch` only ever returns the default ~12 rows per group, and live detail
-  pages (`/skills-taxonomy/occupations/<group>/<code>`) now return 404.
-- **What works:** Google `site:hrsd.gov.sa/skills-taxonomy/occupations <arabic profession>`.
-  The indexed result TITLE = official Arabic occupation name; the URL contains the
-  real 6-digit code. These title↔code pairs are authoritative even though the live
-  page 404s now. English-term and quoted queries hit diminishing returns fast.
+## Sourcing method (the portal is NOT bulk-scrapeable)
+- hrsd.gov.sa skills-taxonomy group pages (e.g. `.../occupations/craft-and-related-trades-workers`)
+  DO render a code↔name markdown table via `webFetch`, BUT only the default view:
+  the top ~12 rows sorted by code DESCENDING. Pagination is client-side AJAX —
+  `?page=N`, `?combine=`, `?search_api_fulltext=`, `?items_per_page=All`, and sort
+  params ALL return the identical default 12 rows. So you can only read the highest
+  codes in each major group, never page down to lower ones.
+- `webSearch` with `site:hrsd.gov.sa ...` now returns NO results (previously the
+  indexed TITLE=name, URL=code trick worked; it has since stopped). Both automated
+  paths are now exhausted — do not re-try them expecting different output.
+- **Most reliable source = the user.** They have ACES/STC HRSD portal access and can
+  read any group page directly. Ask them to confirm/supply codes for unmapped or
+  `review` professions rather than guessing. (User confirmed خياط=753301 this way.)
+- Group pages whose default top-view we HAVE captured: craft-and-related-trades top
+  rows include مراقب الجودة=754301 (confirmed exact), خياط sits in 7531 group.
 
 ## Confidence model (compliance honesty layer)
 Every stored code is a REAL observed HRSD code. `confidence` distinguishes:

@@ -173,7 +173,7 @@ const RAW: Record<string, OccupationCode> = {
     code: "754301",
     officialAr: "مراقب الجودة",
     officialEn: "Quality controller",
-    confidence: "review",
+    confidence: "confirmed",
   },
   "فني صيانة شبكات كهربائية": {
     code: "311306",
@@ -226,10 +226,10 @@ const RAW: Record<string, OccupationCode> = {
     confidence: "pending",
   },
   "خياط": {
-    code: null,
-    officialAr: "خياط (مجموعة 7531)",
-    officialEn: "Tailor (ISCO 7531) — code to verify",
-    confidence: "pending",
+    code: "753301",
+    officialAr: "خياط",
+    officialEn: "Tailor",
+    confidence: "confirmed",
   },
   "مشغل الحاسب الالي": {
     code: null,
