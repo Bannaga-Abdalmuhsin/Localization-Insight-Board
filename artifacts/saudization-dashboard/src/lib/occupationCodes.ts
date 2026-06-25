@@ -212,7 +212,6 @@ const RAW: Record<string, OccupationCode> = {
     confidence: "confirmed",
   },
 
-  // ---------- Pending: no reliable code located; ISCO family noted ----------
   "عامل تحميل وتنزيل": {
     code: "933301",
     officialAr: "عامل تحميل وتنزيل",
@@ -244,10 +243,10 @@ const RAW: Record<string, OccupationCode> = {
     confidence: "confirmed",
   },
   "ضابط علاقات عامة": {
-    code: null,
-    officialAr: "أخصائي علاقات عامة (مجموعة 2432)",
-    officialEn: "Public relations officer (ISCO 2432) — code to verify",
-    confidence: "pending",
+    code: "243202",
+    officialAr: "ضابط علاقات عامة",
+    officialEn: "Public relations officer",
+    confidence: "confirmed",
   },
 };
 

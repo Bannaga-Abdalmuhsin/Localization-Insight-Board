@@ -35,10 +35,10 @@ describe("getOccupationCode", () => {
     expect(getOccupationCode("مهندس كهربائي")?.confidence).toBe("confirmed");
   });
 
-  it("returns a pending entry with a null code for unlocated professions", () => {
+  it("resolves the public relations officer code", () => {
     const oc = getOccupationCode("ضابط علاقات عامة");
-    expect(oc?.confidence).toBe("pending");
-    expect(oc?.code).toBeNull();
+    expect(oc?.code).toBe("243202");
+    expect(oc?.confidence).toBe("confirmed");
   });
 
   it("returns null for unknown professions and empty input", () => {

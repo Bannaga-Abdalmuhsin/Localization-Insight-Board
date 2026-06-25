@@ -20,9 +20,13 @@ Arabic profession, reusing the normalizer from `professionMatch.ts`).
 - `webSearch` with `site:hrsd.gov.sa ...` now returns NO results (previously the
   indexed TITLE=name, URL=code trick worked; it has since stopped). Both automated
   paths are now exhausted — do not re-try them expecting different output.
-- **Most reliable source = the user.** They have ACES/STC HRSD portal access and can
-  read any group page directly. Ask them to confirm/supply codes for unmapped or
-  `review` professions rather than guessing. (User confirmed خياط=753301 this way.)
+- The Masar UCG portal (`eservices.masar.sa/UCG/#/`) is ALSO unreachable to automation:
+  it's a Nafath-login-gated SPA that returns HTTP 504 to any fetch. Only the
+  signed-in user can search it.
+- **Most reliable source = the user.** They have ACES/STC HRSD + Masar portal access and
+  can read any group page directly. Ask them to confirm/supply codes for unmapped or
+  `review` professions rather than guessing. (Nearly all 34 professions were confirmed
+  this way, one code per message.)
 - Group pages whose default top-view we HAVE captured: craft-and-related-trades top
   rows include مراقب الجودة=754301 (confirmed exact), خياط sits in 7531 group.
 
