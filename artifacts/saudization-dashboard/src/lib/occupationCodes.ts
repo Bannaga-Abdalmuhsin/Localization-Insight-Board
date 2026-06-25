@@ -189,9 +189,9 @@ const RAW: Record<string, OccupationCode> = {
   },
   "مبرمج حاسب آلي": {
     code: "251401",
-    officialAr: "مبرمج تطبيقات",
-    officialEn: "Applications programmer",
-    confidence: "review",
+    officialAr: "مبرمج حاسب آلي",
+    officialEn: "Computer programmer",
+    confidence: "confirmed",
   },
   "نجار": {
     code: "711502",

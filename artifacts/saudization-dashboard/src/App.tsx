@@ -9,6 +9,7 @@ import TeamBreakdown from "@/pages/TeamBreakdown";
 import PositionDetail from "@/pages/PositionDetail";
 import Settings from "@/pages/Settings";
 import RoleAlignment from "@/pages/RoleAlignment";
+import Analysis from "@/pages/Analysis";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/not-found";
 import { LanguageProvider } from "@/lib/i18n";
@@ -47,6 +48,9 @@ function Router() {
         </Route>
         <Route path="/alignment">
           <RoleAlignment />
+        </Route>
+        <Route path="/analysis">
+          <Analysis />
         </Route>
         <Route path="/settings">
           {user.is_admin ? <Settings /> : <NotFound />}

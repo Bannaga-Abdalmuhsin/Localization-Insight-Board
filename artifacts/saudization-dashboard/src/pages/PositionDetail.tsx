@@ -293,32 +293,6 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
           </div>
         )}
       </div>
-
-      {/* HRSD code legend */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
-        <span className="font-medium">{isAr ? "رمز المهنة (HRSD):" : "HRSD Code:"}</span>
-        <span className="inline-flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          {isAr ? "مطابقة مؤكدة للمسمى الرسمي" : "Confirmed exact official title"}
-        </span>
-        <span className="inline-flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-          {isAr ? "‏~ أقرب مهنة في نفس التصنيف — يُنصح بالتحقق" : "~ Closest occupation in family — verify"}
-        </span>
-        <span className="inline-flex items-center gap-1.5 italic">
-          {isAr ? "«بانتظار التحقق» = لم يُعثر على رمز موثوق بعد" : "“to verify” = no reliable code located yet"}
-        </span>
-        <span>{isAr ? "مرّر فوق الرمز لعرض المسمى الرسمي." : "Hover a code to see the official title."}</span>
-      </div>
-
-      {filteredNon > 0 && (
-        <p className="text-xs text-muted-foreground">
-          <span className="font-semibold text-amber-600">{filteredNon}</span>{" "}
-          {isAr
-            ? `وظيفة يشغلها غير سعوديين — مصنفة لتخطيط التوطين.`
-            : `position${filteredNon !== 1 ? "s" : ""} held by Non-Saudi nationals — flagged for Saudization transition planning.`}
-</p>
-      )}
     </div>
   );
 }

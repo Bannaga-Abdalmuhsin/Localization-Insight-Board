@@ -8,6 +8,7 @@ import {
   Settings,
   LogOut,
   GitCompareArrows,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
@@ -28,6 +29,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
     { label: t.nav.teamBreakdown, href: "/teams", icon: Users },
     { label: t.nav.positionDetail, href: "/positions", icon: Briefcase },
     { label: t.nav.roleAlignment,  href: "/alignment", icon: GitCompareArrows },
+    { label: t.nav.analysis, href: "/analysis", icon: BarChart3 },
     ...(user?.is_admin ? [{ label: t.nav.settings, href: "/settings", icon: Settings }] : []),
   ];
 

@@ -31,8 +31,11 @@ Arabic profession, reusing the normalizer from `professionMatch.ts`).
   rows include مراقب الجودة=754301 (confirmed exact), خياط sits in 7531 group.
 
 ## Confidence model (compliance honesty layer)
+STATUS: as of 2026-06-25 ALL ~34 professions are `confirmed` (user supplied every
+code one-by-one from the HRSD/Masar portals). No `review`/`pending` entries remain,
+but keep the model below for any NEW unmapped professions added later.
 Every stored code is a REAL observed HRSD code. `confidence` distinguishes:
-- `confirmed` — exact official-title match (≈12 of 34 professions).
+- `confirmed` — exact official-title match (now all stored professions).
 - `review` — no exact page found; closest occupation in the correct ISCO family.
   **Why:** several distinct professions collapse onto the same family code (e.g.
   telecom techs → 3522/352201) because the full unit-group list can't be enumerated.
