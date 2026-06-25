@@ -122,10 +122,10 @@ const RAW: Record<string, OccupationCode> = {
     confidence: "confirmed",
   },
   "عامل بناء": {
-    code: "931302",
-    officialAr: "عامل خلطة خرسانية — مجموعة عمال الإنشاءات (9313)",
-    officialEn: "Construction/building labourer (ISCO 9313)",
-    confidence: "review",
+    code: "931301",
+    officialAr: "عامل بناء",
+    officialEn: "Building labourer",
+    confidence: "confirmed",
   },
   "فني هندسة اتصالات لاسلكية": {
     code: "352202",
