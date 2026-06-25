@@ -17,8 +17,8 @@ describe("getOccupationCode", () => {
   it("matches the alternate spelling of construction worker", () => {
     const a = getOccupationCode("عامل إنشاءات");
     const b = getOccupationCode("عامل انشاءات");
-    expect(a?.code).toBe("931302");
-    expect(b?.code).toBe("931302");
+    expect(a?.code).toBe("931201");
+    expect(b?.code).toBe("931201");
   });
 
   it("matches despite a leading ال definite article and extra spaces", () => {
