@@ -206,10 +206,10 @@ const RAW: Record<string, OccupationCode> = {
     confidence: "review",
   },
   "مهندس سلامة وصحة مهنية": {
-    code: "226302",
-    officialAr: "أخصائي صحة وسلامة مهنية",
-    officialEn: "Occupational health & safety professional",
-    confidence: "review",
+    code: "214105",
+    officialAr: "مهندس سلامة وصحة مهنية",
+    officialEn: "Occupational health & safety engineer",
+    confidence: "confirmed",
   },
 
   // ---------- Pending: no reliable code located; ISCO family noted ----------
