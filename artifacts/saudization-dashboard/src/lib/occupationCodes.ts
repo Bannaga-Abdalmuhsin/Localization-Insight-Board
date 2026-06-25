@@ -128,10 +128,10 @@ const RAW: Record<string, OccupationCode> = {
     confidence: "review",
   },
   "فني هندسة اتصالات لاسلكية": {
-    code: "352201",
-    officialAr: "فني هندسة اتصالات سلكية — مجموعة فنيي هندسة الاتصالات (3522)",
-    officialEn: "Telecommunications engineering technician (ISCO 3522)",
-    confidence: "review",
+    code: "352202",
+    officialAr: "فني هندسة اتصالات لاسلكية",
+    officialEn: "Wireless telecommunications engineering technician",
+    confidence: "confirmed",
   },
   "فني نظم اتصالات": {
     code: "351303",
