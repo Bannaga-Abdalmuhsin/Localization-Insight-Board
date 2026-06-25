@@ -164,10 +164,10 @@ const RAW: Record<string, OccupationCode> = {
     confidence: "confirmed",
   },
   "مهندس ميكانيكي": {
-    code: "214403",
-    officialAr: "أخصائي تقنية هندسة ميكانيكية — مجموعة المهندسين الميكانيكيين (2144)",
-    officialEn: "Mechanical engineer (ISCO 2144)",
-    confidence: "review",
+    code: "214401",
+    officialAr: "مهندس ميكانيكي",
+    officialEn: "Mechanical engineer",
+    confidence: "confirmed",
   },
   "مراقب الجودة": {
     code: "754301",
