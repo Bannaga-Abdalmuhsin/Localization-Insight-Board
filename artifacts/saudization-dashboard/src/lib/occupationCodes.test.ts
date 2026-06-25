@@ -31,6 +31,8 @@ describe("getOccupationCode", () => {
     expect(getOccupationCode("خياط")?.confidence).toBe("confirmed");
     expect(getOccupationCode("مراقب الجودة")?.code).toBe("754301");
     expect(getOccupationCode("مراقب الجودة")?.confidence).toBe("confirmed");
+    expect(getOccupationCode("مهندس كهربائي")?.code).toBe("215101");
+    expect(getOccupationCode("مهندس كهربائي")?.confidence).toBe("confirmed");
   });
 
   it("returns a pending entry with a null code for unlocated professions", () => {

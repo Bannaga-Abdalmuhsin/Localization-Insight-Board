@@ -152,10 +152,10 @@ const RAW: Record<string, OccupationCode> = {
     confidence: "review",
   },
   "مهندس كهربائي": {
-    code: "215105",
-    officialAr: "مهندس أتمتة — مجموعة المهندسين الكهربائيين (2151)",
-    officialEn: "Electrical engineer (ISCO 2151)",
-    confidence: "review",
+    code: "215101",
+    officialAr: "مهندس كهربائي",
+    officialEn: "Electrical engineer",
+    confidence: "confirmed",
   },
   "كهربائي مباني": {
     code: "741202",
