@@ -1,3 +1,4 @@
 - [Vitest in Vite app artifacts](vitest-in-vite-artifacts.md) — add a dedicated vitest.config.ts so vitest doesn't load vite.config.ts (which throws when PORT is unset outside the workflow).
 - [Profession matcher](profession-matcher.md) — category/family-based engine; per-person exceptions cannot be encoded as category rules; STC telecom domain (e.g. rigger=telecom tower tech).
-- [HRSD occupation codes](hrsd-occupation-codes.md) — portal unscrapeable; source codes via Google site-search title↔code pairs; confirmed/review/pending confidence layer for compliance honesty.
+- [HRSD occupation codes](hrsd-occupation-codes.md) — portal unscrapeable; user is the authoritative code source; confirmed/review/pending confidence layer; new dataset professions start as "to verify".
+- [Supabase direct DB access](supabase-access.md) — DDL needs pg via aws-1-ap-southeast-1 pooler (port 6543, postgres.<ref>); db.<ref> host DNS-blocked; supabase-js is DML-only.

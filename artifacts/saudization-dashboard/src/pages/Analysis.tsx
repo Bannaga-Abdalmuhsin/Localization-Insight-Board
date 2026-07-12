@@ -1,20 +1,45 @@
 import { useState, useMemo } from "react";
-import { Search, BarChart3, UserCheck, UserX } from "lucide-react";
-import { REGION_AR } from "@/components/CompanyLogo";
+import { Search, BarChart3, Building2, FolderKanban, Network } from "lucide-react";
 import { useProjectData } from "@/lib/useProjectData";
+import type { ProjectEmployee } from "@/lib/useProjectData";
 import { getOccupationCode } from "@/lib/occupationCodes";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
 
-interface CodeGroup {
+type Basis = "msd" | "company" | "project";
+
+interface CodeCard {
   key: string;
   code: string | null;
   officialAr: string;
   officialEn: string;
-  professions: Set<string>;
   total: number;
-  saudi: number;
-  nonSaudi: number;
+}
+
+function buildCards(employees: ProjectEmployee[]): CodeCard[] {
+  const map = new Map<string, CodeCard>();
+  for (const e of employees) {
+    const oc = getOccupationCode(e.iqama_profession);
+    const hasCode = !!(oc && oc.code);
+    const key = hasCode ? oc!.code! : "__unmapped__";
+    let c = map.get(key);
+    if (!c) {
+      c = {
+        key,
+        code: hasCode ? oc!.code! : null,
+        officialAr: hasCode ? oc!.officialAr : "بانتظار التحقق",
+        officialEn: hasCode ? oc!.officialEn : "To verify",
+        total: 0,
+      };
+      map.set(key, c);
+    }
+    c.total += 1;
+  }
+  return Array.from(map.values()).sort((a, b) => {
+    if (a.code === null && b.code !== null) return 1;
+    if (b.code === null && a.code !== null) return -1;
+    return b.total - a.total;
+  });
 }
 
 export default function Analysis() {
@@ -22,77 +47,52 @@ export default function Analysis() {
   const { lang } = useTranslation();
   const isAr = lang === "ar";
 
+  const [basis, setBasis] = useState<Basis>("msd");
   const [search, setSearch] = useState("");
-  const [regionFilter, setRegionFilter] = useState("all");
-  const [companyFilter, setCompanyFilter] = useState("all");
 
   const employees = metrics.employees;
 
-  const regions = useMemo(
-    () => Array.from(new Set(employees.map((e) => e.region ?? "").filter(Boolean))).sort(),
-    [employees],
-  );
-  const companies = useMemo(
-    () => Array.from(new Set(employees.map((e) => e.company ?? "").filter(Boolean))).sort(),
-    [employees],
-  );
+  const sections = useMemo(() => {
+    const unknownLabel = isAr ? "غير محدد" : "Unknown";
+    const groupBy = (getKey: (e: ProjectEmployee) => string | null) => {
+      const names = Array.from(
+        new Set(employees.map((e) => getKey(e)?.trim() || unknownLabel)),
+      ).sort();
+      return names.map((name) => ({
+        name,
+        employees: employees.filter((e) => (getKey(e)?.trim() || unknownLabel) === name),
+      }));
+    };
 
-  const groups = useMemo(() => {
-    const scoped = employees.filter((e) => {
-      if (regionFilter !== "all" && e.region !== regionFilter) return false;
-      if (companyFilter !== "all" && e.company !== companyFilter) return false;
-      return true;
-    });
-
-    const map = new Map<string, CodeGroup>();
-    for (const e of scoped) {
-      const oc = getOccupationCode(e.iqama_profession);
-      const hasCode = !!(oc && oc.code);
-      const key = hasCode ? oc!.code! : "__unmapped__";
-      let g = map.get(key);
-      if (!g) {
-        g = {
-          key,
-          code: hasCode ? oc!.code! : null,
-          officialAr: hasCode ? oc!.officialAr : "بانتظار التحقق",
-          officialEn: hasCode ? oc!.officialEn : "To verify",
-          professions: new Set<string>(),
-          total: 0,
-          saudi: 0,
-          nonSaudi: 0,
-        };
-        map.set(key, g);
-      }
-      if (e.iqama_profession) g.professions.add(e.iqama_profession);
-      g.total += 1;
-      if (e.is_saudi) g.saudi += 1;
-      else g.nonSaudi += 1;
+    let groups: { name: string; employees: ProjectEmployee[] }[];
+    if (basis === "company") {
+      groups = groupBy((e) => e.company);
+    } else if (basis === "project") {
+      groups = groupBy((e) => e.project);
+    } else {
+      groups = [{ name: isAr ? "إدارة الخدمات المدارة (MSD)" : "MSD Department", employees }];
     }
+    return groups.map((g) => ({ name: g.name, headcount: g.employees.length, cards: buildCards(g.employees) }));
+  }, [employees, basis, isAr]);
 
-    return Array.from(map.values()).sort((a, b) => {
-      // Unmapped bucket always last
-      if (a.code === null && b.code !== null) return 1;
-      if (b.code === null && a.code !== null) return -1;
-      return b.total - a.total;
-    });
-  }, [employees, regionFilter, companyFilter]);
-
-  const visible = useMemo(() => {
+  const visibleSections = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return groups;
-    return groups.filter(
-      (g) =>
-        (g.code ?? "").includes(q) ||
-        g.officialAr.toLowerCase().includes(q) ||
-        g.officialEn.toLowerCase().includes(q) ||
-        Array.from(g.professions).some((p) => p.toLowerCase().includes(q)),
-    );
-  }, [groups, search]);
+    if (!q) return sections;
+    return sections
+      .map((s) => ({
+        ...s,
+        cards: s.cards.filter(
+          (c) =>
+            (c.code ?? "").includes(q) ||
+            c.officialAr.toLowerCase().includes(q) ||
+            c.officialEn.toLowerCase().includes(q),
+        ),
+      }))
+      .filter((s) => s.cards.length > 0);
+  }, [sections, search]);
 
-  const mappedGroups = groups.filter((g) => g.code !== null);
-  const totalInScope = groups.reduce((s, g) => s + g.total, 0);
-  const unmapped = groups.find((g) => g.code === null);
-  const maxTotal = Math.max(1, ...visible.map((g) => g.total));
+  const allCards = buildCards(employees);
+  const distinctCodes = allCards.filter((c) => c.code !== null).length;
 
   if (isLoading) {
     return (
@@ -102,22 +102,10 @@ export default function Analysis() {
     );
   }
 
-  const summary = [
-    {
-      label: isAr ? "عدد الرموز" : "Distinct codes",
-      value: mappedGroups.length,
-      cls: "text-foreground",
-    },
-    {
-      label: isAr ? "موظفون مصنّفون" : "Coded employees",
-      value: totalInScope - (unmapped?.total ?? 0),
-      cls: "text-emerald-600",
-    },
-    {
-      label: isAr ? "بانتظار التحقق" : "To verify",
-      value: unmapped?.total ?? 0,
-      cls: "text-amber-600",
-    },
+  const BASIS_BUTTONS: { key: Basis; label: string; icon: typeof Building2 }[] = [
+    { key: "company", label: isAr ? "حسب الشركة" : "Company basis", icon: Building2 },
+    { key: "project", label: isAr ? "حسب المشروع" : "Project basis", icon: FolderKanban },
+    { key: "msd", label: isAr ? "حسب إدارة MSD" : "MSD Department basis", icon: Network },
   ];
 
   return (
@@ -131,27 +119,49 @@ export default function Analysis() {
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
             {isAr
-              ? "توزيع الموظفين حسب رمز المهنة الرسمي (HRSD) — السعوديون مقابل غير السعوديين لكل رمز"
-              : "Workforce distribution by official HRSD occupation code — Saudi vs Non-Saudi per code"}
+              ? "عدد الموظفين لكل رمز مهنة رسمي (HRSD)"
+              : "Employee count per official HRSD occupation code"}
           </p>
+        </div>
+
+        {/* Quick stats */}
+        <div className="flex flex-wrap gap-3">
+          {[
+            { label: isAr ? "عدد الرموز" : "Codes", value: distinctCodes },
+            { label: isAr ? "إجمالي الموظفين" : "Employees", value: employees.length },
+          ].map((s) => (
+            <div
+              key={s.label}
+              className="flex items-center gap-2 bg-white border border-border rounded-lg px-3 py-2 shadow-sm"
+            >
+              <span className="text-xs text-muted-foreground">{s.label}</span>
+              <span className="text-sm font-bold tabular-nums text-foreground">{s.value}</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Summary strip */}
-      <div className="flex flex-wrap gap-3">
-        {summary.map((s) => (
-          <div
-            key={s.label}
-            className="flex items-center gap-2 bg-white border border-border rounded-lg px-3 py-2 shadow-sm"
-          >
-            <span className="text-xs text-muted-foreground">{s.label}</span>
-            <span className={cn("text-sm font-bold tabular-nums", s.cls)}>{s.value}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Filters */}
+      {/* Basis buttons + search */}
       <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-1.5">
+          {BASIS_BUTTONS.map((b) => (
+            <button
+              key={b.key}
+              onClick={() => setBasis(b.key)}
+              data-testid={`btn-basis-${b.key}`}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg border transition-colors",
+                basis === b.key
+                  ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                  : "bg-white text-muted-foreground border-border hover:border-primary/50",
+              )}
+            >
+              <b.icon className="w-3.5 h-3.5" />
+              {b.label}
+            </button>
+          ))}
+        </div>
+
         <div className="relative flex-1 min-w-56 max-w-sm">
           <Search className="absolute top-1/2 -translate-y-1/2 start-3 w-4 h-4 text-muted-foreground" />
           <input
@@ -162,149 +172,63 @@ export default function Analysis() {
             className="w-full h-9 text-sm rounded-lg border border-border bg-white shadow-sm outline-none focus:ring-2 focus:ring-primary/30 ps-9 pe-4"
           />
         </div>
-
-        <select
-          value={regionFilter}
-          onChange={(e) => setRegionFilter(e.target.value)}
-          className="h-9 text-sm rounded-lg border border-border bg-white shadow-sm px-3 outline-none focus:ring-2 focus:ring-primary/30"
-        >
-          <option value="all">{isAr ? "جميع المناطق" : "All Regions"}</option>
-          {regions.map((r) => (
-            <option key={r} value={r}>
-              {isAr ? REGION_AR[r] ?? r : r}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={companyFilter}
-          onChange={(e) => setCompanyFilter(e.target.value)}
-          className="h-9 text-sm rounded-lg border border-border bg-white shadow-sm px-3 outline-none focus:ring-2 focus:ring-primary/30"
-        >
-          <option value="all">{isAr ? "جميع الشركات" : "All Companies"}</option>
-          {companies.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
       </div>
 
-      {/* Table */}
-      <div className="rounded-xl border border-border bg-white shadow-sm overflow-hidden">
-        {visible.length === 0 ? (
-          <div className="py-16 text-center">
-            <p className="text-sm text-muted-foreground">
-              {isAr ? "لا توجد نتائج تطابق البحث." : "No results match your search."}
-            </p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="border-b border-border bg-muted/40">
-                <tr>
-                  {[
-                    isAr ? "رمز المهنة (HRSD)" : "HRSD Code",
-                    isAr ? "المسمى الرسمي" : "Official Title",
-                    isAr ? "العدد" : "Headcount",
-                    isAr ? "التوزيع" : "Distribution",
-                    isAr ? "سعودي" : "Saudi",
-                    isAr ? "غير سعودي" : "Non-Saudi",
-                    isAr ? "نسبة التوطين" : "Localization %",
-                  ].map((h) => (
-                    <th
-                      key={h}
-                      className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide whitespace-nowrap text-start"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {visible.map((g, idx) => {
-                  const pct = g.total > 0 ? Math.round((g.saudi / g.total) * 100) : 0;
-                  const isUnmapped = g.code === null;
-                  return (
-                    <tr
-                      key={g.key}
-                      className={cn(
-                        "hover:bg-muted/20 transition-colors",
-                        idx % 2 === 0 ? "bg-white" : "bg-muted/10",
+      {/* Sections */}
+      {visibleSections.length === 0 ? (
+        <div className="py-16 text-center rounded-xl border border-border bg-white shadow-sm">
+          <p className="text-sm text-muted-foreground">
+            {isAr ? "لا توجد نتائج تطابق البحث." : "No results match your search."}
+          </p>
+        </div>
+      ) : (
+        visibleSections.map((section) => (
+          <div key={section.name} className="space-y-3">
+            {/* Section header */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <h2 className="text-base font-bold text-foreground">{section.name}</h2>
+              <span className="text-xs text-muted-foreground">
+                {section.cards.length} {isAr ? "رمز" : "codes"} ·{" "}
+                {section.headcount} {isAr ? "موظف" : "employees"}
+              </span>
+            </div>
+
+            {/* Cards grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5">
+              {section.cards.map((c) => {
+                const isUnmapped = c.code === null;
+                return (
+                  <div
+                    key={c.key}
+                    className={cn(
+                      "rounded-lg border bg-white shadow-sm px-3 py-2.5 flex flex-col gap-1",
+                      isUnmapped ? "border-dashed border-amber-300" : "border-border",
+                    )}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      {isUnmapped ? (
+                        <span className="text-[11px] text-amber-600 italic">
+                          {isAr ? "بانتظار التحقق" : "to verify"}
+                        </span>
+                      ) : (
+                        <span className="font-mono text-xs tabular-nums text-muted-foreground">
+                          {c.code}
+                        </span>
                       )}
-                    >
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        {isUnmapped ? (
-                          <span className="text-xs text-muted-foreground italic">
-                            {isAr ? "بانتظار التحقق" : "to verify"}
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 font-mono text-sm tabular-nums text-foreground">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                            {g.code}
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        <p className="text-foreground font-medium">
-                          {isAr ? g.officialAr : g.officialEn}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {isAr ? g.officialEn : g.officialAr}
-                          {g.professions.size > 1 && (
-                            <span className="ms-1">
-                              · {g.professions.size} {isAr ? "مسميات" : "titles"}
-                            </span>
-                          )}
-                        </p>
-                      </td>
-                      <td className="px-4 py-3 tabular-nums font-bold text-foreground">{g.total}</td>
-                      <td className="px-4 py-3 min-w-40">
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden flex">
-                            <div
-                              className="h-full bg-emerald-500"
-                              style={{ width: `${(g.saudi / maxTotal) * 100}%` }}
-                            />
-                            <div
-                              className="h-full bg-amber-400"
-                              style={{ width: `${(g.nonSaudi / maxTotal) * 100}%` }}
-                            />
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 tabular-nums">
-                        <span className="inline-flex items-center gap-1 text-emerald-700">
-                          <UserCheck className="w-3.5 h-3.5" />
-                          {g.saudi}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 tabular-nums">
-                        <span className="inline-flex items-center gap-1 text-amber-700">
-                          <UserX className="w-3.5 h-3.5" />
-                          {g.nonSaudi}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={cn(
-                            "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold tabular-nums",
-                            pct >= 50
-                              ? "bg-emerald-100 text-emerald-700"
-                              : "bg-amber-100 text-amber-700",
-                          )}
-                        >
-                          {pct}%
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                      <span className="text-lg font-bold tabular-nums text-foreground leading-none">
+                        {c.total}
+                      </span>
+                    </div>
+                    <p className="text-xs font-medium text-foreground leading-snug line-clamp-2" title={`${c.officialAr}\n${c.officialEn}`}>
+                      {isAr ? c.officialAr : c.officialEn}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        )}
-      </div>
+        ))
+      )}
     </div>
   );
 }

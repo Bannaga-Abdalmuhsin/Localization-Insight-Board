@@ -31,9 +31,13 @@ Arabic profession, reusing the normalizer from `professionMatch.ts`).
   rows include مراقب الجودة=754301 (confirmed exact), خياط sits in 7531 group.
 
 ## Confidence model (compliance honesty layer)
-STATUS: as of 2026-06-25 ALL ~34 professions are `confirmed` (user supplied every
-code one-by-one from the HRSD/Masar portals). No `review`/`pending` entries remain,
-but keep the model below for any NEW unmapped professions added later.
+STATUS: the original ~34 professions are all `confirmed` (user supplied every code
+one-by-one from the HRSD/Masar portals). The MSD_Data v1.4 dataset (207 employees,
+2 projects) introduced ~18 NEW unmapped professions (e.g. فني صيانة آلات كهربائية,
+مهندس شبكات, فني أجهزة إلكترونية, دهّان, سباك…) that render "to verify" until the
+user confirms their codes the same way. Beware near-miss word orders: فني صيانة
+آلات كهربائية ≠ فني كهربائي صيانة آلات (311908) — distinct official titles; never
+auto-merge them.
 Every stored code is a REAL observed HRSD code. `confidence` distinguishes:
 - `confirmed` — exact official-title match (now all stored professions).
 - `review` — no exact page found; closest occupation in the correct ISCO family.

@@ -17,6 +17,7 @@ export interface ProjectEmployee {
   project: string | null;
   profession_category: string | null;
   required_saudization_pct: number | null;
+  job_description: string | null;
 }
 
 export interface CategoryMetrics {
