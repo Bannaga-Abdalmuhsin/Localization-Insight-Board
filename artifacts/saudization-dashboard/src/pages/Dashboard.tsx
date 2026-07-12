@@ -295,7 +295,6 @@ function CategoryCard({ cat, isAr }: { cat: CategoryMetrics; isAr: boolean }) {
 
 const COMPANY_LABELS: Record<string, { label: string; color: string }> = {
   Aces: { label: "ACES", color: "text-primary" },
-  Mac:  { label: "MAC",  color: "text-violet-700" },
   Anet: { label: "ANET", color: "text-amber-700" },
 };
 
@@ -308,16 +307,14 @@ function BreakdownTable({
   cat: CategoryMetrics;
   isAr: boolean;
 }) {
-  const companies = ["Aces", "Mac", "Anet"];
+  const companies = ["Aces", "Anet"];
 
   const companyBg: Record<string, string> = {
     Aces: "bg-blue-50 border-blue-100",
-    Mac:  "bg-violet-50 border-violet-100",
     Anet: "bg-amber-50 border-amber-100",
   };
   const companyHeaderBg: Record<string, string> = {
     Aces: "bg-blue-700",
-    Mac:  "bg-violet-700",
     Anet: "bg-amber-600",
   };
 
@@ -331,7 +328,7 @@ function BreakdownTable({
       </div>
 
       {/* Column headers */}
-      <div className="grid grid-cols-[minmax(200px,1.4fr)_1fr_1fr_1fr_minmax(150px,1.2fr)] border-b border-border">
+      <div className="grid grid-cols-[minmax(200px,1.4fr)_1fr_1fr_minmax(150px,1.2fr)] border-b border-border">
         <div className="px-6 py-3 bg-muted/30 flex items-end">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
             {isAr ? "المشروع" : "Project"}
@@ -339,13 +336,10 @@ function BreakdownTable({
         </div>
         {companies.map((c) => (
           <div key={c} className={cn("px-3 py-3 flex items-center justify-center",
-            c === "Mac"  ? "bg-white border-b-2 border-violet-300" :
             c === "Aces" ? "bg-white border-b-2 border-blue-300" :
             c === "Anet" ? "bg-white border-b-2 border-amber-300" :
             companyHeaderBg[c])}>
-            {c === "Mac" ? (
-              <img src="/mac-logo.png" alt="MAC" className="h-10 w-auto object-contain" />
-            ) : c === "Aces" ? (
+            {c === "Aces" ? (
               <img src="/aces-logo.png" alt="ACES" className="h-8 w-auto object-contain" />
             ) : c === "Anet" ? (
               <img src="/anet-logo.png" alt="ANET" className="h-9 w-auto object-contain" />
@@ -372,7 +366,7 @@ function BreakdownTable({
             <div
               key={r.name}
               className={cn(
-                "grid grid-cols-[minmax(200px,1.4fr)_1fr_1fr_1fr_minmax(150px,1.2fr)] items-stretch",
+                "grid grid-cols-[minmax(200px,1.4fr)_1fr_1fr_minmax(150px,1.2fr)] items-stretch",
                 !r.isCompliant && "bg-red-50/30"
               )}
             >

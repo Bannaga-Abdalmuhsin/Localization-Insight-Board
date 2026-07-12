@@ -74,8 +74,9 @@ CREATE INDEX login_logs_logged_in_at_idx ON login_logs (logged_in_at DESC);
 ```
 
 Live data table: `project_employees` (207 employees, projects STC COW MS + STC IBS MS,
-companies Aces/Mac/Anet). Includes `job_description text` (current company job
-description per employee, imported from MSD_Data v1.4).
+companies Aces/Anet — MAC closed July 2026, its 55 employees transferred to Anet).
+Includes `job_description text` (current company job description per employee,
+imported from MSD_Data v1.4).
 
 ## Gap Formula
 

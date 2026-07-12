@@ -91,7 +91,7 @@ function computeCategory(
   const nonSaudiToTerminate = gap;
   const targetTotal = total; // headcount stays fixed
 
-  const COMPANIES = ["Aces", "Mac", "Anet"];
+  const COMPANIES = ["Aces", "Anet"];
   const projectKey = (e: ProjectEmployee) => (e.project ?? "").trim() || "Unknown";
   const projects = Array.from(new Set(group.map(projectKey))).sort();
   const byProject: GroupMetrics[] = projects.map((project) => {
