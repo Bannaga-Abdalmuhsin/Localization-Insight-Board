@@ -45,7 +45,7 @@ export default function Dashboard() {
     );
   }
 
-  const { eng30, eng25, tech, totalAll, scopedTotal, scopedSaudi, scopedPct, naTotal } = metrics;
+  const { eng30, spec, tech, totalAll, scopedTotal, scopedSaudi, scopedPct, naTotal } = metrics;
   const projectNames = Array.from(
     new Set(metrics.employees.map((e) => (e.project ?? "").trim()).filter(Boolean))
   ).sort();
@@ -74,44 +74,51 @@ export default function Dashboard() {
           <Stat
             label={isAr ? "الامتثال الكلي" : "Overall Compliance"}
             value={`${(scopedPct * 100).toFixed(1)}%`}
-            highlight={scopedPct >= 0.25 ? "green" : "red"}
+            highlight={metrics.overallCompliant ? "green" : "red"}
           />
         </div>
       </div>
 
       {/* Section title */}
-      <div className="flex items-center gap-2">
-        <ShieldAlert className="w-5 h-5 text-amber-500" />
-        <h2 className="text-base font-bold text-foreground">
-          {isAr ? "حالة الامتثال للتوطين" : "Localization Compliance Status"}
-        </h2>
+      <div>
+        <div className="flex items-center gap-2">
+          <ShieldAlert className="w-5 h-5 text-amber-500" />
+          <h2 className="text-base font-bold text-foreground">
+            {isAr ? "حالة الامتثال للتوطين" : "Localization Compliance Status"}
+          </h2>
+        </div>
+        <p className="text-xs text-muted-foreground mt-1.5">
+          {isAr
+            ? "التصنيف حسب فئات الهيئة السعودية للمهندسين (مهندس / أخصائي / فني) والنسب وفق قرارات وزارة الموارد البشرية: المهن الهندسية 30% (قرار 93483 — نافذ من 30/06/2026)، المهن الفنية الهندسية 30% (قرار 103105 — نافذ من 27/07/2025)، مهن الاتصالات وتقنية المعلومات 25% لكل مجموعة."
+            : "Classified per Saudi Council of Engineers categories (Engineer / Specialist / Technician) with HRSD localization targets: Engineering professions 30% (Decision 93483 — effective 30/06/2026), Technical engineering professions 30% (Decision 103105 — effective 27/07/2025), ICT professions 25% per job group."}
+        </p>
       </div>
 
       {/* Three category cards */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
         <CategoryCard cat={eng30} isAr={isAr} />
-        <CategoryCard cat={eng25} isAr={isAr} />
         <CategoryCard cat={tech} isAr={isAr} />
+        <CategoryCard cat={spec} isAr={isAr} />
       </div>
 
-      {/* Project breakdown — Eng 30% */}
+      {/* Project breakdown — Engineers 30% */}
       <BreakdownTable
-        title={isAr ? "التوزيع حسب المشروع والشركة — الهندسية 30%" : "Project & Company Breakdown — Engineering Category (30%)"}
+        title={isAr ? "التوزيع حسب المشروع والشركة — مهندس (هدف 30%)" : "Project & Company Breakdown — Engineer (30% target)"}
         cat={eng30}
         isAr={isAr}
       />
 
-      {/* Project breakdown — Eng 25% */}
+      {/* Project breakdown — Technicians 30% */}
       <BreakdownTable
-        title={isAr ? "التوزيع حسب المشروع والشركة — الهندسية 25%" : "Project & Company Breakdown — Engineering Category (25%)"}
-        cat={eng25}
+        title={isAr ? "التوزيع حسب المشروع والشركة — فني (هدف 30%)" : "Project & Company Breakdown — Technician (30% target)"}
+        cat={tech}
         isAr={isAr}
       />
 
-      {/* Project breakdown — Tech */}
+      {/* Project breakdown — Specialists 25% */}
       <BreakdownTable
-        title={isAr ? "التوزيع حسب المشروع والشركة — المهن التقنية" : "Project & Company Breakdown — Technical Category (25%)"}
-        cat={tech}
+        title={isAr ? "التوزيع حسب المشروع والشركة — أخصائي (هدف 25%)" : "Project & Company Breakdown — Specialist (25% target)"}
+        cat={spec}
         isAr={isAr}
       />
 
@@ -167,11 +174,11 @@ function CategoryCard({ cat, isAr }: { cat: CategoryMetrics; isAr: boolean }) {
   const gapPct = targetPct - currentPct;
 
   const codeLabel =
-    cat.code === "Eng" && cat.target === 0.3
-      ? isAr ? "الهندسية (30%) - مهندس" : "Engineering (30%) - Engineer"
-      : cat.code === "Eng" && cat.target === 0.25
-      ? isAr ? "الهندسية (25%) - أخصائي" : "Engineering (25%) - Specialist"
-      : isAr ? "المهن التقنية - فني" : "Technical - Technician";
+    cat.code === "Eng"
+      ? isAr ? "مهندس (30%) — المهن الهندسية" : "Engineer (30%) — Engineering Professions"
+      : cat.code === "Spec"
+      ? isAr ? "أخصائي (25%) — الاتصالات وتقنية المعلومات" : "Specialist (25%) — ICT Professions"
+      : isAr ? "فني (30%) — المهن الفنية الهندسية" : "Technician (30%) — Technical Engineering";
 
   return (
     <div

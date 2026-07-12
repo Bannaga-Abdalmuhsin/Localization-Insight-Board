@@ -60,8 +60,10 @@ export interface ProjectMetrics {
   naTotal: number;
   naSaudi: number;
   eng30: CategoryMetrics;
-  eng25: CategoryMetrics;
+  spec: CategoryMetrics;
   tech: CategoryMetrics;
+  /** True only when every category (Engineer 30%, Technician 30%, Specialist 25%) meets its own HRSD target. */
+  overallCompliant: boolean;
   employees: ProjectEmployee[];
 }
 
@@ -133,10 +135,18 @@ function computeCategory(
   };
 }
 
-function computeMetrics(employees: ProjectEmployee[]): ProjectMetrics {
+export function computeMetrics(employees: ProjectEmployee[]): ProjectMetrics {
   const scoped = employees.filter((e) => e.saudization_code !== "NA");
   const na = employees.filter((e) => e.saudization_code === "NA");
   const scopedSaudi = scoped.filter((e) => e.is_saudi).length;
+
+  // HRSD localization targets (verified July 2026):
+  // - Engineering professions: 30% — Decision 93483 (31/12/2025), effective 30/06/2026
+  // - Technical engineering professions: 30% — Decision 103105 (26/01/2025), effective 27/07/2025
+  // - ICT / specialist professions: 25% per job group — ICT localization decision (2021)
+  const eng30 = computeCategory(employees, "Eng", 0.3);
+  const spec = computeCategory(employees, "Spec", 0.25);
+  const tech = computeCategory(employees, "Tech", 0.3);
 
   return {
     totalAll: employees.length,
@@ -146,9 +156,10 @@ function computeMetrics(employees: ProjectEmployee[]): ProjectMetrics {
     scopedPct: scoped.length > 0 ? scopedSaudi / scoped.length : 0,
     naTotal: na.length,
     naSaudi: na.filter((e) => e.is_saudi).length,
-    eng30: computeCategory(employees, "Eng", 0.3, 0.3),
-    eng25: computeCategory(employees, "Eng", 0.25, 0.25),
-    tech: computeCategory(employees, "Tech", 0.25),
+    eng30,
+    spec,
+    tech,
+    overallCompliant: eng30.isCompliant && spec.isCompliant && tech.isCompliant,
     employees,
   };
 }
