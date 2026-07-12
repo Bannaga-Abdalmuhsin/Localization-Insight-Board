@@ -32,12 +32,15 @@ Arabic profession, reusing the normalizer from `professionMatch.ts`).
 
 ## Confidence model (compliance honesty layer)
 STATUS: the original ~34 professions are all `confirmed` (user supplied every code
-one-by-one from the HRSD/Masar portals). The MSD_Data v1.4 dataset (207 employees,
-2 projects) introduced ~18 NEW unmapped professions (e.g. فني صيانة آلات كهربائية,
-مهندس شبكات, فني أجهزة إلكترونية, دهّان, سباك…) that render "to verify" until the
-user confirms their codes the same way. Beware near-miss word orders: فني صيانة
-آلات كهربائية ≠ فني كهربائي صيانة آلات (311908) — distinct official titles; never
-auto-merge them.
+one-by-one from the HRSD/Masar portals). The 18 MSD_Data v1.4 professions were
+researched July 2026: 1 promoted to `confirmed` (فني هندسة اتصالات سلكية = 352201,
+observed exact-title on the hrsd.gov.sa technicians group page's default top-12 view,
+beside the confirmed wireless 352202), 4 to `review` (741101×2, 742202, 352201-general),
+13 remain `pending` (ISCO family noted) awaiting user confirmation via Masar. Beware
+near-miss word orders: فني صيانة آلات كهربائية ≠ فني كهربائي صيانة آلات (311908) —
+distinct official titles; never auto-merge them. AI search-engine "answers" invent
+plausible 6-digit codes (e.g. 252101, 713201, 214423) — record them only as
+unverified candidates in `pending` notes, never as stored codes.
 Every stored code is a REAL observed HRSD code. `confidence` distinguishes:
 - `confirmed` — exact official-title match (now all stored professions).
 - `review` — no exact page found; closest occupation in the correct ISCO family.

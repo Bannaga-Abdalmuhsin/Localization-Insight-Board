@@ -46,4 +46,62 @@ describe("getOccupationCode", () => {
     expect(getOccupationCode("")).toBeNull();
     expect(getOccupationCode(null)).toBeNull();
   });
+
+  describe("MSD_Data v1.4 professions (researched July 2026)", () => {
+    it("confirms the wired-communication technician from the official HRSD page", () => {
+      const oc = getOccupationCode("فني هندسة اتصالات سلكية");
+      expect(oc?.code).toBe("352201");
+      expect(oc?.confidence).toBe("confirmed");
+    });
+
+    it("maps wiring technicians to the closest observed family code as review", () => {
+      for (const title of ["فني كهربائي تمديدات كهربائية", "فني كهرباء تمديدات"]) {
+        const oc = getOccupationCode(title);
+        expect(oc?.code).toBe("741101");
+        expect(oc?.confidence).toBe("review");
+      }
+      expect(getOccupationCode("عامل خدمات الاتصالات وتقنية المعلومات")?.code).toBe("742202");
+      expect(getOccupationCode("عامل خدمات الاتصالات وتقنية المعلومات")?.confidence).toBe("review");
+      expect(getOccupationCode("فني في الاتصالات السلكية واللاسلكية عام")?.code).toBe("352201");
+      expect(getOccupationCode("فني في الاتصالات السلكية واللاسلكية عام")?.confidence).toBe("review");
+    });
+
+    it("resolves دهّان (with shadda) to a pending entry via normalization", () => {
+      const oc = getOccupationCode("دهّان");
+      expect(oc).not.toBeNull();
+      expect(oc?.code).toBeNull();
+      expect(oc?.confidence).toBe("pending");
+    });
+
+    it("never merges فني صيانة آلات كهربائية into the 311908 near-miss", () => {
+      const oc = getOccupationCode("فني صيانة آلات كهربائية");
+      expect(oc).not.toBeNull();
+      expect(oc?.code).toBeNull();
+      expect(oc?.confidence).toBe("pending");
+      // the word-order sibling keeps its own confirmed code
+      expect(getOccupationCode("فني كهربائي صيانة آلات")?.code).toBe("311908");
+    });
+
+    it("keeps every remaining backlog profession as pending (code null), never blank-unmapped", () => {
+      const pendingTitles = [
+        "فني أجهزة إلكترونية",
+        "مهندس شبكات",
+        "فني هندسة ميكانيكية",
+        "فني نظم حاسب آلي",
+        "كاتب علاقات حكومية",
+        "سائق سيارة",
+        "رسام هندسي",
+        "عامل تصنيع",
+        "عامل",
+        "سباك",
+        "أخصائي دعم فني",
+      ];
+      for (const title of pendingTitles) {
+        const oc = getOccupationCode(title);
+        expect(oc, title).not.toBeNull();
+        expect(oc?.code, title).toBeNull();
+        expect(oc?.confidence, title).toBe("pending");
+      }
+    });
+  });
 });

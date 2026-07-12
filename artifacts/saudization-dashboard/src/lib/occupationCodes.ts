@@ -248,6 +248,125 @@ const RAW: Record<string, OccupationCode> = {
     officialEn: "Public relations officer",
     confidence: "confirmed",
   },
+
+  // ---------- MSD_Data v1.4 professions (researched July 2026) ----------
+  // Confirmed: observed on the official HRSD skills-taxonomy page
+  // (technicians-and-associate-professionals default view), exact title —
+  // sits directly beside the already-confirmed wireless variant 352202.
+  "فني هندسة اتصالات سلكية": {
+    code: "352201",
+    officialAr: "فني هندسة اتصالات سلكية",
+    officialEn: "Wired communication engineering technician",
+    confidence: "confirmed",
+  },
+
+  // Review: real observed HRSD codes of the closest official occupation in the
+  // correct ISCO family — confirm the exact variant on the Masar/HRSD portal.
+  "فني كهربائي تمديدات كهربائية": {
+    code: "741101",
+    officialAr: "كهربائي مباني",
+    officialEn: "Building electrician (closest official in family 7411 — verify exact wiring-technician variant)",
+    confidence: "review",
+  },
+  "فني كهرباء تمديدات": {
+    code: "741101",
+    officialAr: "كهربائي مباني",
+    officialEn: "Building electrician (closest official in family 7411 — verify exact wiring-technician variant)",
+    confidence: "review",
+  },
+  "عامل خدمات الاتصالات وتقنية المعلومات": {
+    code: "742202",
+    officialAr: "عامل تركيب خطوط الاتصالات وتقنية المعلومات",
+    officialEn: "Telecom & IT line installer (closest official in family 7422 — verify services-worker variant)",
+    confidence: "review",
+  },
+  "فني في الاتصالات السلكية واللاسلكية عام": {
+    code: "352201",
+    officialAr: "فني هندسة اتصالات سلكية",
+    officialEn: "Wired communication engineering technician (closest official in family 3522 — general-telecom variant unverified)",
+    confidence: "review",
+  },
+
+  // Pending: no reliable official code located via automated sources; the ISCO
+  // family (and any unverified candidate) is noted for manual portal lookup.
+  "فني صيانة آلات كهربائية": {
+    code: null,
+    officialAr: "عائلة فنيي الميكانيكا الكهربائية (7412 / 3119)",
+    officialEn: "ISCO family 7412/3119 — NOT the same title as فني كهربائي صيانة آلات (311908); distinct official occupations",
+    confidence: "pending",
+  },
+  "فني أجهزة إلكترونية": {
+    code: null,
+    officialAr: "عائلة فنيي الإلكترونيات (3114)",
+    officialEn: "ISCO family 3114 — electronics engineering technicians",
+    confidence: "pending",
+  },
+  "مهندس شبكات": {
+    code: null,
+    officialAr: "عائلة اختصاصيي الشبكات (2523)",
+    officialEn: "ISCO family 2523 — computer network professionals (candidate 252101 unverified)",
+    confidence: "pending",
+  },
+  "فني هندسة ميكانيكية": {
+    code: null,
+    officialAr: "عائلة تقنيي الهندسة الميكانيكية (3115)",
+    officialEn: "ISCO family 3115 — candidate تقني هندسة ميكانيكية 214423 unverified",
+    confidence: "pending",
+  },
+  "فني نظم حاسب آلي": {
+    code: null,
+    officialAr: "عائلة فنيي عمليات تقنية المعلومات (3511)",
+    officialEn: "ISCO family 3511 — ICT operations technicians",
+    confidence: "pending",
+  },
+  "دهّان": {
+    code: null,
+    officialAr: "عائلة الدهانين (7131)",
+    officialEn: "ISCO family 7131 — candidate دهان مباني 713201 unverified",
+    confidence: "pending",
+  },
+  "كاتب علاقات حكومية": {
+    code: null,
+    officialAr: "عائلة الكتبة (4419)",
+    officialEn: "ISCO family 4419 — candidate 411001 unverified",
+    confidence: "pending",
+  },
+  "سائق سيارة": {
+    code: null,
+    officialAr: "عائلة سائقي السيارات (8322)",
+    officialEn: "ISCO family 8322 — car, taxi and van drivers",
+    confidence: "pending",
+  },
+  "رسام هندسي": {
+    code: null,
+    officialAr: "عائلة الرسامين الهندسيين (3118)",
+    officialEn: "ISCO family 3118 — draughtspersons",
+    confidence: "pending",
+  },
+  "عامل تصنيع": {
+    code: null,
+    officialAr: "عائلة عمال التصنيع (9329)",
+    officialEn: "ISCO family 9329 — manufacturing labourers",
+    confidence: "pending",
+  },
+  "عامل": {
+    code: null,
+    officialAr: "عائلة العمال (9622 / 9329)",
+    officialEn: "ISCO family 9622/9329 — general labourers",
+    confidence: "pending",
+  },
+  "سباك": {
+    code: null,
+    officialAr: "عائلة السباكين (7126)",
+    officialEn: "ISCO family 7126 — candidate 712601 unverified",
+    confidence: "pending",
+  },
+  "أخصائي دعم فني": {
+    code: null,
+    officialAr: "عائلة فنيي دعم المستخدمين (3512)",
+    officialEn: "ISCO family 3512 — ICT user support technicians",
+    confidence: "pending",
+  },
 };
 
 const LOOKUP = new Map<string, OccupationCode>();
