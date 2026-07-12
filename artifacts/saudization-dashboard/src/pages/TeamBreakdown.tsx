@@ -5,17 +5,14 @@ import {
   Search,
   ChevronUp,
   ChevronDown,
-  MapPin,
-  Building,
   ShieldCheck,
   ShieldAlert,
 } from "lucide-react";
 import { useProjectData, ProjectEmployee } from "@/lib/useProjectData";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
-import CompanyLogo, { REGION_AR } from "@/components/CompanyLogo";
+import CompanyLogo from "@/components/CompanyLogo";
 
-type GroupBy = "region" | "company";
 type SortKey = "name" | "total" | "saudi" | "nonSaudi" | "eng30Pct" | "specPct" | "techPct";
 
 interface GroupRow {
@@ -37,12 +34,10 @@ interface GroupRow {
   techCompliant: boolean;
 }
 
-function buildGroups(employees: ProjectEmployee[], groupBy: GroupBy): GroupRow[] {
+function buildGroups(employees: ProjectEmployee[]): GroupRow[] {
   const map = new Map<string, ProjectEmployee[]>();
   for (const e of employees) {
-    const key = groupBy === "region"
-      ? (e.region ?? "Unknown")
-      : (e.company ?? "Unknown");
+    const key = e.company ?? "Unknown";
     if (!map.has(key)) map.set(key, []);
     map.get(key)!.push(e);
   }
@@ -84,7 +79,6 @@ export default function TeamBreakdown({ targetPct: _unused }: { targetPct: numbe
   const { lang } = useTranslation();
   const isAr = lang === "ar";
 
-  const [groupBy, setGroupBy] = useState<GroupBy>("region");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "compliant" | "action">("all");
   const [sortKey, setSortKey] = useState<SortKey>("name");
@@ -127,7 +121,7 @@ export default function TeamBreakdown({ targetPct: _unused }: { targetPct: numbe
     );
   }
 
-  const rows = buildGroups(metrics.employees, groupBy);
+  const rows = buildGroups(metrics.employees);
 
   const filtered = rows
     .filter((r) => {
@@ -164,8 +158,8 @@ export default function TeamBreakdown({ targetPct: _unused }: { targetPct: numbe
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           {isAr
-            ? "حالة الامتثال للتوطين حسب المنطقة أو الشركة — مشروع stc COW MS"
-            : "Localization compliance by Region or Company — stc COW MS project"}
+            ? "حالة الامتثال للتوطين حسب الشركة — مشروع stc COW MS"
+            : "Localization compliance by Company — stc COW MS project"}
         </p>
       </div>
 
@@ -185,34 +179,6 @@ export default function TeamBreakdown({ targetPct: _unused }: { targetPct: numbe
 
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3">
-        {/* Group by toggle */}
-        <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-          <button
-            onClick={() => setGroupBy("region")}
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
-              groupBy === "region"
-                ? "bg-white text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <MapPin className="w-3.5 h-3.5" />
-            {isAr ? "حسب المنطقة" : "By Region"}
-          </button>
-          <button
-            onClick={() => setGroupBy("company")}
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
-              groupBy === "company"
-                ? "bg-white text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <Building className="w-3.5 h-3.5" />
-            {isAr ? "حسب الشركة" : "By Company"}
-          </button>
-        </div>
-
         {/* Search */}
         <div className="relative flex-1 min-w-48 max-w-xs">
           <Search className="absolute top-1/2 -translate-y-1/2 start-3 w-4 h-4 text-muted-foreground" />
@@ -261,7 +227,7 @@ export default function TeamBreakdown({ targetPct: _unused }: { targetPct: numbe
             <table className="w-full text-sm">
               <thead className="border-b border-border bg-muted/40">
                 <tr>
-                  <Th label={groupBy === "region" ? (isAr ? "المنطقة" : "Region") : (isAr ? "الشركة" : "Company")} k="name" />
+                  <Th label={isAr ? "الشركة" : "Company"} k="name" />
                   <Th label={isAr ? "الإجمالي" : "Total"} k="total" />
                   <Th label={isAr ? "سعودي" : "Saudi"} k="saudi" />
                   <Th label={isAr ? "غير سعودي" : "Non-Saudi"} k="nonSaudi" />
@@ -282,9 +248,7 @@ export default function TeamBreakdown({ targetPct: _unused }: { targetPct: numbe
                       className={cn("hover:bg-muted/30 transition-colors", idx % 2 === 0 ? "bg-white" : "bg-muted/10")}
                     >
                       <td className="px-4 py-3.5 font-semibold text-foreground whitespace-nowrap">
-                        {groupBy === "company"
-                          ? <CompanyLogo company={row.name} className="h-7" />
-                          : (isAr ? (REGION_AR[row.name] ?? row.name) : row.name)}
+                        <CompanyLogo company={row.name} className="h-7" />
                       </td>
                       <td className="px-4 py-3.5 tabular-nums text-foreground">{row.total}</td>
                       <td className="px-4 py-3.5 tabular-nums text-emerald-600 font-medium">{row.saudi}</td>
