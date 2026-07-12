@@ -31,7 +31,7 @@ export interface CategoryMetrics {
   saudiNeededToHire: number;
   nonSaudiToTerminate: number;
   targetTotal: number;
-  byRegion: RegionMetrics[];
+  byProject: GroupMetrics[];
 }
 
 export interface CompanySlice {
@@ -41,8 +41,8 @@ export interface CompanySlice {
   required: number;
 }
 
-export interface RegionMetrics {
-  region: string;
+export interface GroupMetrics {
+  name: string;
   total: number;
   saudi: number;
   nonSaudi: number;
@@ -91,16 +91,15 @@ function computeCategory(
   const nonSaudiToTerminate = gap;
   const targetTotal = total; // headcount stays fixed
 
-  const REGIONS = ["Central", "East", "South", "West"];
   const COMPANIES = ["Aces", "Mac", "Anet"];
-  const byRegion: RegionMetrics[] = REGIONS.map((region) => {
-    const rg = group.filter(
-      (e) => (e.region ?? "").toLowerCase() === region.toLowerCase()
-    );
-    const rs = rg.filter((e) => e.is_saudi).length;
-    const rt = rg.length;
+  const projectKey = (e: ProjectEmployee) => (e.project ?? "").trim() || "Unknown";
+  const projects = Array.from(new Set(group.map(projectKey))).sort();
+  const byProject: GroupMetrics[] = projects.map((project) => {
+    const pg = group.filter((e) => projectKey(e) === project);
+    const ps = pg.filter((e) => e.is_saudi).length;
+    const pt = pg.length;
     const byCompany: CompanySlice[] = COMPANIES.map((company) => {
-      const cg = rg.filter(
+      const cg = pg.filter(
         (e) => (e.company ?? "").toLowerCase() === company.toLowerCase()
       );
       const cs = cg.filter((e) => e.is_saudi).length;
@@ -109,15 +108,15 @@ function computeCategory(
       return { company, total: ct, saudi: cs, required: req };
     });
     return {
-      region,
-      total: rt,
-      saudi: rs,
-      nonSaudi: rt - rs,
-      currentPct: rt > 0 ? rs / rt : 0,
-      isCompliant: rt > 0 ? rs / rt >= targetPct : true,
+      name: project,
+      total: pt,
+      saudi: ps,
+      nonSaudi: pt - ps,
+      currentPct: pt > 0 ? ps / pt : 0,
+      isCompliant: pt > 0 ? ps / pt >= targetPct : true,
       byCompany,
     };
-  }).filter((r) => r.total > 0);
+  }).filter((p) => p.total > 0);
 
   return {
     code,
@@ -130,7 +129,7 @@ function computeCategory(
     saudiNeededToHire,
     nonSaudiToTerminate,
     targetTotal,
-    byRegion,
+    byProject,
   };
 }
 

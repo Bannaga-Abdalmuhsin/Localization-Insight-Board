@@ -13,8 +13,7 @@ import {
   ShieldAlert,
   ShieldCheck,
 } from "lucide-react";
-import CompanyLogo, { REGION_AR } from "@/components/CompanyLogo";
-import { useProjectData, CategoryMetrics, RegionMetrics } from "@/lib/useProjectData";
+import { useProjectData, CategoryMetrics, GroupMetrics } from "@/lib/useProjectData";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
 
@@ -47,6 +46,9 @@ export default function Dashboard() {
   }
 
   const { eng30, eng25, tech, totalAll, scopedTotal, scopedSaudi, scopedPct, naTotal } = metrics;
+  const projectNames = Array.from(
+    new Set(metrics.employees.map((e) => (e.project ?? "").trim()).filter(Boolean))
+  ).sort();
 
   return (
     <div className="p-6 space-y-6">
@@ -57,11 +59,13 @@ export default function Dashboard() {
           <div className="flex items-center gap-2 mb-1">
             <Building2 className="w-4 h-4 opacity-70" />
             <span className="text-xs font-medium opacity-70 uppercase tracking-wide">
-              {isAr ? "المشروع" : "Project"}
+              {isAr ? "الإدارة" : "Department"}
             </span>
           </div>
-          <h1 className="text-lg font-bold">stc COW MS</h1>
-          <p className="text-xs opacity-60 mt-0.5">ACES-MSD</p>
+          <h1 className="text-lg font-bold">ACES MSD</h1>
+          <p className="text-xs opacity-60 mt-0.5">
+            {projectNames.length > 0 ? projectNames.join(" · ") : "ACES-MSD"}
+          </p>
         </div>
         <div className="flex items-center gap-6">
           <Stat label={isAr ? "إجمالي العمالة" : "Total Workforce"} value={totalAll} />
@@ -90,23 +94,23 @@ export default function Dashboard() {
         <CategoryCard cat={tech} isAr={isAr} />
       </div>
 
-      {/* Regional breakdown — Eng 30% */}
-      <RegionalTable
-        title={isAr ? "التوزيع الإقليمي — الهندسية 30%" : "Regional Breakdown — Engineering Category (30%)"}
+      {/* Project breakdown — Eng 30% */}
+      <BreakdownTable
+        title={isAr ? "التوزيع حسب المشروع والشركة — الهندسية 30%" : "Project & Company Breakdown — Engineering Category (30%)"}
         cat={eng30}
         isAr={isAr}
       />
 
-      {/* Regional breakdown — Eng 25% */}
-      <RegionalTable
-        title={isAr ? "التوزيع الإقليمي — الهندسية 25%" : "Regional Breakdown — Engineering Category (25%)"}
+      {/* Project breakdown — Eng 25% */}
+      <BreakdownTable
+        title={isAr ? "التوزيع حسب المشروع والشركة — الهندسية 25%" : "Project & Company Breakdown — Engineering Category (25%)"}
         cat={eng25}
         isAr={isAr}
       />
 
-      {/* Regional breakdown — Tech */}
-      <RegionalTable
-        title={isAr ? "التوزيع الإقليمي — المهن التقنية" : "Regional Breakdown — Technical Category (25%)"}
+      {/* Project breakdown — Tech */}
+      <BreakdownTable
+        title={isAr ? "التوزيع حسب المشروع والشركة — المهن التقنية" : "Project & Company Breakdown — Technical Category (25%)"}
         cat={tech}
         isAr={isAr}
       />
@@ -295,7 +299,7 @@ const COMPANY_LABELS: Record<string, { label: string; color: string }> = {
   Anet: { label: "ANET", color: "text-amber-700" },
 };
 
-function RegionalTable({
+function BreakdownTable({
   title,
   cat,
   isAr,
@@ -330,7 +334,7 @@ function RegionalTable({
       <div className="grid grid-cols-[minmax(200px,1.4fr)_1fr_1fr_1fr_minmax(150px,1.2fr)] border-b border-border">
         <div className="px-6 py-3 bg-muted/30 flex items-end">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-            {isAr ? "المنطقة" : "Region"}
+            {isAr ? "المشروع" : "Project"}
           </span>
         </div>
         {companies.map((c) => (
@@ -361,23 +365,23 @@ function RegionalTable({
 
       {/* Data rows */}
       <div className="divide-y divide-border">
-        {cat.byRegion.map((r: RegionMetrics) => {
+        {cat.byProject.map((r: GroupMetrics) => {
           const totalRequired = Math.max(0, Math.ceil(cat.target * r.total) - r.saudi);
           const pct = r.total > 0 ? (r.currentPct * 100).toFixed(0) : "0";
           return (
             <div
-              key={r.region}
+              key={r.name}
               className={cn(
                 "grid grid-cols-[minmax(200px,1.4fr)_1fr_1fr_1fr_minmax(150px,1.2fr)] items-stretch",
                 !r.isCompliant && "bg-red-50/30"
               )}
             >
-              {/* Region */}
+              {/* Project */}
               <div className="px-6 py-5 flex items-center gap-2 bg-muted/10 border-r border-border">
                 {r.isCompliant
                   ? <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
                   : <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />}
-                <p className="text-base font-bold text-foreground whitespace-nowrap">{isAr ? (REGION_AR[r.region] ?? r.region) : r.region}</p>
+                <p className="text-base font-bold text-foreground whitespace-nowrap">{r.name}</p>
                 <p className={cn("text-sm font-semibold whitespace-nowrap", r.isCompliant ? "text-emerald-600" : "text-red-500")}>
                   {pct}%
                 </p>
