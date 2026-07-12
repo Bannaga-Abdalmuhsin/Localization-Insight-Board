@@ -13,14 +13,18 @@ import {
   ShieldAlert,
   ShieldCheck,
 } from "lucide-react";
-import { useProjectData, CategoryMetrics, GroupMetrics } from "@/lib/useProjectData";
+import { useState } from "react";
+import { useProjectData, computeMetrics, CategoryMetrics, GroupMetrics } from "@/lib/useProjectData";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n";
 
+type ScopeFilter = "all" | "cow" | "ibs" | "aces" | "anet";
+
 export default function Dashboard() {
-  const { metrics, isLoading, error } = useProjectData();
+  const { metrics: allMetrics, isLoading, error } = useProjectData();
   const { lang } = useTranslation();
   const isAr = lang === "ar";
+  const [scopeFilter, setScopeFilter] = useState<ScopeFilter>("all");
 
   if (isLoading) {
     return (
@@ -45,10 +49,31 @@ export default function Dashboard() {
     );
   }
 
+  const filteredEmployees = allMetrics.employees.filter((e) => {
+    const project = (e.project ?? "").toUpperCase();
+    const company = (e.company ?? "").toLowerCase();
+    switch (scopeFilter) {
+      case "cow": return project.includes("COW");
+      case "ibs": return project.includes("IBS");
+      case "aces": return company === "aces";
+      case "anet": return company === "anet";
+      default: return true;
+    }
+  });
+  const metrics = scopeFilter === "all" ? allMetrics : computeMetrics(filteredEmployees);
+
   const { eng30, spec, tech, totalAll, scopedTotal, scopedSaudi, scopedPct, naTotal } = metrics;
   const projectNames = Array.from(
     new Set(metrics.employees.map((e) => (e.project ?? "").trim()).filter(Boolean))
   ).sort();
+
+  const FILTERS: { key: ScopeFilter; label: string; labelAr: string }[] = [
+    { key: "all", label: "All", labelAr: "الكل" },
+    { key: "cow", label: "COW Project", labelAr: "مشروع COW" },
+    { key: "ibs", label: "IBS Project", labelAr: "مشروع IBS" },
+    { key: "aces", label: "ACES", labelAr: "ACES" },
+    { key: "anet", label: "Anet", labelAr: "Anet" },
+  ];
 
   return (
     <div className="p-6 space-y-6">
@@ -77,6 +102,24 @@ export default function Dashboard() {
             highlight={metrics.overallCompliant ? "green" : "red"}
           />
         </div>
+      </div>
+
+      {/* Scope filter buttons */}
+      <div className="flex flex-wrap items-center gap-2">
+        {FILTERS.map((f) => (
+          <button
+            key={f.key}
+            onClick={() => setScopeFilter(f.key)}
+            className={cn(
+              "px-4 py-1.5 text-sm font-medium rounded-lg border transition-colors",
+              scopeFilter === f.key
+                ? "bg-sidebar text-white border-sidebar shadow-sm"
+                : "bg-white text-muted-foreground border-border hover:border-sidebar/40 hover:text-foreground"
+            )}
+          >
+            {isAr ? f.labelAr : f.label}
+          </button>
+        ))}
       </div>
 
       {/* Section title */}
