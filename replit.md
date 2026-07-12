@@ -85,7 +85,7 @@ Engineering Council categories with HRSD localization targets:
 
 - `Eng` — Engineer (مهندس*), target 30% — HRSD Decision 93483 (31/12/2025), effective 30/06/2026, min wage SAR 8,000, SCE accreditation required (58 employees)
 - `Tech` — Technician (فني*, رسام هندسي, مراقب الجودة, مشرف موقع), target 30% — HRSD Decision 103105 (26/01/2025), effective 27/07/2025, min wage SAR 5,000, SCE accreditation required (73 employees)
-- `Spec` — Specialist (ICT: محلل مبرمج، مبرمج حاسب آلي، أخصائي دعم فني، مشغل الحاسب الالي), target 25% — ICT localization decision 2021, per job group (5 employees)
+- `Spec` — Specialist (ICT: محلل مبرمج، مبرمج حاسب آلي، أخصائي دعم فني، مشغل الحاسب الالي), target 30% — upgraded from 25% per user confirmation July 2026 (5 employees)
 - `NA` — out of localization scope (laborers, craft trades, admin) (71 employees)
 
 HRSD higher-rate rule: professions covered by multiple decisions take the HIGHER

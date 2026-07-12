@@ -38,11 +38,11 @@ function group(
 }
 
 describe("computeMetrics — HRSD category targets", () => {
-  it("uses 30% target for Engineers, 30% for Technicians, 25% for Specialists", () => {
+  it("uses 30% target for Engineers, Technicians, and Specialists", () => {
     const m = computeMetrics([]);
     expect(m.eng30.target).toBe(0.3);
     expect(m.tech.target).toBe(0.3);
-    expect(m.spec.target).toBe(0.25);
+    expect(m.spec.target).toBe(0.3);
   });
 
   it("marks Technicians non-compliant between 25% and 30% (old threshold must not pass)", () => {
@@ -68,7 +68,7 @@ describe("computeMetrics — HRSD category targets", () => {
     const employees = [
       ...group("Eng", 0.3, 3, 7), // 30% ✓
       ...group("Tech", 0.3, 3, 7), // 30% ✓
-      ...group("Spec", 0.25, 1, 3), // 25% ✓
+      ...group("Spec", 0.3, 3, 7), // 30% ✓
       ...group("NA", null, 0, 5), // excluded
     ];
     const m = computeMetrics(employees);
@@ -82,6 +82,6 @@ describe("computeMetrics — HRSD category targets", () => {
     const m = computeMetrics(group("NA", null, 1, 4));
     expect(m.spec.total).toBe(0);
     // An empty category has currentPct 0 which is below target — verify actual behavior
-    expect(m.spec.isCompliant).toBe(m.spec.currentPct >= 0.25);
+    expect(m.spec.isCompliant).toBe(m.spec.currentPct >= 0.3);
   });
 });

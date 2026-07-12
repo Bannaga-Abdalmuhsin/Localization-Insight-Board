@@ -2,4 +2,4 @@
 - [Profession matcher](profession-matcher.md) — category/family-based engine; per-person exceptions cannot be encoded as category rules; STC telecom domain (e.g. rigger=telecom tower tech).
 - [HRSD occupation codes](hrsd-occupation-codes.md) — portal unscrapeable; user is the authoritative code source; confirmed/review/pending confidence layer; new dataset professions start as "to verify".
 - [Supabase direct DB access](supabase-access.md) — DDL needs pg via aws-1-ap-southeast-1 pooler (port 6543, postgres.<ref>); db.<ref> host DNS-blocked; supabase-js is DML-only.
-- [HRSD localization targets & SCE classification](hrsd-localization-targets.md) — Eng 30% / Tech 30% / Spec 25%, higher-rate rule; banner compliance must check all categories, not a flat 25%.
+- [HRSD localization targets & SCE classification](hrsd-localization-targets.md) — Eng 30% / Tech 30% / Spec 30% (upgraded from 25%, user-confirmed), higher-rate rule; banner compliance must check all categories, not a flat 25%.

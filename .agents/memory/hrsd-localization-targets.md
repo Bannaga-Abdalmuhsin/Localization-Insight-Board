@@ -7,12 +7,12 @@ description: Verified HRSD localization percentages per SCE category (Engineer/S
 
 - **Engineering professions (مهندس\*)**: 30%, Decision **93483** dated 31/12/2025, effective **30/06/2026**, min wage SAR 8,000, SCE professional accreditation required, entities with 5+ workers in the covered professions, 46 professions.
 - **Technical engineering professions (فني\*)**: 30%, Decision **103105** dated 26/01/2025, effective **27/07/2025**, min wage SAR 5,000, SCE accreditation required.
-- **ICT professions**: 25% **per job group independently** (2021 decision): (1) telecom/IT engineering, (2) programming/analysis/app dev, (3) technical support & telecom technicians.
+- **ICT professions**: originally 25% per job group (2021 decision); **upgraded to 30% — user-confirmed July 2026, dashboard uses 30% for Spec**: (1) telecom/IT engineering, (2) programming/analysis/app dev, (3) technical support & telecom technicians.
 - **Higher-rate rule**: both HRSD procedural manuals state that professions targeted by multiple decisions take the **higher** percentage. This is why telecom technicians are 30% (tech-eng) not 25% (ICT).
 
 # Classification decisions in this project
 
-- `saudization_code` values: `Eng` (30%), `Tech` (30%), `Spec` (25%), `NA` (exempt).
+- `saudization_code` values: `Eng` (30%), `Tech` (30%), `Spec` (30%), `NA` (exempt).
 - Spec = pure ICT professions not under SCE: محلل مبرمج، مبرمج حاسب آلي، أخصائي دعم فني، مشغل الحاسب الالي.
 - فني نظم حاسب آلي kept as `Tech` (stricter 30%) — borderline ICT-support case.
 - مراقب الجودة / مشرف موقع إنشائي / رسام هندسي kept as `Tech` per the user's original file classification.

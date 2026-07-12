@@ -132,8 +132,8 @@ export default function Dashboard() {
         </div>
         <p className="text-xs text-muted-foreground mt-1.5">
           {isAr
-            ? "التصنيف حسب فئات الهيئة السعودية للمهندسين (مهندس / أخصائي / فني) والنسب وفق قرارات وزارة الموارد البشرية: المهن الهندسية 30% (قرار 93483 — نافذ من 30/06/2026)، المهن الفنية الهندسية 30% (قرار 103105 — نافذ من 27/07/2025)، مهن الاتصالات وتقنية المعلومات 25% لكل مجموعة."
-            : "Classified per Saudi Council of Engineers categories (Engineer / Specialist / Technician) with HRSD localization targets: Engineering professions 30% (Decision 93483 — effective 30/06/2026), Technical engineering professions 30% (Decision 103105 — effective 27/07/2025), ICT professions 25% per job group."}
+            ? "التصنيف حسب فئات الهيئة السعودية للمهندسين (مهندس / أخصائي / فني) والنسب وفق قرارات وزارة الموارد البشرية: المهن الهندسية 30% (قرار 93483 — نافذ من 30/06/2026)، المهن الفنية الهندسية 30% (قرار 103105 — نافذ من 27/07/2025)، مهن الاتصالات وتقنية المعلومات 30%."
+            : "Classified per Saudi Council of Engineers categories (Engineer / Specialist / Technician) with HRSD localization targets: Engineering professions 30% (Decision 93483 — effective 30/06/2026), Technical engineering professions 30% (Decision 103105 — effective 27/07/2025), ICT professions 30%."}
         </p>
       </div>
 
@@ -158,9 +158,9 @@ export default function Dashboard() {
         isAr={isAr}
       />
 
-      {/* Project breakdown — Specialists 25% */}
+      {/* Project breakdown — Specialists 30% */}
       <BreakdownTable
-        title={isAr ? "التوزيع حسب المشروع والشركة — أخصائي (هدف 25%)" : "Project & Company Breakdown — Specialist (25% target)"}
+        title={isAr ? "التوزيع حسب المشروع والشركة — أخصائي (هدف 30%)" : "Project & Company Breakdown — Specialist (30% target)"}
         cat={spec}
         isAr={isAr}
       />
@@ -220,7 +220,7 @@ function CategoryCard({ cat, isAr }: { cat: CategoryMetrics; isAr: boolean }) {
     cat.code === "Eng"
       ? isAr ? "مهندس (30%) — المهن الهندسية" : "Engineer (30%) — Engineering Professions"
       : cat.code === "Spec"
-      ? isAr ? "أخصائي (25%) — الاتصالات وتقنية المعلومات" : "Specialist (25%) — ICT Professions"
+      ? isAr ? "أخصائي (30%) — الاتصالات وتقنية المعلومات" : "Specialist (30%) — ICT Professions"
       : isAr ? "فني (30%) — المهن الفنية الهندسية" : "Technician (30%) — Technical Engineering";
 
   return (

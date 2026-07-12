@@ -70,7 +70,7 @@ function buildGroups(employees: ProjectEmployee[], groupBy: GroupBy): GroupRow[]
       specTotal: spec.length,
       specSaudi,
       specPct,
-      specCompliant: spec.length === 0 || specPct >= 0.25,
+      specCompliant: spec.length === 0 || specPct >= 0.3,
       techTotal: tech.length,
       techSaudi,
       techPct,
@@ -266,7 +266,7 @@ export default function TeamBreakdown({ targetPct: _unused }: { targetPct: numbe
                   <Th label={isAr ? "سعودي" : "Saudi"} k="saudi" />
                   <Th label={isAr ? "غير سعودي" : "Non-Saudi"} k="nonSaudi" />
                   <Th label={isAr ? "مهندسون % (هدف 30%)" : "Engineers % (30% target)"} k="eng30Pct" />
-                  <Th label={isAr ? "أخصائيون % (هدف 25%)" : "Specialists % (25% target)"} k="specPct" />
+                  <Th label={isAr ? "أخصائيون % (هدف 30%)" : "Specialists % (30% target)"} k="specPct" />
                   <Th label={isAr ? "فنيون % (هدف 30%)" : "Technicians % (30% target)"} k="techPct" />
                   <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide whitespace-nowrap">
                     {isAr ? "الحالة" : "Status"}
@@ -310,14 +310,14 @@ export default function TeamBreakdown({ targetPct: _unused }: { targetPct: numbe
                         )}
                       </td>
 
-                      {/* Specialist 25% cell */}
+                      {/* Specialist 30% cell */}
                       <td className="px-4 py-3.5">
                         {row.specTotal > 0 ? (
                           <div className="flex items-center gap-2">
                             <div className="w-20 bg-muted rounded-full h-2 overflow-hidden">
                               <div
                                 className={cn("h-full rounded-full", row.specCompliant ? "bg-emerald-500" : "bg-red-500")}
-                                style={{ width: `${Math.min(100, (row.specPct / 0.25) * 100)}%` }}
+                                style={{ width: `${Math.min(100, (row.specPct / 0.3) * 100)}%` }}
                               />
                             </div>
                             <span className={cn("text-xs font-bold tabular-nums", row.specCompliant ? "text-emerald-600" : "text-red-600")}>

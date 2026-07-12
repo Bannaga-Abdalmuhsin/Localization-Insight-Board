@@ -64,7 +64,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
 
   function getCodeLabel(emp: { saudization_code: string | null; required_saudization_pct: number | null }): string {
     if (emp.saudization_code === "Eng") return "Engineer (30%)";
-    if (emp.saudization_code === "Spec") return "Specialist (25%)";
+    if (emp.saudization_code === "Spec") return "Specialist (30%)";
     if (emp.saudization_code === "Tech") return "Technician (30%)";
     return emp.saudization_code ?? "NA";
   }
@@ -142,7 +142,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
           <option value="all">{isAr ? "جميع الفئات" : "All Categories"}</option>
           <option value="Eng">{isAr ? "مهندس (30%)" : "Engineer (30%)"}</option>
           <option value="Tech">{isAr ? "فني (30%)" : "Technician (30%)"}</option>
-          <option value="Spec">{isAr ? "أخصائي (25%)" : "Specialist (25%)"}</option>
+          <option value="Spec">{isAr ? "أخصائي (30%)" : "Specialist (30%)"}</option>
           <option value="NA">NA ({isAr ? "معفى" : "Excluded"})</option>
         </select>
 

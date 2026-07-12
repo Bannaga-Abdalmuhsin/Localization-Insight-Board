@@ -62,7 +62,7 @@ export interface ProjectMetrics {
   eng30: CategoryMetrics;
   spec: CategoryMetrics;
   tech: CategoryMetrics;
-  /** True only when every category (Engineer 30%, Technician 30%, Specialist 25%) meets its own HRSD target. */
+  /** True only when every category (Engineer 30%, Technician 30%, Specialist 30%) meets its own HRSD target. */
   overallCompliant: boolean;
   employees: ProjectEmployee[];
 }
@@ -143,9 +143,9 @@ export function computeMetrics(employees: ProjectEmployee[]): ProjectMetrics {
   // HRSD localization targets (verified July 2026):
   // - Engineering professions: 30% — Decision 93483 (31/12/2025), effective 30/06/2026
   // - Technical engineering professions: 30% — Decision 103105 (26/01/2025), effective 27/07/2025
-  // - ICT / specialist professions: 25% per job group — ICT localization decision (2021)
+  // - ICT / specialist professions: upgraded to 30% (per user confirmation, July 2026)
   const eng30 = computeCategory(employees, "Eng", 0.3);
-  const spec = computeCategory(employees, "Spec", 0.25);
+  const spec = computeCategory(employees, "Spec", 0.3);
   const tech = computeCategory(employees, "Tech", 0.3);
 
   return {
