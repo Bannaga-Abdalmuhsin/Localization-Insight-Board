@@ -132,8 +132,8 @@ export default function Dashboard() {
         </div>
         <p className="text-xs text-muted-foreground mt-1.5">
           {isAr
-            ? "التصنيف حسب فئات الهيئة السعودية للمهندسين (مهندس / أخصائي / فني) والنسب وفق قرارات وزارة الموارد البشرية: المهن الهندسية 30% (قرار 93483 — نافذ من 30/06/2026)، المهن الفنية الهندسية 30% (قرار 103105 — نافذ من 27/07/2025)، مهن الاتصالات وتقنية المعلومات 30%."
-            : "Classified per Saudi Council of Engineers categories (Engineer / Specialist / Technician) with HRSD localization targets: Engineering professions 30% (Decision 93483 — effective 30/06/2026), Technical engineering professions 30% (Decision 103105 — effective 27/07/2025), ICT professions 30%."}
+            ? "التصنيف حسب فئات الهيئة السعودية للمهندسين (مهندس / أخصائي / فني) والنسب وفق قرارات وزارة الموارد البشرية: المهن الهندسية 30% (قرار 93483 — نافذ من 30/06/2026)، المهن الفنية الهندسية 30% (قرار 103105 — نافذ من 27/07/2025)، مهن الأخصائيين 30%."
+            : "Classified per Saudi Council of Engineers categories (Engineer / Specialist / Technician) with HRSD localization targets: Engineering professions 30% (Decision 93483 — effective 30/06/2026), Technical engineering professions 30% (Decision 103105 — effective 27/07/2025), Specialist professions 30%."}
         </p>
       </div>
 
@@ -220,7 +220,7 @@ function CategoryCard({ cat, isAr }: { cat: CategoryMetrics; isAr: boolean }) {
     cat.code === "Eng"
       ? isAr ? "مهندس (30%) — المهن الهندسية" : "Engineer (30%) — Engineering Professions"
       : cat.code === "Spec"
-      ? isAr ? "أخصائي (30%) — الاتصالات وتقنية المعلومات" : "Specialist (30%) — ICT Professions"
+      ? isAr ? "أخصائي (30%)" : "Specialist (30%)"
       : isAr ? "فني (30%) — المهن الفنية الهندسية" : "Technician (30%) — Technical Engineering";
 
   return (
