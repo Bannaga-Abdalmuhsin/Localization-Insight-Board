@@ -16,6 +16,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
   const [companyFilter, setCompanyFilter] = useState("all");
   const [codeFilter, setCodeFilter] = useState("all");
   const [saudiFilter, setSaudiFilter] = useState<"all" | "saudi" | "non-saudi">("all");
+  const [alignFilter, setAlignFilter] = useState<"all" | "aligned" | "partial" | "misaligned">("all");
 
   if (isLoading) {
     return (
@@ -40,6 +41,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
     if (codeFilter !== "all" && codeFilter !== "Eng" && codeFilter !== "Spec" && codeFilter !== "Tech" && codeFilter !== "NA") return false;
     if (saudiFilter === "saudi" && !e.is_saudi) return false;
     if (saudiFilter === "non-saudi" && e.is_saudi) return false;
+    if (alignFilter !== "all" && e.jd_alignment !== alignFilter) return false;
     const q = search.toLowerCase();
     if (
       q &&
@@ -54,6 +56,13 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
 
   const filteredSaudi = filtered.filter((e) => e.is_saudi).length;
   const filteredNon = filtered.filter((e) => !e.is_saudi).length;
+  const filteredMisaligned = filtered.filter((e) => e.jd_alignment === "misaligned").length;
+
+  const ALIGN_META: Record<string, { labelEn: string; labelAr: string; cls: string; dot: string }> = {
+    aligned: { labelEn: "Aligned", labelAr: "متوافق", cls: "bg-emerald-100 text-emerald-700", dot: "bg-emerald-500" },
+    partial: { labelEn: "Partial", labelAr: "جزئي", cls: "bg-amber-100 text-amber-700", dot: "bg-amber-500" },
+    misaligned: { labelEn: "Misaligned", labelAr: "غير متوافق", cls: "bg-red-100 text-red-700", dot: "bg-red-500" },
+  };
 
   const CODE_COLORS: Record<string, string> = {
     Eng: "bg-blue-100 text-blue-700",
@@ -91,6 +100,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
           { label: isAr ? "عرض" : "Showing", value: filtered.length, cls: "text-foreground" },
           { label: isAr ? "سعودي" : "Saudi", value: filteredSaudi, cls: "text-emerald-600" },
           { label: isAr ? "غير سعودي" : "Non-Saudi", value: filteredNon, cls: "text-amber-600" },
+          { label: isAr ? "وصف غير متوافق" : "JD Misaligned", value: filteredMisaligned, cls: "text-red-600" },
         ].map((s) => (
           <div key={s.label} className="flex items-center gap-2 bg-white border border-border rounded-lg px-3 py-2 shadow-sm">
             <span className="text-xs text-muted-foreground">{s.label}</span>
@@ -146,6 +156,18 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
           <option value="NA">NA ({isAr ? "معفى" : "Excluded"})</option>
         </select>
 
+        {/* Job-description alignment */}
+        <select
+          value={alignFilter}
+          onChange={(e) => setAlignFilter(e.target.value as typeof alignFilter)}
+          className="h-9 text-sm rounded-lg border border-border bg-white shadow-sm px-3 outline-none focus:ring-2 focus:ring-primary/30"
+        >
+          <option value="all">{isAr ? "توافق الوصف الوظيفي: الكل" : "JD Alignment: All"}</option>
+          <option value="aligned">{isAr ? "متوافق" : "Aligned"}</option>
+          <option value="partial">{isAr ? "جزئي" : "Partial"}</option>
+          <option value="misaligned">{isAr ? "غير متوافق" : "Misaligned"}</option>
+        </select>
+
         {/* Saudi / Non-Saudi quick filter */}
         <div className="flex items-center gap-1.5">
           <Filter className="w-4 h-4 text-muted-foreground" />
@@ -199,6 +221,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
                     isAr ? "الشركة" : "Company",
                     isAr ? "فئة التوطين" : "Category",
                     isAr ? "النسبة المطلوبة" : "Required %",
+                    isAr ? "توافق الوصف الوظيفي" : "JD Alignment",
                     isAr ? "الحالة" : "Status",
                   ].map((h) => (
                     <th key={h} className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide whitespace-nowrap text-start">
@@ -275,6 +298,38 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
                       {emp.required_saudization_pct != null
                         ? `${(emp.required_saudization_pct * 100).toFixed(0)}%`
                         : <span className="text-muted-foreground text-xs">{isAr ? "معفى" : "Excluded"}</span>}
+                    </td>
+                    <td className="px-4 py-3">
+                      {(() => {
+                        const meta = emp.jd_alignment ? ALIGN_META[emp.jd_alignment] : null;
+                        if (!meta) {
+                          return <span className="text-xs text-muted-foreground italic">—</span>;
+                        }
+                        const note = isAr
+                          ? (emp.jd_alignment_note_ar ?? emp.jd_alignment_note_en)
+                          : (emp.jd_alignment_note_en ?? emp.jd_alignment_note_ar);
+                        const title = [
+                          note,
+                          emp.jd_alignment_score != null
+                            ? (isAr ? `الدرجة: ${emp.jd_alignment_score}/100` : `Score: ${emp.jd_alignment_score}/100`)
+                            : null,
+                        ].filter(Boolean).join("\n");
+                        return (
+                          <span
+                            title={title || undefined}
+                            className={cn(
+                              "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold cursor-help whitespace-nowrap",
+                              meta.cls
+                            )}
+                          >
+                            <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", meta.dot)} />
+                            {isAr ? meta.labelAr : meta.labelEn}
+                            {emp.jd_alignment_score != null && (
+                              <span className="opacity-70 tabular-nums">{emp.jd_alignment_score}</span>
+                            )}
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td className="px-4 py-3">
                       <span className={cn(

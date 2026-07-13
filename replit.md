@@ -78,6 +78,15 @@ companies Aces/Anet — MAC closed July 2026, its 55 employees transferred to An
 Includes `job_description text` (current company job description per employee,
 imported from MSD_Data v1.4).
 
+AI job-description alignment (July 2026): columns `jd_alignment` ("aligned" |
+"partial" | "misaligned"), `jd_alignment_score` (0-100), `jd_alignment_note_en`,
+`jd_alignment_note_ar` — produced by a one-off Claude analysis (via Replit AI
+Integrations) comparing each employee's job description on file against their
+current company position title. Shown in Position Detail as a badge column with
+tooltip note + filter. Verdicts: 118 aligned, 64 partial, 25 misaligned.
+Short/empty descriptions are capped at "partial" since they can't evidence a
+specialized title.
+
 ### Localization categories (SCE + HRSD, verified July 2026)
 
 `saudization_code` classifies each employee by iqama profession into Saudi

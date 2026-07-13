@@ -18,6 +18,11 @@ export interface ProjectEmployee {
   profession_category: string | null;
   required_saudization_pct: number | null;
   job_description: string | null;
+  /** AI analysis: does the job description on file match the current company position? */
+  jd_alignment: "aligned" | "partial" | "misaligned" | null;
+  jd_alignment_score: number | null;
+  jd_alignment_note_en: string | null;
+  jd_alignment_note_ar: string | null;
 }
 
 export interface CategoryMetrics {
