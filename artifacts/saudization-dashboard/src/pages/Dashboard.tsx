@@ -218,10 +218,10 @@ function CategoryCard({ cat, isAr }: { cat: CategoryMetrics; isAr: boolean }) {
 
   const codeLabel =
     cat.code === "Eng"
-      ? isAr ? "مهندس (30%) — المهن الهندسية" : "Engineer (30%) — Engineering Professions"
+      ? isAr ? "مهندس (30%)" : "Engineer (30%)"
       : cat.code === "Spec"
       ? isAr ? "أخصائي (30%)" : "Specialist (30%)"
-      : isAr ? "فني (30%) — المهن الفنية الهندسية" : "Technician (30%) — Technical Engineering";
+      : isAr ? "فني (30%)" : "Technician (30%)";
 
   return (
     <div
