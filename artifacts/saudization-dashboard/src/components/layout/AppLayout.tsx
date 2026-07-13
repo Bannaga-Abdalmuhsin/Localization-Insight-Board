@@ -126,7 +126,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
       <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
         <main className="flex-1 overflow-y-auto px-4 md:px-8 lg:px-12 py-8 bg-[#f8f9fc] relative">
           <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-blue-50/50 to-transparent pointer-events-none" />
-          <div className="relative z-10 max-w-7xl mx-auto fade-in-up">
+          <div className="relative z-10 max-w-[1600px] mx-auto fade-in-up">
             {children}
           </div>
         </main>

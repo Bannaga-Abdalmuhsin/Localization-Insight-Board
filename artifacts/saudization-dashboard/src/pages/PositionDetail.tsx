@@ -240,7 +240,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
                     isAr ? "توافق الوصف الوظيفي" : "JD Alignment",
                     isAr ? "الحالة" : "Status",
                   ].map((h) => (
-                    <th key={h} className="px-4 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-start whitespace-nowrap">
+                    <th key={h} className="px-3 py-3.5 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-start whitespace-nowrap">
                       {h}
                     </th>
                   ))}
@@ -252,16 +252,16 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
                     key={emp.id}
                     className="hover:bg-slate-50/80 transition-colors group"
                   >
-                    <td className="px-4 py-4 align-middle tabular-nums text-slate-400 text-xs font-bold">{emp.employee_no ?? idx + 1}</td>
-                    <td className="px-4 py-4 align-middle font-bold text-slate-800 whitespace-nowrap">{emp.employee_name}</td>
-                    <td className="px-4 py-4 align-middle text-slate-600 font-medium whitespace-nowrap">{emp.nationality}</td>
-                    <td className="px-4 py-4 align-middle">
+                    <td className="px-3 py-3.5 align-middle tabular-nums text-slate-400 text-xs font-bold">{emp.employee_no ?? idx + 1}</td>
+                    <td className="px-3 py-3.5 align-middle font-bold text-slate-800 text-sm min-w-[140px]">{emp.employee_name}</td>
+                    <td className="px-3 py-3.5 align-middle text-slate-600 font-medium">{emp.nationality}</td>
+                    <td className="px-3 py-3.5 align-middle">
                       <p className="text-slate-800 font-bold text-sm leading-tight">{emp.job_title ?? "—"}</p>
                       {emp.iqama_profession && (
                         <p className="text-xs text-slate-500 font-medium mt-1">{emp.iqama_profession}</p>
                       )}
                     </td>
-                    <td className="px-4 py-4 align-middle whitespace-nowrap border-s border-slate-100">
+                    <td className="px-3 py-3.5 align-middle whitespace-nowrap border-s border-slate-100">
                       {(() => {
                         const oc = getOccupationCode(emp.iqama_profession);
                         if (!oc || oc.confidence === "pending" || !oc.code) {
@@ -296,23 +296,23 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
                         );
                       })()}
                     </td>
-                    <td className="px-4 py-4 align-middle text-slate-600 font-medium whitespace-nowrap">
+                    <td className="px-3 py-3.5 align-middle text-slate-600 font-medium whitespace-nowrap">
                       {emp.region ? (isAr ? (REGION_AR[emp.region] ?? emp.region) : emp.region) : "—"}
                     </td>
-                    <td className="px-4 py-4 align-middle">
+                    <td className="px-3 py-3.5 align-middle">
                       {emp.company ? <CompanyLogo company={emp.company} className="h-6" /> : <span className="text-slate-400 font-bold">—</span>}
                     </td>
-                    <td className="px-4 py-4 align-middle border-s border-slate-100">
+                    <td className="px-3 py-3.5 align-middle border-s border-slate-100">
                       <span className={cn("inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold border", CODE_COLORS[emp.saudization_code ?? "NA"] ?? CODE_COLORS.NA)}>
                         {getCodeLabel(emp)}
                       </span>
                     </td>
-                    <td className="px-4 py-4 align-middle tabular-nums text-slate-800 font-black text-center">
+                    <td className="px-3 py-3.5 align-middle tabular-nums text-slate-800 font-black text-center">
                       {emp.required_saudization_pct != null
                         ? `${(emp.required_saudization_pct * 100).toFixed(0)}%`
                         : <span className="text-slate-400 text-xs font-bold">{isAr ? "معفى" : "Excluded"}</span>}
                     </td>
-                    <td className="px-4 py-4 align-middle border-s border-slate-100">
+                    <td className="px-3 py-3.5 align-middle border-s border-slate-100">
                       {(() => {
                         const meta = emp.jd_alignment ? ALIGN_META[emp.jd_alignment] : null;
                         if (!meta) {
@@ -344,7 +344,7 @@ export default function PositionDetail({ targetPct: _unused }: { targetPct: numb
                         );
                       })()}
                     </td>
-                    <td className="px-4 py-4 align-middle border-s border-slate-100">
+                    <td className="px-3 py-3.5 align-middle border-s border-slate-100">
                       <span className={cn(
                         "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border shadow-sm",
                         emp.is_saudi ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-amber-50 text-amber-700 border-amber-100"
